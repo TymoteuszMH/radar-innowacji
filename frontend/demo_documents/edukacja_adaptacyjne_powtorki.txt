@@ -1,0 +1,7 @@
+Dane demonstracyjne — fikcyjny opis innowacji
+Materiał testowy do projektu Innovation Radar. Nie opisuje rzeczywistej instytucji ani wyników wdrożenia.
+Tytuł: Adaptacyjne powtórki materiału
+Problem: Uczniowie mają zaległości w nauce i potrzebują bardziej indywidualnego planu powtórek.
+Rozwiązanie: Nauczyciel wprowadza krótkie diagnozy i adaptacyjny plan powtórek dopasowany do bieżących potrzeb uczniów.
+Efekt: Autorzy oczekują ograniczenia zaległości. Wynik nie został jeszcze potwierdzony niezależną ewaluacją.
+Wymagania: Nauczyciel prowadzący, materiały dydaktyczne i zgoda szkoły na krótki pilotaż.
