@@ -22,7 +22,23 @@
                 "output": "app"
               }
             ],
-            "styles": ["src/styles.css"]
+            "styles": ["app/style.css", "src/styles.css"],
+            "scripts": [
+              "app/data/seed.js",
+              "app/core/evidence.js",
+              "app/core/discovery.js",
+              "app/core/assessment.js",
+              "app/core/matching.js",
+              "app/core/actions.js",
+              "app/core/analysis.js",
+              "app/core/pdf.js",
+              "app/core/store.js",
+              "app/core/localApi.js",
+              "app/core/sources/openalex.js",
+              "app/core/sources/ncbr.js",
+              "app/core/onlineSearch.js",
+              "app/app.js"
+            ]
           },
           "configurations": {
             "production": {

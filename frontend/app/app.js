@@ -1,5 +1,5 @@
 /* Innovation Radar v0.5. Offline core + optional public internet search. No AI API. */
-const root = document.querySelector('#app');
+window.startRadarApp = function startRadarApp(root, renderShell) {
 const state = { draft:{}, extracted:null, sourceMode:'form', q:'', discovery:null, online:null, onlineQuery:'edukacja', onlineSource:'both', onlineLimit:8, sourceEvidence:[], sourceName:'', sourceMeta:{}, isDemo:false };
 const stageNames = { concept:'Koncepcja',prototype:'Prototyp',pilot:'Pilotaż',implemented:'Wdrożone' };
 const typeNames = { technical:'Technologiczna',organizational:'Organizacyjna',educational:'Edukacyjna',social:'Społeczna',process:'Procesowa' };
@@ -14,6 +14,12 @@ async function api(url, options={}) {
 const href = (route, content, klass='') => `<a href="#${e(route)}" data-nav="${e(route)}" class="${klass}">${content}</a>`;
 const sideItem = (path, icon, label, active) => href(path, `<span class="nav-glyph" aria-hidden="true">${icon}</span><span>${label}</span>`, 'nav-link '+(active?'active':'')).replace('class="nav-link '+(active?'active':'')+'"', 'class="nav-link '+(active?'active':'')+'"'+(active?' aria-current="page"':''));
 function shell(content, current='/', crumb='Przegląd') {
+  if (renderShell) {
+    root.innerHTML = content;
+    renderShell(current, crumb, window.RadarStore.folderName, window.RadarStore.storageWarning);
+    document.title = `${crumb} · Innovation Radar`;
+    return;
+  }
   const active = (route) => route==='/' ? current==='/' : route==='/innovations' ? current==='/innovations' : route==='/needs' ? current==='/needs' : current===route;
   const folderLabel = window.RadarStore.folderName ? 'Połączono: '+window.RadarStore.folderName : 'Nie wybrano folderu';
   const workspaceExpanded = !window.matchMedia?.('(max-width:760px)')?.matches;
@@ -294,7 +300,7 @@ function formObject(form) {
   return result;
 }
 function inlineError(message) {const slot=document.querySelector('#form-error'); if (slot) slot.innerHTML=`<div class="form-alert">${e(message)}</div>`;}
-document.addEventListener('click',async (event)=>{
+const onClick = async (event)=>{
   const link=event.target.closest('a[data-nav]');
   if(link) { event.preventDefault(); await navigate(link.dataset.nav); return; }
   const act=event.target.closest('[data-action]');
@@ -376,8 +382,8 @@ document.addEventListener('click',async (event)=>{
       innovationForm();
     } catch(err) {alert(err.message);act.disabled=false;act.textContent='⌁ Analizuj i uzupełnij formularz';}
   }
-});
-document.addEventListener('submit', async (event)=>{
+};
+const onSubmit = async (event)=>{
   const form=event.target;
   if(!form.matches('form[data-form]'))return;
   event.preventDefault();
@@ -404,8 +410,8 @@ document.addEventListener('submit', async (event)=>{
       await navigate('/needs/'+response.need.id);
     }
   } catch(err) {inlineError(err.message);if(button)button.disabled=false;}
-});
-document.addEventListener('change', async (event) => {
+};
+const onChange = async (event) => {
   if(event.target?.id !== 'json-import') return;
   const file = event.target.files?.[0]; if(!file) return;
   try {
@@ -417,6 +423,20 @@ document.addEventListener('change', async (event) => {
     alert('Dane zaimportowano.');
   } catch (err) { alert('Import nieudany: '+err.message); }
   finally { event.target.value = ''; }
-});
-window.addEventListener('hashchange',()=>navigate(location.hash.slice(1) || '/',true));
+};
+const onHashChange = () => navigate(location.hash.slice(1) || '/',true);
+document.addEventListener('click', onClick);
+document.addEventListener('submit', onSubmit);
+document.addEventListener('change', onChange);
+window.addEventListener('hashchange', onHashChange);
 navigate(location.hash.slice(1) || '/',true);
+return () => {
+  document.removeEventListener('click', onClick);
+  document.removeEventListener('submit', onSubmit);
+  document.removeEventListener('change', onChange);
+  window.removeEventListener('hashchange', onHashChange);
+};
+};
+
+const standaloneRoot = document.querySelector('#app');
+if (standaloneRoot) window.startRadarApp(standaloneRoot);
