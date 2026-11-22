@@ -10,5 +10,5 @@ __pycache__/
 /models/*.pt
 /models/*.pt.tmp
 /logs/
-# /results/
+/results/
 /tests/
