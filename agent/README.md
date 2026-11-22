@@ -4,6 +4,10 @@ Główny pipeline uruchamia `main.py`: crawler pobiera strony z `data/sites.csv`
 a `RawDataFormatter` formatuje zapisane treści do `results/results.json` bez
 klasyfikacji i analizy projektów. Każdy artykuł zawiera domenę, URL, tytuł
 źródła i pełną treść otrzymaną od crawlera.
+Następnie `ProjectAgent` wykrywa projekty i zapisuje je do
+`results/projects.json`, a całą analizę do `results/data.json`. Przed pierwszym
+uruchomieniem potrzebny jest wytrenowany model `models/project_agent.pt`:
+uruchom `train.bat` po przygotowaniu wyników lub danych treningowych.
 Domyślnie po zakończeniu usuwany jest katalog danych crawlera; ustaw
 `DELETE_SCRAPPED_AFTER_RUN=0` w `.env`, aby go zachować.
 
@@ -40,9 +44,8 @@ wymaga istniejącego zbioru crawlera; brakujący zbiór projektów tworzy z
 
 ## Niezależne wykrywanie projektów
 
-`ProjectAgent` to osobna sieć PyTorch, która klasyfikuje zapisane artykuły,
-nie uruchamiając crawlera ani `RawDataFormatter`. Można go trenować razem z crawlerem
-przez `train.bat` albo osobno i użyć na gotowych wynikach:
+`ProjectAgent` to sieć PyTorch, która klasyfikuje zapisane artykuły; używa jej
+główny pipeline. Można go też trenować i uruchamiać osobno na gotowych wynikach:
 
 ```powershell
 python data/build_project_dataset.py
@@ -62,19 +65,23 @@ Trening zapisuje `models/project_agent.pt` i wyświetla precision oraz recall na
 wydzielonych domenach. Są to wyniki względem etykiet bootstrapowych, a nie
 niezależna ocena rzeczywistej skuteczności. Wagi modelu nie są wersjonowane.
 Ostatnie polecenie zapisuje dwa pliki, nie zmieniając pliku wejściowego:
-`results/projects.json` zawiera listę `projects` z domeną, adresem i tytułem
-źródła dla znalezionych kandydatów, a `results/data.json` zawiera wszystkie
+`results/projects.json` zawiera listę `projects` z nazwą projektu, opisem,
+osobami, instytucją, fragmentami źródłowymi i adresem, a `results/data.json` zawiera wszystkie
 artykuły wraz z tekstem przekazanym modelowi (`analyzed_text`) i wynikiem
 klasyfikacji (`project_detection`). Prawdopodobieństwo dotyczy wykrycia,
 nie oceny wartości innowacji. Próg można ustawić przez `--threshold`, a ścieżki
-plików przez `--output` i `--data-output`.
+plików przez `--output` i `--data-output`. Dla głównego pipeline'u ścieżki
+można ustawić zmiennymi `PROJECTS_OUTPUT_FILE` i `PROJECT_DATA_OUTPUT_FILE`,
+a próg zmienną `PROJECT_AGENT_THRESHOLD`.
 
 Model korzysta z tytułu i pełnej treści w nowych wynikach. W starszych wynikach
 korzysta z tytułu, streszczenia, faktów i fragmentów, ponieważ nie zawierają
 pełnej treści. Po zmianie formatu warto ponownie przygotować i zweryfikować dane
-treningowe oraz wytrenować model. Model wykrywa rekordy kandydatów, nie wyodrębnia
-gotowych danych projektu, nie rozdziela kilku projektów opisanych w jednym
-artykule ani nie generuje nowych opisów. Tytuł źródła nie musi być nazwą projektu.
+treningowe oraz wytrenować model. Sieć wybiera artykuły, a pola projektu są
+wyodrębniane prostymi regułami z tekstu źródłowego; nie są generowane przez sieć.
+Nieznane dane pozostają puste, a gdy nie znaleziono nazwy, używany jest tytuł
+źródła lub fragment tekstu. Wyniki mogą zawierać błędy i wymagają weryfikacji;
+jeden artykuł daje co najwyżej jeden rekord projektu.
 
 ## Struktura
 

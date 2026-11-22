@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 interface Organization { id: string; name: string; }
 interface Entity {
@@ -71,7 +72,7 @@ export type DetailView = {
 @Component({
   selector: 'app-detail',
   standalone: true,
-  imports: [NgTemplateOutlet],
+  imports: [NgTemplateOutlet, RouterLink],
   templateUrl: './detail.component.html',
 })
 export class DetailComponent {

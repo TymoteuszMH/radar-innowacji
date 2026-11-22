@@ -5,7 +5,7 @@
     <p>{{ view.kind === 'innovations' ? 'Przeglądaj pomysły z różnych typów instytucji i sprawdź ich potencjał.' : 'Zacznij od konkretnej potrzeby, aby wyszukać możliwe innowacje.' }}</p>
   </div>
   <div class="buttons">
-    <a [href]="'#/' + view.kind + '/new'" [attr.data-nav]="'/' + view.kind + '/new'" class="btn btn-primary">{{ view.kind === 'innovations' ? '＋ Dodaj innowację' : '＋ Zgłoś potrzebę' }}</a>
+    <a [routerLink]="['/', view.kind, 'new']" class="btn btn-primary">{{ view.kind === 'innovations' ? '＋ Dodaj innowację' : '＋ Zgłoś potrzebę' }}</a>
   </div>
 </div>
 <form class="search-row" (submit)="search($event, searchInput.value)">
@@ -18,7 +18,7 @@
 @if (error) { <div class="form-alert" role="alert">{{ error }}</div> }
 <div class="section-head">
   <h2>{{ view.kind === 'innovations' ? 'Innowacje' : 'Zgłoszone potrzeby' }} <span class="counter">{{ data.total }}</span></h2>
-  <span class="small-note">{{ view.kind === 'innovations' ? 'Oceny nie są zweryfikowane' : 'Prywatne dane lokalne i przykłady' }}</span>
+  <span class="small-note">{{ view.kind === 'innovations' ? 'Oceny nie są zweryfikowane' : 'Dane wymagają weryfikacji' }}</span>
 </div>
 <div class="list-cards">
   @for (item of data.items; track item.id) {
@@ -29,11 +29,11 @@
           @for (tag of (item.domain_tags || []).slice(0, 2); track $index) { <span class="tag">{{ tag }}</span> }
           @if (view.kind === 'innovations') { <span class="tag tag-outline">{{ stageName(item.stage) }}</span> }
         </div>
-        <h3><a [href]="'#/' + view.kind + '/' + item.id" [attr.data-nav]="'/' + view.kind + '/' + item.id">{{ item.title }}</a></h3>
+        <h3><a [routerLink]="['/', view.kind, item.id]">{{ item.title }}</a></h3>
         <p>{{ excerpt(item.problem) }}</p>
         <div class="small-note" style="margin-top:9px">{{ organizationName(item.organization_id) }}@if (view.kind === 'innovations') { · {{ typeName(item.innovation_type) }} }</div>
       </div>
-      <div class="side"><a [href]="'#/' + view.kind + '/' + item.id" [attr.data-nav]="'/' + view.kind + '/' + item.id" class="btn btn-sm">{{ view.kind === 'innovations' ? 'Otwórz →' : 'Szukaj rozwiązań →' }}</a></div>
+      <div class="side"><a [routerLink]="['/', view.kind, item.id]" class="btn btn-sm">{{ view.kind === 'innovations' ? 'Otwórz →' : 'Szukaj rozwiązań →' }}</a></div>
     </article>
   } @empty {
     <div class="empty">{{ view.kind === 'innovations' ? 'Brak wyników. Spróbuj innego hasła.' : 'Brak potrzeb dla tego hasła.' }}</div>

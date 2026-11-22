@@ -3,7 +3,7 @@
     <div class="eyebrow">RADAR INNOWACJI · SYSTEM DEMONSTRACYJNY</div>
     <h1 id="page-title" tabindex="-1">Odkrywaj innowacje.<br><span>Łącz je z potrzebami.</span></h1>
     <p>Znajduj wartościowe pomysły ze szkół, uczelni i samorządów. Sprawdzaj ich potencjał oraz możliwe zastosowania w innych organizacjach.</p>
-    <div class="buttons"><a href="#/online" data-nav="/online" class="btn btn-primary">Szukaj w internecie</a><a href="#/discovery" data-nav="/discovery" class="btn btn-secondary">Wykryj w dokumentach</a></div>
+    <div class="buttons"><a routerLink="/online" class="btn btn-primary">Szukaj w internecie</a><a routerLink="/discovery" class="btn btn-secondary">Wykryj w dokumentach</a></div>
   </div>
   <div class="hero-guide">
     <div class="guide-title">Jak działa system?</div>
@@ -16,30 +16,23 @@
   </div>
 </section>
 <div class="metric-grid" aria-label="Statystyki katalogu">
-  <div class="metric-card"><span class="metric-label">Innowacje w katalogu</span><strong class="metric-num">{{ data.counts.innovations }}</strong><span class="small-note">wpisy lokalne i demonstracyjne</span></div>
-  <div class="metric-card"><span class="metric-label">Potrzeby organizacji</span><strong class="metric-num">{{ data.counts.needs }}</strong><span class="small-note">zgłoszenia i fikcyjne przykłady</span></div>
-  <div class="metric-card"><span class="metric-label">Organizacje</span><strong class="metric-num">{{ data.counts.organizations }}</strong><span class="small-note">rekordy w lokalnej bazie</span></div>
+  <div class="metric-card"><span class="metric-label">Innowacje w katalogu</span><strong class="metric-num">{{ data.counts.innovations }}</strong><span class="small-note">wpisy w katalogu</span></div>
+  <div class="metric-card"><span class="metric-label">Potrzeby organizacji</span><strong class="metric-num">{{ data.counts.needs }}</strong><span class="small-note">zgłoszone potrzeby</span></div>
+  <div class="metric-card"><span class="metric-label">Organizacje</span><strong class="metric-num">{{ data.counts.organizations }}</strong><span class="small-note">rekordy w bazie</span></div>
 </div>
-<section class="demo-scenarios">
-  <div class="section-head"><div><div class="eyebrow">PRZETESTUJ PROTOTYP</div><h2>Dwa scenariusze demonstracyjne</h2><p>Przykłady pokazują oba kierunki wyszukiwania. Dane i instytucje są fikcyjne.</p></div></div>
-  <div class="scenario-grid">
-    <article class="scenario-card"><div class="scenario-type">SCENARIUSZ 01 · OD INNOWACJI</div><h3>Pomysł ze szkoły</h3><p>Sprawdź ocenę rozwiązania edukacyjnego, podobne projekty i potrzeby innych placówek.</p><a href="#/innovations/inn-adaptive" data-nav="/innovations/inn-adaptive" class="text-link">Przejdź do analizy innowacji →</a></article>
-    <article class="scenario-card"><div class="scenario-type">SCENARIUSZ 02 · OD POTRZEBY</div><h3>Problem samorządu</h3><p>Rozpocznij od potrzeby ograniczenia kosztów odbioru odpadów i znajdź możliwe rozwiązania.</p><a href="#/needs/need-waste" data-nav="/needs/need-waste" class="text-link">Znajdź innowacje dla gminy →</a></article>
-  </div>
-</section>
 <section>
-  <div class="section-head"><div><h2>Potencjalne dopasowania</h2><p>Przykładowe pary innowacja → potrzeba. Wyniki są wyłącznie orientacyjne.</p></div><a href="#/innovations" data-nav="/innovations" class="text-link">Wszystkie innowacje →</a></div>
+  <div class="section-head"><div><h2>Potencjalne dopasowania</h2><p>Pary innowacja → potrzeba. Wyniki są wyłącznie orientacyjne.</p></div><a routerLink="/innovations" class="text-link">Wszystkie innowacje →</a></div>
   <div class="cards-grid">
     @for (item of data.featured; track item.innovation.id) {
       @if (item.matches[0]; as match) {
         <article class="card">
           <div class="card-head"><span class="tag tag-good">WSTĘPNE DOPASOWANIE</span><span class="score">{{ match.match_score === null ? '—' : match.match_score }}<span> / 100*</span></span></div>
-          <h3><a [href]="'#/innovations/' + item.innovation.id" [attr.data-nav]="'/innovations/' + item.innovation.id">{{ item.innovation.title }}</a></h3>
+          <h3><a [routerLink]="['/innovations', item.innovation.id]">{{ item.innovation.title }}</a></h3>
           <div class="small-note">{{ organizationName(item.innovation.organization_id) }}</div>
           <div class="divider"></div>
           <div class="card-meta"><span class="pair-arrow" aria-hidden="true">↓</span><strong class="pair-need">{{ match.need.title }}</strong></div>
           <p>{{ match.reasons[0] || 'Dopasowanie wymaga oceny człowieka.' }}</p>
-          <div class="card-footer"><span class="small-note">*Ocena heurystyczna</span><a [href]="'#/innovations/' + item.innovation.id" [attr.data-nav]="'/innovations/' + item.innovation.id" class="link-subtle">Szczegóły →</a></div>
+          <div class="card-footer"><span class="small-note">*Ocena heurystyczna</span><a [routerLink]="['/innovations', item.innovation.id]" class="link-subtle">Szczegóły →</a></div>
         </article>
       }
     } @empty {
@@ -48,17 +41,17 @@
   </div>
 </section>
 <section>
-  <div class="section-head"><div><h2>Ostatnio dodane innowacje</h2><p>Przeglądaj pomysły i oceniaj kolejne kroki.</p></div><a href="#/innovations" data-nav="/innovations" class="text-link">Otwórz katalog →</a></div>
+  <div class="section-head"><div><h2>Ostatnio dodane innowacje</h2><p>Przeglądaj pomysły i oceniaj kolejne kroki.</p></div><a routerLink="/innovations" class="text-link">Otwórz katalog →</a></div>
   <div class="cards-grid">
     @for (innovation of data.recent.slice(0, 4); track innovation.id) {
       <article class="card">
         <div class="card-head"><span [class]="innovation.is_demo ? 'tag tag-demo' : 'tag tag-slate'">{{ innovation.is_demo ? 'DANE DEMONSTRACYJNE' : 'Dane niezweryfikowane' }}</span><span class="tag tag-slate">{{ stageName(innovation.stage) }}</span></div>
-        <h3><a [href]="'#/innovations/' + innovation.id" [attr.data-nav]="'/innovations/' + innovation.id">{{ innovation.title }}</a></h3>
+        <h3><a [routerLink]="['/innovations', innovation.id]">{{ innovation.title }}</a></h3>
         <p>{{ excerpt(innovation.problem, 175) }}</p>
         <div class="card-meta">@for (tag of (innovation.domain_tags || []).slice(0, 3); track $index) {<span class="tag">{{ tag }}</span>}</div>
-        <div class="card-footer"><span class="small-note">{{ organizationName(innovation.organization_id) }}</span><a [href]="'#/innovations/' + innovation.id" [attr.data-nav]="'/innovations/' + innovation.id" class="link-subtle">Analizuj →</a></div>
+        <div class="card-footer"><span class="small-note">{{ organizationName(innovation.organization_id) }}</span><a [routerLink]="['/innovations', innovation.id]" class="link-subtle">Analizuj →</a></div>
       </article>
     }
   </div>
 </section>
-<div class="notice" role="note"><strong>Ważne:</strong> 10 przykładowych innowacji i 6 potrzeb to fikcyjne scenariusze. Ocena nie oznacza potwierdzenia skuteczności, zainteresowania organizacji ani gotowości do wdrożenia.</div>
+<div class="notice" role="note"><strong>Ważne:</strong> Ocena nie oznacza potwierdzenia skuteczności, zainteresowania organizacji ani gotowości do wdrożenia.</div>

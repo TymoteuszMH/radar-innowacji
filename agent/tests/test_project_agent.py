@@ -69,7 +69,7 @@ class ProjectAgentTests(unittest.TestCase):
                                {"url": "2", "summary": "nieznanewyrazy"}]}
         output = agent.classify_results(source, threshold=0)
         self.assertEqual(output["projects"][0]["url"], "1")
-        self.assertNotIn("summary", output["projects"][0])
+        self.assertEqual(output["projects"][0]["summary"], "projekt szkolny aplikacja")
         self.assertEqual(output["records"][0]["analyzed_text"], "projekt szkolny aplikacja")
         self.assertIsNone(output["records"][1]["project_detection"]["is_project"])
         self.assertNotIn("project_detection", source["articles"][0])
@@ -94,6 +94,8 @@ class ProjectAgentTests(unittest.TestCase):
             self.assertEqual(list(projects), ["projects"])
             self.assertEqual([item["url"] for item in projects["projects"]], ["1"])
             self.assertNotIn("content", projects["projects"][0])
+            self.assertEqual(projects["projects"][0]["project_title"], "Tytuł")
+            self.assertEqual(projects["projects"][0]["summary"], "projekt szkolny aplikacja")
             self.assertEqual(len(data["records"]), 2)
             self.assertEqual(data["records"][0]["analyzed_text"], "Tytuł\nprojekt szkolny aplikacja")
             self.assertEqual(data["records"][0]["content"], "projekt szkolny aplikacja")
@@ -106,6 +108,38 @@ class ProjectAgentTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     main()
             self.assertEqual(source.read_text(encoding="utf-8"), "original")
+
+    def test_extracts_named_project_from_article(self):
+        from agents.project_agent import project_from_article
+        project = project_from_article({"source_title": "Szkoła", "url": "https://example.pl",
+            "content": "Projekt „Cyfrowa Szkoła” wspiera naukę.\nUczniowie testują aplikację."})
+        self.assertEqual(project["project_title"], "Cyfrowa Szkoła")
+        self.assertIn("Projekt „Cyfrowa Szkoła”", project["summary"])
+        self.assertEqual(project["url"], "https://example.pl")
+
+    def test_extracts_name_with_adjectives(self):
+        from agents.project_agent import project_from_article
+        project = project_from_article({"source_title": "Zespół Szkół nr 2", "content":
+            "Szkoła realizuje mobilny projekt edukacyjny „EKONOMICZNA AKADEMIA MALUCHA”."})
+        self.assertEqual(project["project_title"], "EKONOMICZNA AKADEMIA MALUCHA")
+
+    def test_extracts_unquoted_project_name(self):
+        from agents.project_agent import project_from_article
+        project = project_from_article({"source_title": "Zajęcia pozalekcyjne", "content":
+            "Szkolne Koło ECDL (w ramach projektu Klasa z ECDL)"})
+        self.assertEqual(project["project_title"], "Klasa z ECDL")
+
+    def test_does_not_save_general_mentions_as_projects(self):
+        agent = ProjectAgent(hidden_size=8)
+        agent.fit(self.records, epochs=2)
+        source = {"articles": [
+            {"url": "1", "source_title": "Warsztaty", "content": "Poznawali projekty edukacyjne."},
+            {"url": "2", "source_title": "Projekt", "content": "Już wkrótce"},
+        ]}
+        with patch.object(agent, "predict_proba", return_value=0.9):
+            output = agent.classify_results(source)
+        self.assertEqual(output["projects"], [])
+        self.assertEqual(len(output["records"]), 2)
 
 
 if __name__ == "__main__":

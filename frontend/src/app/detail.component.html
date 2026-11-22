@@ -1,6 +1,6 @@
 @if (view.kind === 'innovation') {
-  <a href="#/innovations" data-nav="/innovations" class="back">← Powrót do katalogu</a>
-  <div class="page-heading"><div><div class="eyebrow">ANALIZA INNOWACJI</div><h1 id="page-title" tabindex="-1">{{ view.innovation.title }}</h1><p>Każda rekomendacja wymaga weryfikacji przez autora lub eksperta.</p></div><div class="buttons"><a href="#/innovations/new" data-nav="/innovations/new" class="btn">＋ Dodaj kolejną</a></div></div>
+  <a routerLink="/innovations" class="back">← Powrót do katalogu</a>
+  <div class="page-heading"><div><div class="eyebrow">ANALIZA INNOWACJI</div><h1 id="page-title" tabindex="-1">{{ view.innovation.title }}</h1><p>Każda rekomendacja wymaga weryfikacji przez autora lub eksperta.</p></div><div class="buttons"><a routerLink="/innovations/new" class="btn">＋ Dodaj kolejną</a></div></div>
   <div class="card-meta" style="margin:-11px 0 21px">
     <span [class]="view.innovation.is_demo ? 'tag tag-demo' : 'tag tag-slate'">{{ view.innovation.is_demo ? 'DANE DEMONSTRACYJNE' : 'Dane niezweryfikowane' }}</span>
     @for (tag of (view.innovation.domain_tags || []).slice(0, 4); track $index) { <span class="tag">{{ tag }}</span> }
@@ -24,8 +24,8 @@
       <section class="detail-card">
         <h2>Możliwie podobne projekty <span class="counter">{{ view.similar.length }}</span></h2>
         @for (similar of view.similar; track similar.innovation.id) {
-          <div class="match-row"><div class="match-title"><a [href]="'#/innovations/' + similar.innovation.id" [attr.data-nav]="'/innovations/' + similar.innovation.id">{{ similar.innovation.title }}</a><span class="tag tag-slate">{{ similar.similarity_score }} / 100*</span></div><p class="match-reason">{{ similar.reasons.join(' ') || 'Potencjalne podobieństwo tekstowe.' }}</p><div class="small-note">*Podobieństwo heurystyczne, nie dowód duplikatu.</div></div>
-        } @empty { <div class="empty">Nie znaleziono silnego podobieństwa w lokalnym katalogu.</div> }
+          <div class="match-row"><div class="match-title"><a [routerLink]="['/innovations', similar.innovation.id]">{{ similar.innovation.title }}</a><span class="tag tag-slate">{{ similar.similarity_score }} / 100*</span></div><p class="match-reason">{{ similar.reasons.join(' ') || 'Potencjalne podobieństwo tekstowe.' }}</p><div class="small-note">*Podobieństwo heurystyczne, nie dowód duplikatu.</div></div>
+        } @empty { <div class="empty">Nie znaleziono silnego podobieństwa w katalogu.</div> }
       </section>
     </div>
     <div class="stack"><section class="detail-card">
@@ -61,7 +61,7 @@
     </div></section>
   </div>
 } @else {
-  <a href="#/needs" data-nav="/needs" class="back">← Powrót do potrzeb</a>
+  <a routerLink="/needs" class="back">← Powrót do potrzeb</a>
   <div class="page-heading"><div><div class="eyebrow">OD POTRZEBY DO INNOWACJI</div><h1 id="page-title" tabindex="-1">{{ view.need.title }}</h1><p>Rozwiązania z katalogu pasujące do problemu organizacji.</p></div></div>
   <div class="card-meta" style="margin:-10px 0 20px"><span [class]="view.need.is_demo ? 'tag tag-demo' : 'tag tag-slate'">{{ view.need.is_demo ? 'DANE DEMONSTRACYJNE' : 'Dane niezweryfikowane' }}</span>@for (tag of (view.need.domain_tags || []).slice(0, 4); track $index) { <span class="tag">{{ tag }}</span> }</div>
   <div class="detail-grid">
@@ -74,12 +74,12 @@
       } @empty { <div class="empty">Brak przekonujących dopasowań.</div> }
     </section>
   </div>
-  <div class="notice">Wszystkie potrzeby demonstracyjne są fikcyjne. Dopasowanie nie oznacza, że organizacja wyraziła zgodę na pilotaż, kontakt lub finansowanie.</div>
+  <div class="notice">Dopasowanie nie oznacza, że organizacja wyraziła zgodę na pilotaż, kontakt lub finansowanie.</div>
 }
 
 <ng-template #matchRow let-match="match" let-entity="entity" let-path="path">
-  <div class="match-row"><div class="match-title"><a [href]="'#/' + path + '/' + entity.id" [attr.data-nav]="'/' + path + '/' + entity.id">{{ entity.title }}</a><span class="tag tag-good">{{ match.match_score == null ? 'Brak oceny' : match.match_score + ' / 100*' }}</span></div>
+  <div class="match-row"><div class="match-title"><a [routerLink]="['/', path, entity.id]">{{ entity.title }}</a><span class="tag tag-good">{{ match.match_score == null ? 'Brak oceny' : match.match_score + ' / 100*' }}</span></div>
     <div class="small-note">{{ organizationName(entity.organization_id) }}</div><p class="match-reason">{{ match.reasons.join(' ') }}</p><p class="small-note">@if (match.matched_keywords?.length) { Wspólne frazy: {{ match.matched_keywords.join(', ') }}. } @if (match.risks?.length) { Uwaga: {{ match.risks.join(' ') }} }</p>
-    <div class="card-meta">@for (tag of (entity.domain_tags || []).slice(0, 3); track $index) { <span class="tag">{{ tag }}</span> }</div><p class="small-note">Do weryfikacji: {{ match.unknowns[0] }} <a [href]="'#/' + path + '/' + entity.id" [attr.data-nav]="'/' + path + '/' + entity.id" class="link-subtle">Szczegóły →</a></p>
+    <div class="card-meta">@for (tag of (entity.domain_tags || []).slice(0, 3); track $index) { <span class="tag">{{ tag }}</span> }</div><p class="small-note">Do weryfikacji: {{ match.unknowns[0] }} <a [routerLink]="['/', path, entity.id]" class="link-subtle">Szczegóły →</a></p>
   </div>
 </ng-template>

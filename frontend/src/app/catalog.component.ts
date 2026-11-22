@@ -1,4 +1,6 @@
 import { ChangeDetectorRef, Component, DestroyRef, Input, OnChanges } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { RadarApiService, apiError } from './radar-api.service';
 
 interface Organization {
   id: string;
@@ -16,7 +18,7 @@ interface CatalogItem {
   innovation_type?: string;
 }
 
-interface CatalogData {
+export interface CatalogData {
   items: CatalogItem[];
   organizations: Organization[];
   total: number;
@@ -26,22 +28,14 @@ export interface CatalogView extends CatalogData {
   kind: 'innovations' | 'needs';
 }
 
-declare global {
-  interface Window {
-    RadarLocalApi: {
-      request(endpoint: string): Promise<CatalogData>;
-      request(endpoint: string, options: { method: string; body: string | Blob; headers?: Record<string, string> }): Promise<unknown>;
-    };
-  }
-}
-
 @Component({
   selector: 'app-catalog',
   standalone: true,
+  imports: [RouterLink],
   templateUrl: './catalog.component.html',
 })
 export class CatalogComponent implements OnChanges {
-  constructor(private readonly changeDetector: ChangeDetectorRef, private readonly destroyRef: DestroyRef) {}
+  constructor(private readonly changeDetector: ChangeDetectorRef, private readonly destroyRef: DestroyRef, private readonly api: RadarApiService) {}
   @Input({ required: true }) view!: CatalogView;
   data!: CatalogData;
   query = '';
@@ -72,12 +66,11 @@ export class CatalogComponent implements OnChanges {
     this.error = '';
     this.loading = true;
     try {
-      const suffix = query ? `?q=${encodeURIComponent(query)}` : '';
-      const data = await window.RadarLocalApi.request(`/api/${this.view.kind}${suffix}`);
+      const data = await this.api.catalog(this.view.kind, query);
       if (version === this.searchVersion) this.data = data;
     } catch (error: unknown) {
       if (version === this.searchVersion) {
-        this.error = error instanceof Error ? error.message : 'Nie udało się wyszukać danych.';
+        this.error = apiError(error);
       }
     } finally {
       if (version === this.searchVersion) {

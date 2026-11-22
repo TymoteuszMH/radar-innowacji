@@ -1,7 +1,0 @@
-Dane demonstracyjne — fikcyjny opis innowacji
-Materiał testowy do projektu Innovation Radar. Nie opisuje rzeczywistej instytucji ani wyników wdrożenia.
-Tytuł: Inteligentne trasy odbioru odpadów
-Problem: Stałe trasy odbioru odpadów powodują zbędne przejazdy pojazdów i problemy z harmonogramem.
-Rozwiązanie: Planowanie tras na podstawie raportów z osiedli i dostępnych danych o pojemnikach oraz transporcie.
-Efekt: Możliwość ograniczenia przejazdów jest hipotezą, nie wynikiem pomiarów.
-Wymagania: Zgoda operatora odpadów, dane o pojazdach i pojemnikach, test na niewielkim obszarze.

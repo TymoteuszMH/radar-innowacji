@@ -1,12 +1,14 @@
 import { ChangeDetectorRef, Component, DestroyRef, Input } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import { RadarApiService, apiError } from './radar-api.service';
 
 type FieldValue = string | string[] | undefined;
-interface Extracted {
+export interface Extracted {
   extracted_characters: number;
   warnings: string[];
   fields: Record<string, FieldValue>;
 }
-interface DraftState {
+export interface DraftState {
   draft: Record<string, FieldValue>;
   extracted: Extracted | null;
   sourceMode: 'form' | 'pdf' | 'discovery' | 'online';
@@ -43,10 +45,11 @@ const types = [
 @Component({
   selector: 'app-entry-form',
   standalone: true,
+  imports: [RouterLink],
   templateUrl: './entry-form.component.html',
 })
 export class EntryFormComponent {
-  constructor(private readonly changeDetector: ChangeDetectorRef, private readonly destroyRef: DestroyRef) {}
+  constructor(private readonly changeDetector: ChangeDetectorRef, private readonly destroyRef: DestroyRef, private readonly api: RadarApiService, private readonly router: Router) {}
   @Input({ required: true }) view!: EntryFormView;
   error = '';
   extracting = false;
@@ -83,6 +86,12 @@ export class EntryFormComponent {
     return value || (name === 'innovation_type' ? 'educational' : name === 'stage' || name === 'minimum_stage' ? 'concept' : '');
   }
 
+  safeHttps(value: string | undefined): boolean {
+    if (!value) return false;
+    try { return new URL(value).protocol === 'https:'; }
+    catch { return false; }
+  }
+
   async extract(form: HTMLFormElement, file: File | undefined, text: string): Promise<void> {
     if (!file && !text.trim()) { this.error = 'Wybierz PDF lub wpisz tekst.'; return; }
     this.error = '';
@@ -90,8 +99,7 @@ export class EntryFormComponent {
     this.view.state.draft = this.formValues(form);
     try {
       if (file && file.size > 10_000_000) throw new Error('PDF może mieć maksymalnie 10 MB.');
-      const body = file || JSON.stringify({ text });
-      const result = await window.RadarLocalApi.request('/api/innovations/extract', { method: 'POST', body });
+      const result = await this.api.extract(file, text);
       if (!this.isExtracted(result)) throw new Error('Niepoprawny wynik analizy dokumentu.');
       const state = this.view.state;
       state.sourceMode = file ? 'pdf' : 'form';
@@ -101,7 +109,7 @@ export class EntryFormComponent {
       state.isDemo = false;
       state.draft = { ...state.draft, ...result.fields };
     } catch (error: unknown) {
-      this.error = error instanceof Error ? error.message : 'Nie udało się przeanalizować dokumentu.';
+      this.error = apiError(error);
     } finally {
       this.extracting = false;
       if (!this.destroyRef.destroyed) this.changeDetector.detectChanges();
@@ -129,16 +137,16 @@ export class EntryFormComponent {
         if (state.sourceMode === 'online') Object.assign(payload, state.sourceMeta);
       }
       const kind = this.view.kind === 'innovation' ? 'innovations' : 'needs';
-      const response = await window.RadarLocalApi.request(`/api/${kind}`, { method: 'POST', body: JSON.stringify(payload) });
+      const response = this.view.kind === 'innovation' ? await this.api.saveInnovation(payload) : await this.api.saveNeed(payload);
       const id = this.responseId(response, this.view.kind);
       if (!id) throw new Error('Niepoprawna odpowiedź po zapisaniu danych.');
       if (this.view.kind === 'innovation') {
         state.draft = {}; state.extracted = null; state.sourceMode = 'form'; state.sourceEvidence = [];
         state.sourceName = ''; state.sourceMeta = {}; state.isDemo = false;
       }
-      window.location.hash = `/${kind}/${id}`;
+      await this.router.navigate(['/', kind, id]);
     } catch (error: unknown) {
-      this.error = error instanceof Error ? error.message : 'Nie udało się zapisać danych.';
+      this.error = apiError(error);
     } finally {
       this.saving = false;
       if (!this.destroyRef.destroyed) this.changeDetector.detectChanges();
