@@ -1,47 +1,59 @@
-# Backend NestJS
+# Backend — NestJS
 
-Wymagany Node.js 20 lub nowszy.
+Backend udostepnia JSON API dla frontendu Angular i czyta wynik agenta Python z `agent/results/projects.json`. Nie tworzy ani nie edytuje rekordow.
+
+## Uruchomienie
+
+Wymagany jest Node.js 20 lub nowszy. Z katalogu `backend`:
 
 ```bash
-cd backend
 npm install
-npm run build
-npm start
+npm run start:dev
 ```
 
-Serwer dziala domyslnie na porcie 3000 (zmienna `PORT`). Dane sa odczytywane przy kazdym wyszukiwaniu z `agent/results/projects.json`. Opcjonalnie `PROJECTS_FILE` wskazuje inny plik w tym samym formacie.
+`npm run build` kompiluje TypeScript, `npm start` uruchamia skompilowany serwer, a `npm test` buduje projekt i uruchamia testy Node.js. Domyslny port to `3000`; zmien go przez `PORT`.
 
-## Katalog
+## Dane i architektura
 
-`GET /api/innovations` zwraca katalog projektow, a opcjonalne `q` filtruje go wedlug slow wystepujacych w projekcie. `GET /api/innovations/:id` zwraca szczegoly i fragmenty zrodlowe. Identyfikator jest skrotem tresci rekordu i zmienia sie po jego zmianie; identyczne rekordy sa wyswietlane raz.
+Plik musi zawierac obiekt `{"projects": [...]}` w formacie generowanym przez [agenta](../agent/README.md). Backend odczytuje plik przy kazdym zadaniu; `PROJECTS_FILE` moze wskazac inna lokalizacje. Nie ma bazy danych, uwierzytelniania ani zapisu przez API.
 
-Katalog i szczegoly zwracaja `domain_tags` oraz `keywords` zapisane przez agenta;
-starsze rekordy bez tych pol otrzymuja puste listy. Oba pola sa przeszukiwane.
+`ProjectsController` waliduje HTTP i deleguje prace do `ProjectsService`. Serwis mapuje rekordy agenta na kontrakt frontendowy, generuje stabilne dla danego rekordu identyfikatory i dostarcza tekstowe wyszukiwanie. Zmiana tresci rekordu moze zmienic jego identyfikator.
 
-`GET /api/needs` zwraca pusta liste, a `GET /api/needs/:id` zwraca 404, poniewaz plik nie zawiera potrzeb. Katalog i szczegoly przekazuja ocene oraz wyniki porownania zapisane przez agenta; starsze rekordy moga ich nie zawierac. Dopasowania i zapisywanie projektow ani potrzeb nie sa obslugiwane.
+## Endpointy
 
-## Asystent AI
+| Metoda i sciezka | Zachowanie |
+| --- | --- |
+| `GET /api/innovations?q=...` | Katalog; opcjonalne filtrowanie tekstowe; zwraca `items`, `organizations`, `total` |
+| `GET /api/innovations/:id` | Szczegoly innowacji, ocena, cytaty, podobne rekordy i dalsze kroki |
+| `GET /api/projects/search?q=...&keywords=...` | Wyszukiwanie tekstowe; zwraca `{ project, matchedTerms }[]` |
+| `GET /projects/search` | Alias zgodnosci wstecznej dla wyszukiwania |
+| `GET /api/needs` | Pusta lista: brak danych o potrzebach organizacji |
+| `GET /api/needs/:id` | `404`: rekordy potrzeb nie sa dostepne |
+| `POST /api/innovations/:id/analysis` | Opcjonalna analiza AI; nie zmienia zapisanej oceny |
+| `POST /assessment` | Placeholder: `criteria_not_configured`; nie liczy ani nie zapisuje oceny |
 
-Opcjonalna analiza na karcie projektu wymaga ustawienia `OPENAI_API_KEY` w
-srodowisku backendu oraz ponownego uruchomienia serwera. Opcjonalny
-`OPENAI_MODEL` wybiera model (domyslnie `gpt-4o-mini`).
-`POST /api/innovations/:id/analysis` przesyla tytul, opis i brakujace obszary do
-OpenAI; korzystanie z API moze generowac koszty. Bez klucza lub w razie bledu
-dostawcy zwracany jest HTTP 503. Odpowiedz AI wymaga weryfikacji i nie zmienia
-oceny projektu. Endpoint nie ma uwierzytelniania ani limitu zapytan: przed
-udostepnieniem backendu publicznie nalezy zabezpieczyc go i ograniczyc koszty.
+Wyszukiwanie ignoruje wielkosc liter i polskie znaki, dopasowuje fragmenty slow w polach projektu i ogranicza zapytanie `q` do 180 znakow, a `keywords` do 500. Co najmniej jedno slowo musi byc podane. `matchedTerms` jest lista dopasowan, a nie wynikiem trafnosci.
 
-## Wyszukiwanie
+## Podobienstwa i kolejne kroki
 
-`GET /api/projects/search?q=szkola&keywords=technologie,edukacja` (dostepny rowniez pod `/projects/search`)
+Szczegoly porownuja projekt z innymi rekordami po wspolnych obszarach, slowach kluczowych i terminach tytulu. Zwracaja do pieciu kandydatow z wynikiem heurystycznym i powodami. Nie jest to dowod duplikatu ani potwierdzenie relacji partnerskiej. `actions` powstaje z brakujacych pytan oceny i jej statusu; kazdy krok zawiera warunek weryfikacji.
 
-Wymagane jest co najmniej jedno slowo w `q` lub `keywords`. Wyszukiwanie ignoruje wielkosc liter i polskie znaki, dopasowuje fragmenty slow w tytule, opisie, faktach, dowodach i pozostalych kluczowych polach. Zwraca projekty z co najmniej jednym pasujacym slowem, uporzadkowane wedlug liczby dopasowanych slow; przy remisie pierwszenstwo maja dopasowania w `keywords` agenta. Odpowiedz to tablica obiektow `{ "project": ..., "matchedTerms": [...] }`. Jest to wyszukiwanie tekstowe, nie ocena projektu.
+Nie ma zrodel potrzeb organizacji, wiec backend nie dopasowuje projektow do konkretnych odbiorcow, partnerow ani inwestorow. Oceny i podobienstwa wymagaja recznej weryfikacji.
 
-## Ocena
+## Konfiguracja i bezpieczenstwo
 
-`POST /assessment` z naglowkiem `Content-Type: application/json` i trescia np. `{"parameters":{"budget":100}}`.
+| Zmienna | Domyslnie | Znaczenie |
+| --- | --- | --- |
+| `PORT` | `3000` | Port HTTP |
+| `PROJECTS_FILE` | `agent/results/projects.json` | Plik wejsciowy projektow |
+| `CORS_ORIGINS` | `http://localhost:4200,http://127.0.0.1:4200` | Dozwolone originy przegladarki, rozdzielane przecinkami |
+| `OPENAI_API_KEY` | brak | Wlacza endpoint analizy AI |
+| `OPENAI_MODEL` | `gpt-4o-mini` | Model OpenAI dla analizy |
 
-Ten niezalezny endpoint nadal zwraca `status: "criteria_not_configured"` i nie
-oblicza oceny; ocena projektow jest tworzona przez agenta na podstawie zrodla.
+Analiza AI jest ograniczona do 10 zapytan na adres IP w ciagu 10 minut. Licznik jest lokalny dla procesu i nie wystarcza dla wielu instancji. Przed publicznym wdrozeniem dodaj uwierzytelnianie oraz limit wspoldzielony na bramie API. Odpowiedz OpenAI moze generowac koszty i nie zastapia oceny eksperckiej.
 
-Testy: `npm test`.
+## Testy
+
+```bash
+npm test
+```

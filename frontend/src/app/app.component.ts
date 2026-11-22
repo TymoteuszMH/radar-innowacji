@@ -12,7 +12,7 @@ import { filter } from 'rxjs';
 })
 export class AppComponent implements OnInit {
   readonly navigation = [
-    { path: '/online', icon: '◎', label: 'Wyszukaj innowacje' },
+    { path: '/search', icon: '◎', label: 'Wyszukaj innowacje' },
     { path: '/innovations', icon: '◫', label: 'Katalog innowacji' },
   ];
   current = '/';

@@ -1,26 +1,59 @@
-# Innovation Radar — frontend Angular
+# Innovation Radar — frontend
 
-Frontend używa komponentów Angulara, Angular Router i `HttpClient`. Dane i analiza wymagają backendu; aplikacja nie zawiera lokalnego silnika ani danych demonstracyjnych.
+Angular 20 SPA do przeglądania katalogu innowacji, wyszukiwania projektów i analizy szczegółów. Frontend nie przechowuje rekordów ani nie implementuje własnego silnika oceny; pobiera dane z API backendu.
 
 ## Uruchomienie
 
-W katalogu `frontend` uruchom `npm install`, a następnie `npm start`. `npm run build` tworzy wersję produkcyjną. Adres backendu jest ustawiony w [environment.development.ts](src/environments/environment.development.ts) dla developmentu oraz w [environment.ts](src/environments/environment.ts) dla produkcji. Domyślnie development łączy się bezpośrednio z `http://127.0.0.1:3000`, a produkcja używa tego samego hosta co frontend. Dla różnych hostów backend musi zezwalać na żądania CORS.
+Wymagany jest Node.js zgodny z Angular CLI 20.
 
-Wyszukiwanie i katalog innowacji korzystają z projektów w `agent/results/projects.json`.
+```bash
+npm install
+npm start
+```
 
-## Kontrakt backendu
+`npm start` uruchamia Angular dev server domyślnie pod `http://localhost:4200`. Backend uruchom w drugim terminalu poleceniem `npm --prefix backend run start:dev` z katalogu głównego repozytorium. `npm run build` tworzy produkcyjny build w `dist/innovation-radar-angular`.
 
-Klient i typy odpowiedzi znajdują się w [radar-api.service.ts](src/app/services/radar-api.service.ts), a szczegółowe typy danych w odpowiednich komponentach. Wszystkie odpowiedzi są JSON-em.
+Development używa `http://127.0.0.1:3000` jako adresu backendu, zgodnie z [environment.development.ts](src/environments/environment.development.ts). Produkcyjne [environment.ts](src/environments/environment.ts) ma pusty `backendUrl`, więc żądania API są same-origin. Dla różnych originów backend musi mieć odpowiednią listę `CORS_ORIGINS`.
 
-| Metoda i ścieżka                     | Żądanie        | Odpowiedź                                                 |
-| ------------------------------------ | -------------- | --------------------------------------------------------- |
-| `GET /api/innovations`               | opcjonalne `q` | `CatalogData`: `items`, `organizations`, `total`          |
-| `GET /api/innovations/:id`           | —              | dane szczegółów innowacji z `DetailView`, bez pola `kind` |
-| `GET /api/projects/search`           | `q`            | tablica `{ project, matchedTerms }`                       |
-| `POST /api/innovations/:id/analysis` | —              | `{ "analysis": "..." }`                                   |
+## Routing
 
-Identyfikatory projektów są generowane z treści rekordu, dlatego zmiana rekordu zmienia jego adres. Zapisywanie danych nie jest obsługiwane.
+Router używa zwykłych ścieżek bez hash-location:
 
-Opcjonalna analiza AI wymaga konfiguracji backendu i przesyła tytuł, opis oraz brakujące obszary do OpenAI. Szczegóły znajdują się w [dokumentacji backendu](../backend/README.md).
+| Ścieżka | Widok |
+| --- | --- |
+| `/innovations` | Katalog innowacji |
+| `/innovations/:id` | Szczegóły innowacji |
+| `/search` | Wyszukiwanie projektów zindeksowanych przez agenta |
+| `/online` | Przekierowanie zgodności wstecznej do `/search` |
+| `/needs` i `/needs/:id` | Przekierowanie do katalogu; API nie ma danych o potrzebach |
 
-Nie należy przesyłać danych poufnych ani osobowych bez odpowiednich zabezpieczeń.
+Hosting produkcyjny musi kierować bezpośrednie żądania nieznanych ścieżek aplikacji do `index.html`.
+
+## Podział odpowiedzialności
+
+- [app.routes.ts](src/app/app.routes.ts) definiuje adresy i tryby widoków.
+- [page.component.ts](src/app/components/page/page.component.ts) wybiera ekran i pobiera jego dane.
+- [search.component.ts](src/app/components/search/search.component.ts) obsługuje wyszukiwanie i prezentuje wyniki.
+- [radar-api.service.ts](src/app/services/radar-api.service.ts) jest adapterem HTTP i mapuje odpowiedź wyszukiwania na typy UI.
+- Interfejsy API są w [interfaces](src/app/interfaces).
+
+## API
+
+Wszystkie odpowiedzi są JSON-em. Frontend korzysta z:
+
+| Metoda i ścieżka | Odpowiedź |
+| --- | --- |
+| `GET /api/innovations?q=...` | `{ items, organizations, total }` |
+| `GET /api/innovations/:id` | Innowacja, ocena, podobne rekordy, działania i dowody |
+| `GET /api/projects/search?q=...` | Tablica `{ project, matchedTerms }` |
+| `POST /api/innovations/:id/analysis` | `{ analysis }`; opcjonalna analiza AI |
+
+`matchedTerms` to dopasowane słowa, nie wynik trafności. Podobieństwa w szczegółach są heurystycznymi kandydatami i wymagają weryfikacji. Zapisywanie ani edycja rekordów nie są dostępne. Szczegóły konfiguracji i ograniczeń API: [README backendu](../backend/README.md).
+
+## Walidacja
+
+```bash
+npm run build
+```
+
+Nie przesyłaj danych poufnych ani osobowych do niezabezpieczonego środowiska demonstracyjnego.

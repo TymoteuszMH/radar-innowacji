@@ -1,7 +1,29 @@
 import { Injectable, ServiceUnavailableException } from '@nestjs/common';
 
+/** Obsluguje opcjonalna analize AI i limit zapytan w procesie. */
 @Injectable()
 export class AssessmentService {
+  private readonly analysisWindows = new Map<string, { startedAt: number; count: number }>();
+
+  /** Dopuszcza do 10 analiz z jednego IP w ruchomym oknie 10 minut. */
+  allowAnalysis(clientIp: string): boolean {
+    const now = Date.now();
+    const windowMs = 10 * 60 * 1000;
+    for (const [ip, window] of this.analysisWindows) {
+      if (now - window.startedAt >= windowMs) this.analysisWindows.delete(ip);
+    }
+
+    const key = clientIp || 'unknown';
+    const current = this.analysisWindows.get(key);
+    if (current && current.count >= 10) return false;
+    if (!current && this.analysisWindows.size >= 10000) return false;
+    this.analysisWindows.set(key, current
+      ? { ...current, count: current.count + 1 }
+      : { startedAt: now, count: 1 });
+    return true;
+  }
+
+  /** Zwraca tekst pomocniczy; nie zmienia oceny projektu. */
   async analyze(title: string, summary: string, missing: string[]): Promise<{ analysis: string }> {
     const key = process.env.OPENAI_API_KEY?.trim();
     if (!key) throw new ServiceUnavailableException('Asystent AI nie jest skonfigurowany.');
@@ -29,6 +51,7 @@ export class AssessmentService {
     }
   }
 
+  /** Placeholder zgodnosci wstecznej; kryteria oceny nie sa skonfigurowane. */
   evaluate(parameters: Record<string, unknown>): {
     status: 'criteria_not_configured';
     score: null;

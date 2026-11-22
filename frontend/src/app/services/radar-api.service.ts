@@ -4,18 +4,21 @@ import { firstValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
 import type { CatalogData } from '../interfaces/catalog.interfaces';
 import type { DetailView } from '../interfaces/detail.interfaces';
-import type { DiscoveryState, ProjectSearchResult } from '../interfaces/discovery.interfaces';
+import type { ProjectSearchResult, SearchState } from '../interfaces/search.interfaces';
 
+/** Adapter HTTP do endpointow JSON backendu. */
 @Injectable({ providedIn: 'root' })
 export class RadarApiService {
   private readonly base = `${environment.backendUrl}/api`;
   constructor(private readonly http: HttpClient) {}
 
+  /** Pobiera katalog przez GET /api/innovations. */
   catalog(kind: 'innovations', query = ''): Promise<CatalogData> {
     const params = query ? new HttpParams().set('q', query) : undefined;
     return firstValueFrom(this.http.get<CatalogData>(`${this.base}/${kind}`, { params }));
   }
 
+  /** Pobiera innowacje wraz z ocena, dowodami i podobnymi rekordami. */
   innovation(id: string): Promise<Omit<Extract<DetailView, { kind: 'innovation' }>, 'kind'>> {
     return firstValueFrom(
       this.http.get<Omit<Extract<DetailView, { kind: 'innovation' }>, 'kind'>>(
@@ -24,7 +27,8 @@ export class RadarApiService {
     );
   }
 
-  async online(query: string): Promise<ProjectSearchResult[]> {
+  /** Wyszukuje rekordy; matchedTerms to dopasowane slowa, a nie wynik trafnosci. */
+  async searchProjects(query: string): Promise<ProjectSearchResult[]> {
     const params = new HttpParams().set('q', query);
     const results = await firstValueFrom(
       this.http.get<unknown>(`${this.base}/projects/search`, { params }),
@@ -71,11 +75,12 @@ export class RadarApiService {
 
 }
 
+/** Zachowuje zapytanie i wyniki podczas przechodzenia miedzy trasami. */
 @Injectable({ providedIn: 'root' })
-export class DiscoveryStateService {
-  readonly state: DiscoveryState = {
-    online: null,
-    onlineQuery: '',
+export class SearchStateService {
+  readonly state: SearchState = {
+    results: null,
+    query: '',
   };
 }
 

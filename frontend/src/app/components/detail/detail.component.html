@@ -40,7 +40,7 @@
           }
         }
         @for (similar of view.similar; track similar.innovation.id) {
-          <div class="match-row"><div class="match-title"><a [routerLink]="['/innovations', similar.innovation.id]">{{ similar.innovation.title }}</a><span class="tag tag-slate">{{ similar.similarity_score }} / 100*</span></div><p class="match-reason">{{ similar.reasons.join(' ') || 'Potencjalne podobieństwo tekstowe.' }}</p><div class="small-note">*Podobieństwo heurystyczne, nie dowód duplikatu.</div></div>
+          <div class="match-row"><div class="match-title"><a [routerLink]="['/innovations', similar.innovation.id]">{{ similar.innovation.title }}</a><span class="tag tag-slate">{{ similar.similarity_score }} / 100*</span></div><p class="small-note">{{ organizationName(similar.innovation.organization_id) }}</p><p class="match-reason">{{ similar.reasons.join(' ') || 'Potencjalne podobieństwo tekstowe.' }}</p><div class="small-note">*Podobieństwo heurystyczne, nie dowód duplikatu ani potwierdzenie relacji partnerskiej.</div></div>
         } @empty { @if (view.innovation.prior_art?.status !== 'matches_found') { <div class="empty">Brak potwierdzonych danych o podobnych projektach.</div> } }
       </section>
     </div>
@@ -48,7 +48,7 @@
       <h2>Ocena potencjału</h2>
       <div class="stat-highlight"><div><span class="small-note">Wynik potencjału</span><div><strong>{{ view.assessment.score === null ? '—' : view.assessment.score }}</strong><span class="small-note"> / 100</span></div><p>Pewność oceny: {{ round(view.assessment.coverage * 100) }}%</p></div><span [class]="view.assessment.status === 'high' ? 'tag tag-good' : 'tag tag-demo'">{{ assessmentStatus(view.assessment.status) }}</span></div>
       @for (dimension of view.assessment.dimensions; track $index) {
-        <div class="assessment-row"><div class="assessment-top"><div class="assessment-name">{{ dimension.label }} <span class="small-note">{{ round(dimension.weight * 100) }}%</span></div><span class="assessment-score">{{ dimension.grade === null ? 'Brak danych' : dimension.grade + ' / 5' }}</span></div><div class="progress" role="meter" [attr.aria-label]="dimension.label" aria-valuemin="0" aria-valuemax="5" [attr.aria-valuenow]="dimension.grade === null ? 0 : dimension.grade"><div [style.width.%]="dimension.grade === null ? 0 : dimension.grade / 5 * 100"></div></div><div class="assessment-note">{{ dimension.reason }}</div></div>
+        <div class="assessment-row"><div class="assessment-top"><div class="assessment-name">{{ dimension.label }} <span class="small-note">{{ round(dimension.weight * 100) }}%</span></div><span class="assessment-score">{{ dimension.grade === null ? 'Brak danych' : dimension.grade + ' / 5' }}</span></div><div class="progress" role="meter" [attr.aria-label]="dimension.label" aria-valuemin="0" aria-valuemax="5" [attr.aria-valuenow]="dimension.grade === null ? 0 : dimension.grade"><div [style.width.%]="dimension.grade === null ? 0 : dimension.grade / 5 * 100"></div></div><div class="assessment-note">{{ dimension.reason }}</div>@for (quote of dimension.evidence || []; track $index) { <blockquote class="small-note">{{ quote }}</blockquote> }</div>
       }
       <p class="small-note" style="margin-top:16px">{{ view.assessment.disclaimer }}</p>
       @if (view.assessment.missing_questions.length) { <div class="notice" style="margin-top:12px"><b>Do uzupełnienia:</b> {{ view.assessment.missing_questions.join(' ') }}</div> }

@@ -1,31 +1,32 @@
 import { ChangeDetectorRef, Component, DestroyRef, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { RadarApiService, apiError } from '../../services/radar-api.service';
-import type { DiscoveryView } from '../../interfaces/discovery.interfaces';
+import type { SearchView } from '../../interfaces/search.interfaces';
 
+/** Ekran wyszukiwania zindeksowanych projektow i linkow do zrodel. */
 @Component({
-  selector: 'app-discovery',
+  selector: 'app-search',
   standalone: true,
   imports: [RouterLink],
-  templateUrl: './discovery.component.html',
+  templateUrl: './search.component.html',
 })
-export class DiscoveryComponent {
-  @Input({ required: true }) view!: DiscoveryView;
+export class SearchComponent {
+  @Input({ required: true }) view!: SearchView;
   readonly round = Math.round;
   loading = false;
   error = '';
 
   constructor(private readonly changeDetector: ChangeDetectorRef, private readonly destroyRef: DestroyRef, private readonly api: RadarApiService) {}
 
-  async online(event: Event, query: string): Promise<void> {
+  async search(event: Event, query: string): Promise<void> {
     event.preventDefault();
     const phrase = query.trim();
     if (!phrase || !/[\p{L}\p{N}]/u.test(phrase)) { this.error = 'Podaj frazę do wyszukania.'; return; }
     await this.run(async () => {
       const state = this.view.state;
-      state.onlineQuery = phrase;
-      state.online = null;
-      state.online = await this.api.online(phrase);
+      state.query = phrase;
+      state.results = null;
+      state.results = await this.api.searchProjects(phrase);
     });
   }
 

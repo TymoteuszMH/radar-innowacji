@@ -32,7 +32,7 @@ interface Assessment {
   disclaimer: string;
   missing_questions: string[];
   recommendation?: string;
-  dimensions: { label: string; weight: number; grade: number | null; reason: string }[];
+  dimensions: { label: string; weight: number; grade: number | null; reason: string; evidence?: string[] }[];
 }
 interface Evidence {
   field: string;

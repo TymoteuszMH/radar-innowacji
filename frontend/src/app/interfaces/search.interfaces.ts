@@ -1,3 +1,4 @@
+/** Typy odpowiedzi wyszukiwarki i stanu wspolne dla ekranu oraz adaptera API. */
 export interface ProjectSearchResult {
   project: {
     uuid: string;
@@ -11,8 +12,10 @@ export interface ProjectSearchResult {
   };
   matchedTerms: string[];
 }
-export interface DiscoveryState {
-  online: ProjectSearchResult[] | null;
-  onlineQuery: string;
+
+export interface SearchState {
+  results: ProjectSearchResult[] | null;
+  query: string;
 }
-export interface DiscoveryView { state: DiscoveryState; }
+
+export interface SearchView { state: SearchState; }
