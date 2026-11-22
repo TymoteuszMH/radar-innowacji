@@ -37,7 +37,21 @@
     </aside>
     <main id="main-content" class="content-area" tabindex="-1">
       <div class="topbar"><div class="breadcrumbs"><span>Innovation Radar</span><span class="chevron" aria-hidden="true">/</span><b>{{ crumb }}</b></div><div class="status-line"><span class="status-dot" aria-hidden="true"></span> Silnik lokalny · internet opcjonalnie</div></div>
-      <div #page class="page"></div>
+      <div class="page">
+        @if (dashboard; as data) {
+          <app-dashboard [data]="data"></app-dashboard>
+        }
+        @if (catalog; as data) {
+          <app-catalog [view]="data"></app-catalog>
+        }
+        @if (detail; as data) {
+          <app-detail [view]="data"></app-detail>
+        }
+        @if (form; as data) {
+          <app-entry-form [view]="data"></app-entry-form>
+        }
+        <div #page [hidden]="!!dashboard || !!catalog || !!detail || !!form"></div>
+      </div>
       <footer class="footer"><span>Innovation Radar · HackNation 2026 · wersja demonstracyjna v0.5</span><span>Niezależny prototyp. Nie jest oficjalnym serwisem administracji publicznej.</span></footer>
     </main>
   </div>

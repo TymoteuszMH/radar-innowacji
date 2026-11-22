@@ -8,8 +8,7 @@ from dotenv import load_dotenv
 PROJECT_DIR = Path(__file__).resolve().parent
 load_dotenv(PROJECT_DIR / ".env")
 
-from agents.local_agent import LocalAgent
-from crawler import Crawler
+from crawler import Crawler, RawDataFormatter
 from logging_utils import get_logger
 
 LOGGER = get_logger("pipeline", console=False)
@@ -31,7 +30,7 @@ def main() -> None:
     if not sites_file.is_absolute():
         sites_file = PROJECT_DIR / sites_file
     Crawler(sites_file).run()
-    LocalAgent().run()
+    RawDataFormatter().run()
     if os.getenv("DELETE_SCRAPPED_AFTER_RUN", "1").strip().lower() in {"1", "true", "yes", "on"}:
         scrapped_dir = Path(os.getenv("SCRAPPED_DIR", "data/scrapped"))
         if not scrapped_dir.is_absolute():

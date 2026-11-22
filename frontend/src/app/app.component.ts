@@ -1,10 +1,14 @@
 import { afterNextRender, ChangeDetectorRef, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { DashboardComponent, DashboardData } from './dashboard.component';
+import { CatalogComponent, CatalogView } from './catalog.component';
+import { DetailComponent, DetailView } from './detail.component';
+import { EntryFormComponent, EntryFormView } from './entry-form.component';
 
 declare global {
   interface Window {
     startRadarApp(
       root: HTMLElement,
-      renderShell: (current: string, crumb: string, folderName: string, warning: string) => void,
+      renderShell: (current: string, crumb: string, folderName: string, warning: string, dashboard?: DashboardData, catalog?: CatalogView, detail?: DetailView, form?: EntryFormView) => void,
     ): () => void;
   }
 }
@@ -12,6 +16,7 @@ declare global {
 @Component({
   selector: 'app-root',
   standalone: true,
+  imports: [DashboardComponent, CatalogComponent, DetailComponent, EntryFormComponent],
   templateUrl: './app.component.html',
 })
 export class AppComponent implements OnDestroy {
@@ -31,15 +36,23 @@ export class AppComponent implements OnDestroy {
   crumb = 'Przegląd';
   folderName = '';
   warning = '';
+  dashboard: DashboardData | null = null;
+  catalog: CatalogView | null = null;
+  detail: DetailView | null = null;
+  form: EntryFormView | null = null;
   private dispose?: () => void;
 
   constructor(private readonly changeDetector: ChangeDetectorRef) {
     afterNextRender(() => {
-      this.dispose = window.startRadarApp(this.page.nativeElement, (current, crumb, folderName, warning) => {
+      this.dispose = window.startRadarApp(this.page.nativeElement, (current, crumb, folderName, warning, dashboard, catalog, detail, form) => {
         this.current = current;
         this.crumb = crumb;
         this.folderName = folderName;
         this.warning = warning;
+        this.dashboard = dashboard ?? null;
+        this.catalog = catalog ?? null;
+        this.detail = detail ?? null;
+        this.form = form ?? null;
         this.changeDetector.detectChanges();
       });
     });

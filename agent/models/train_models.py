@@ -9,8 +9,9 @@ if str(PROJECT_DIR) not in sys.path:
 
 from dotenv import load_dotenv
 
-from agents.local_agent import LocalAgent
 from crawler.crawler_agent import CrawlerAgent
+from data.build_project_dataset import write_dataset
+from models.train_project_agent import train_project
 
 
 load_dotenv(PROJECT_DIR / ".env")
@@ -22,6 +23,13 @@ def configured_path(name: str, default: str) -> Path:
 
 
 def main() -> None:
+    project_dataset_path = configured_path("PROJECT_AGENT_DATASET_PATH", "data/project_dataset.json")
+    if not project_dataset_path.is_file():
+        write_dataset(
+            configured_path("ANALYSIS_OUTPUT_FILE", "results/results.json"),
+            project_dataset_path,
+            overwrite=False,
+        )
     crawler_dataset_path = configured_path(
         "CRAWLER_AGENT_DATASET_PATH",
         "data/crawler_agent_data.json",
@@ -42,23 +50,13 @@ def main() -> None:
     )
     crawler_agent.save(crawler_model_path)
 
-    dataset_path = configured_path("LOCAL_AGENT_DATASET_PATH", "data/dataset_clean.json")
-    records = json.loads(dataset_path.read_text(encoding="utf-8"))["records"]
-    local_agent = LocalAgent(load_existing=False)
-    metrics = local_agent.fit(records)
-    local_model_path = configured_path(
-        "LOCAL_AGENT_MODEL_PATH",
-        "models/local_agent.pt",
-    )
-    local_agent.save(local_model_path)
-
     print(f"CrawlerAgent checkpoint: {crawler_model_path}")
     print(f"CrawlerAgent training data: {len(crawler_records)} records from {crawler_dataset_path}")
-    print(f"LocalAgent checkpoint: {local_model_path}")
-    print(
-        "LocalAgent walidacja: "
-        f"accuracy={metrics['validation_accuracy']:.3f}, "
-        f"loss={metrics['validation_loss']:.4f}"
+
+    train_project(
+        project_dataset_path,
+        configured_path("PROJECT_AGENT_MODEL_PATH", "models/project_agent.pt"),
+        epochs=int(os.getenv("PROJECT_AGENT_TRAIN_EPOCHS", "50")),
     )
 
 

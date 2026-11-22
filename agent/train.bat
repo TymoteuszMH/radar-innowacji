@@ -12,11 +12,8 @@ if exist "%TRAINING_DIR%" goto choose_directory
 mkdir "%TRAINING_DIR%"
 if errorlevel 1 exit /b 1
 
-set "LOCAL_AGENT_DATASET_PATH=%TRAINING_DIR%\dataset_clean.json"
 set "CRAWLER_AGENT_DATASET_PATH=%TRAINING_DIR%\crawler_agent_data.json"
 
-"%PYTHON%" data\build_clean_dataset.py --output "%LOCAL_AGENT_DATASET_PATH%"
-if errorlevel 1 goto failed
 "%PYTHON%" data\build_crawler_agent_data.py --output "%CRAWLER_AGENT_DATASET_PATH%"
 if errorlevel 1 goto failed
 "%PYTHON%" models\train_models.py

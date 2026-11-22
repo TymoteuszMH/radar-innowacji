@@ -1,0 +1,85 @@
+@if (view.kind === 'innovation') {
+  <a href="#/innovations" data-nav="/innovations" class="back">← Powrót do katalogu</a>
+  <div class="page-heading"><div><div class="eyebrow">ANALIZA INNOWACJI</div><h1 id="page-title" tabindex="-1">{{ view.innovation.title }}</h1><p>Każda rekomendacja wymaga weryfikacji przez autora lub eksperta.</p></div><div class="buttons"><a href="#/innovations/new" data-nav="/innovations/new" class="btn">＋ Dodaj kolejną</a></div></div>
+  <div class="card-meta" style="margin:-11px 0 21px">
+    <span [class]="view.innovation.is_demo ? 'tag tag-demo' : 'tag tag-slate'">{{ view.innovation.is_demo ? 'DANE DEMONSTRACYJNE' : 'Dane niezweryfikowane' }}</span>
+    @for (tag of (view.innovation.domain_tags || []).slice(0, 4); track $index) { <span class="tag">{{ tag }}</span> }
+    <span class="tag tag-outline">{{ stageName(view.innovation.stage) }}</span>
+  </div>
+  <div class="detail-grid">
+    <div class="stack">
+      <section class="detail-card">
+        <h2>Opis rozwiązania</h2>
+        <div class="data-heading">Problem</div><p>{{ view.innovation.problem }}</p>
+        <div class="data-heading">Proponowane rozwiązanie</div><p>{{ view.innovation.solution }}</p>
+        <div class="data-heading">Deklarowany wpływ</div><p>{{ view.innovation.claimed_impact || 'Brak deklarowanych efektów.' }}</p>
+        <div class="data-heading">Warunki wdrożenia</div><p>{{ view.innovation.requirements || 'Brak danych — wymagane uzupełnienie.' }}</p>
+        <div class="line"></div>
+        <div class="card-meta">@for (tag of (view.innovation.target_groups || []).slice(0, 6); track $index) { <span class="tag">{{ tag }}</span> }</div>
+        <p class="small-note">Źródło: {{ sourceName(view.innovation.source_mode) }} · {{ organizationName(view.innovation.organization_id) }}</p>
+        @if (safeHttps(view.innovation.source_url)) {
+          <p class="small-note">Oryginalne źródło: <a target="_blank" rel="noopener noreferrer" [href]="view.innovation.source_url">{{ view.innovation.source_provider || 'Otwórz stronę źródłową' }}</a> · {{ view.innovation.source_published_at || 'Data publikacji nieznana' }} · pozyskano {{ (view.innovation.source_retrieved_at || '').slice(0, 10) }}</p>
+        }
+      </section>
+      <section class="detail-card">
+        <h2>Możliwie podobne projekty <span class="counter">{{ view.similar.length }}</span></h2>
+        @for (similar of view.similar; track similar.innovation.id) {
+          <div class="match-row"><div class="match-title"><a [href]="'#/innovations/' + similar.innovation.id" [attr.data-nav]="'/innovations/' + similar.innovation.id">{{ similar.innovation.title }}</a><span class="tag tag-slate">{{ similar.similarity_score }} / 100*</span></div><p class="match-reason">{{ similar.reasons.join(' ') || 'Potencjalne podobieństwo tekstowe.' }}</p><div class="small-note">*Podobieństwo heurystyczne, nie dowód duplikatu.</div></div>
+        } @empty { <div class="empty">Nie znaleziono silnego podobieństwa w lokalnym katalogu.</div> }
+      </section>
+    </div>
+    <div class="stack"><section class="detail-card">
+      <h2>Ocena potencjału</h2>
+      <div class="stat-highlight"><div><span class="small-note">Wynik wstępny</span><div><strong>{{ view.assessment.score === null ? '—' : view.assessment.score }}</strong><span class="small-note"> / 100</span></div><p>Pokrycie kryteriów: {{ round(view.assessment.coverage * 100) }}%</p></div><span [class]="view.assessment.status === 'provisional' ? 'tag tag-good' : 'tag tag-demo'">{{ view.assessment.status === 'provisional' ? 'WSTĘPNA' : 'BRAK DANYCH' }}</span></div>
+      @for (dimension of view.assessment.dimensions; track $index) {
+        <div class="assessment-row"><div class="assessment-top"><div class="assessment-name">{{ dimension.label }} <span class="small-note">{{ round(dimension.weight * 100) }}%</span></div><span class="assessment-score">{{ dimension.grade === null ? 'Brak danych' : dimension.grade + ' / 4' }}</span></div><div class="progress" role="meter" [attr.aria-label]="dimension.label" aria-valuemin="0" aria-valuemax="4" [attr.aria-valuenow]="dimension.grade === null ? 0 : dimension.grade"><div [style.width.%]="dimension.grade === null ? 0 : dimension.grade / 4 * 100"></div></div><div class="assessment-note">{{ dimension.reason }}</div></div>
+      }
+      <p class="small-note" style="margin-top:16px">{{ view.assessment.disclaimer }}</p>
+      @if (view.assessment.missing_questions.length) { <div class="notice" style="margin-top:12px"><b>Do uzupełnienia:</b> {{ view.assessment.missing_questions.join(' ') }}</div> }
+    </section></div>
+  </div>
+  @if (view.evidence.records.length) {
+    <section class="detail-card evidence-section"><h2>Źródła opisu <span class="counter">{{ view.evidence.records.length }}</span></h2><p>{{ view.evidence.disclaimer }}</p><div class="evidence-list">
+      @for (record of view.evidence.records; track $index) {
+        <div class="evidence-item"><strong>{{ record.field }} · {{ record.source_name }} · {{ record.line_number ? 'wiersz ' + record.line_number : 'metadane źródła' }}</strong><blockquote>{{ record.quote }}</blockquote>@if (safeHttps(record.source_url)) { <a [href]="record.source_url" target="_blank" rel="noopener noreferrer">Sprawdź źródło ↗</a> }</div>
+      }
+    </div></section>
+  }
+  <div class="detail-grid">
+    <section class="detail-card"><h2>Dopasowane potrzeby <span class="counter">{{ view.matches.length }}</span></h2><p>Dlaczego dana innowacja może odpowiadać na opisany problem?</p>
+      @for (match of view.matches; track $index) {
+        @if (match.need; as need) {
+          <ng-container [ngTemplateOutlet]="matchRow" [ngTemplateOutletContext]="{ match: match, entity: need, path: 'needs' }"></ng-container>
+        }
+      } @empty { <div class="empty">Brak przekonujących dopasowań w katalogu.</div> }
+      <div class="notice neutral" style="margin-top:14px">*Wyniki są punktacją dopasowania słów, obszarów i etapu rozwoju. Nie są zweryfikowaną prognozą ani gwarancją współpracy.</div>
+    </section>
+    <section class="detail-card"><h2>Następne kroki</h2><p>Co powinien zrobić człowiek, zanim rozpocznie wdrożenie?</p><div class="steps">
+      @for (step of view.actions; track $index; let index = $index) {
+        <div class="step"><div class="step-num">{{ index + 1 }}</div><div><div class="step-title">{{ step.title }}</div><p class="step-p">{{ step.reason }}</p><p class="step-p"><b>Kryterium:</b> {{ step.success_check }}</p></div></div>
+      }
+    </div></section>
+  </div>
+} @else {
+  <a href="#/needs" data-nav="/needs" class="back">← Powrót do potrzeb</a>
+  <div class="page-heading"><div><div class="eyebrow">OD POTRZEBY DO INNOWACJI</div><h1 id="page-title" tabindex="-1">{{ view.need.title }}</h1><p>Rozwiązania z katalogu pasujące do problemu organizacji.</p></div></div>
+  <div class="card-meta" style="margin:-10px 0 20px"><span [class]="view.need.is_demo ? 'tag tag-demo' : 'tag tag-slate'">{{ view.need.is_demo ? 'DANE DEMONSTRACYJNE' : 'Dane niezweryfikowane' }}</span>@for (tag of (view.need.domain_tags || []).slice(0, 4); track $index) { <span class="tag">{{ tag }}</span> }</div>
+  <div class="detail-grid">
+    <section class="detail-card"><h2>Kontekst potrzeby</h2><div class="data-heading">Problem do rozwiązania</div><p>{{ view.need.problem }}</p><div class="data-heading">Oczekiwany rezultat</div><p>{{ view.need.desired_outcome || 'Nie wskazano.' }}</p><div class="data-heading">Kontekst organizacji</div><p>{{ view.need.context || 'Brak opisu kontekstu.' }}</p><div class="data-heading">Ograniczenia</div><p>{{ view.need.constraints || 'Wymagane doprecyzowanie.' }}</p><p class="small-note">Organizacja: {{ organizationName(view.need.organization_id) }}</p></section>
+    <section class="detail-card"><h2>Innowacje do rozważenia <span class="counter">{{ view.matches.length }}</span></h2>
+      @for (match of view.matches; track $index) {
+        @if (match.innovation; as innovation) {
+          <ng-container [ngTemplateOutlet]="matchRow" [ngTemplateOutletContext]="{ match: match, entity: innovation, path: 'innovations' }"></ng-container>
+        }
+      } @empty { <div class="empty">Brak przekonujących dopasowań.</div> }
+    </section>
+  </div>
+  <div class="notice">Wszystkie potrzeby demonstracyjne są fikcyjne. Dopasowanie nie oznacza, że organizacja wyraziła zgodę na pilotaż, kontakt lub finansowanie.</div>
+}
+
+<ng-template #matchRow let-match="match" let-entity="entity" let-path="path">
+  <div class="match-row"><div class="match-title"><a [href]="'#/' + path + '/' + entity.id" [attr.data-nav]="'/' + path + '/' + entity.id">{{ entity.title }}</a><span class="tag tag-good">{{ match.match_score == null ? 'Brak oceny' : match.match_score + ' / 100*' }}</span></div>
+    <div class="small-note">{{ organizationName(entity.organization_id) }}</div><p class="match-reason">{{ match.reasons.join(' ') }}</p><p class="small-note">@if (match.matched_keywords?.length) { Wspólne frazy: {{ match.matched_keywords.join(', ') }}. } @if (match.risks?.length) { Uwaga: {{ match.risks.join(' ') }} }</p>
+    <div class="card-meta">@for (tag of (entity.domain_tags || []).slice(0, 3); track $index) { <span class="tag">{{ tag }}</span> }</div><p class="small-note">Do weryfikacji: {{ match.unknowns[0] }} <a [href]="'#/' + path + '/' + entity.id" [attr.data-nav]="'/' + path + '/' + entity.id" class="link-subtle">Szczegóły →</a></p>
+  </div>
+</ng-template>

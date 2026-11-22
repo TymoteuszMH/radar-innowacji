@@ -1,11 +1,14 @@
 __pycache__/
 *.pyc
+*.pt
 .venv/
 /data/scrapped/
 /data/dataset_clean.json
 /data/crawler_agent_data.json
+/data/project_dataset.json
 /data/*.json.tmp
 /models/*.pt
 /models/*.pt.tmp
 /logs/
-/results/
+# /results/
+/tests/

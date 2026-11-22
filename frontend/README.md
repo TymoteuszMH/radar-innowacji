@@ -6,7 +6,7 @@ Static, gov.pl-inspired institutional prototype for the HackNation 2026 **Radar 
 
 Run `npm install` once, then `npm start` from the `frontend` directory and open the URL reported by Angular. Use `npm run build` for a production build. **Internet is needed only for the live OpenAlex search.**
 
-The Angular application currently provides the outer layout without an iframe. Its page views and offline engine still use the legacy scripts in `app/`; the migration to Angular components and services is not yet complete. The original standalone `app/index.html` is also available.
+The Angular application provides the outer layout, dashboard, catalog lists, detail pages and entry forms without an iframe. The discovery views and offline engine still use the legacy scripts in `app/`; the migration to Angular components and services is not yet complete. The original standalone `app/index.html` is also available.
 
 ## Online Discovery (new)
 

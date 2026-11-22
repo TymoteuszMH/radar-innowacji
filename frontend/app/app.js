@@ -65,6 +65,12 @@ function innovationCard(inn, orgs) {
 }
 async function dashboard() {
   const d = await api('/api/dashboard');
+  if (renderShell) {
+    root.innerHTML = '';
+    renderShell('/', 'Radar', window.RadarStore.folderName, window.RadarStore.storageWarning, d);
+    document.title = 'Radar · Innovation Radar';
+    return;
+  }
   const features = d.featured.map((pair)=>({ innovation:pair.innovation, top:pair.matches[0] }));
   const main = `<section class="hero" aria-labelledby="page-title">
     <div class="hero-copy"><div class="eyebrow">RADAR INNOWACJI · SYSTEM DEMONSTRACYJNY</div>
@@ -96,12 +102,24 @@ async function dashboard() {
 }
 async function innovationsList(query='') {
   const d = await api('/api/innovations'+(query?`?q=${encodeURIComponent(query)}`:''));
+  if (renderShell) {
+    root.innerHTML = '';
+    renderShell('/innovations', 'Innowacje', window.RadarStore.folderName, window.RadarStore.storageWarning, undefined, { kind:'innovations', ...d });
+    document.title = 'Innowacje · Innovation Radar';
+    return;
+  }
   const content = heading('KATALOG POMYSŁÓW','Odkryj innowacje','Przeglądaj pomysły z różnych typów instytucji i sprawdź ich potencjał.',href('/innovations/new','＋ Dodaj innowację','btn btn-primary')) +
   `<form data-form="search-innovations" class="search-row"><div class="search-field"><span class="search-icon">⌕</span><input name="q" aria-label="Szukaj innowacji" value="${e(query)}" placeholder="Szukaj po problemie, rozwiązaniu lub obszarze..."></div><button type="submit" class="btn">Szukaj</button></form><div class="section-head"><h2>Innowacje <span class="counter">${d.total}</span></h2><span class="small-note">Oceny nie są zweryfikowane</span></div><div class="list-cards">${d.items.map((inn)=>`<article class="list-row"><div><div class="meta">${demoTag(inn.is_demo)} ${tags(inn.domain_tags,2)} <span class="tag tag-outline">${e(stageNames[inn.stage]||inn.stage)}</span></div><h3>${href('/innovations/'+inn.id,e(inn.title))}</h3><p>${e(cut(inn.problem,180))}</p><div class="small-note" style="margin-top:9px">${e(orgName(inn.organization_id,d.organizations))} · ${e(typeNames[inn.innovation_type]||'')}</div></div><div class="side">${href('/innovations/'+inn.id,'Otwórz →','btn btn-sm')}</div></article>`).join('')||'<div class="empty">Brak wyników. Spróbuj innego hasła.</div>'}</div>`;
   shell(content,'/innovations','Innowacje');
 }
 async function needsList(query='') {
   const d = await api('/api/needs'+(query?`?q=${encodeURIComponent(query)}`:''));
+  if (renderShell) {
+    root.innerHTML = '';
+    renderShell('/needs', 'Potrzeby', window.RadarStore.folderName, window.RadarStore.storageWarning, undefined, { kind:'needs', ...d });
+    document.title = 'Potrzeby · Innovation Radar';
+    return;
+  }
   const content = heading('OD PROBLEMU DO ROZWIĄZANIA','Potrzeby organizacji','Zacznij od konkretnej potrzeby, aby wyszukać możliwe innowacje.',href('/needs/new','＋ Zgłoś potrzebę','btn btn-primary')) +
   `<form data-form="search-needs" class="search-row"><div class="search-field"><span class="search-icon">⌕</span><input name="q" aria-label="Szukaj potrzeb" value="${e(query)}" placeholder="Jaką potrzebę chcesz rozwiązać?"></div><button type="submit" class="btn">Szukaj</button></form><div class="section-head"><h2>Zgłoszone potrzeby <span class="counter">${d.total}</span></h2><span class="small-note">Prywatne dane lokalne i przykłady</span></div><div class="list-cards">${d.items.map((n)=>`<article class="list-row"><div><div class="meta">${demoTag(n.is_demo)} ${tags(n.domain_tags,2)}</div><h3>${href('/needs/'+n.id,e(n.title))}</h3><p>${e(cut(n.problem,180))}</p><div class="small-note" style="margin-top:9px">${e(orgName(n.organization_id,d.organizations))}</div></div><div class="side">${href('/needs/'+n.id,'Szukaj rozwiązań →','btn btn-sm')}</div></article>`).join('')||'<div class="empty">Brak potrzeb dla tego hasła.</div>'}</div>`;
   shell(content,'/needs','Potrzeby');
@@ -115,6 +133,12 @@ function matchBlock(match, organizations, target) {
 }
 async function innovationDetail(id) {
   const d = await api('/api/innovations/'+id), i=d.innovation, a=d.assessment;
+  if (renderShell) {
+    root.innerHTML = '';
+    renderShell('/innovations', 'Szczegóły innowacji', window.RadarStore.folderName, window.RadarStore.storageWarning, undefined, undefined, { kind:'innovation', ...d });
+    document.title = 'Szczegóły innowacji · Innovation Radar';
+    return;
+  }
   const actions = d.actions.map((step,j)=>`<div class="step"><div class="step-num">${j+1}</div><div><div class="step-title">${e(step.title)}</div><p class="step-p">${e(step.reason)}</p><p class="step-p"><b>Kryterium:</b> ${e(step.success_check)}</p></div></div>`).join('');
   const assessments = a.dimensions.map((r)=>`<div class="assessment-row"><div class="assessment-top"><div class="assessment-name">${e(r.label)} <span class="small-note">${Math.round(r.weight*100)}%</span></div><span class="assessment-score">${r.grade===null?'Brak danych':r.grade+' / 4'}</span></div><div class="progress" role="meter" aria-label="${e(r.label)}" aria-valuemin="0" aria-valuemax="4" aria-valuenow="${r.grade===null?0:r.grade}"><div style="width:${r.grade===null?0:r.grade/4*100}%"></div></div><div class="assessment-note">${e(r.reason)}</div></div>`).join('');
   const content = `${href('/innovations','← Powrót do katalogu','back')}
@@ -129,6 +153,12 @@ async function innovationDetail(id) {
 }
 async function needDetail(id) {
   const d = await api('/api/needs/'+id), n=d.need;
+  if (renderShell) {
+    root.innerHTML = '';
+    renderShell('/needs', 'Szczegóły potrzeby', window.RadarStore.folderName, window.RadarStore.storageWarning, undefined, undefined, { kind:'need', ...d });
+    document.title = 'Szczegóły potrzeby · Innovation Radar';
+    return;
+  }
   const content = `${href('/needs','← Powrót do potrzeb','back')}${heading('OD POTRZEBY DO INNOWACJI',n.title,'Rozwiązania z katalogu pasujące do problemu organizacji.')}
     <div class="card-meta" style="margin:-10px 0 20px">${demoTag(n.is_demo)} ${tags(n.domain_tags,4)}</div>
     <div class="detail-grid"><section class="detail-card"><h2>Kontekst potrzeby</h2><div class="data-heading">Problem do rozwiązania</div><p>${e(n.problem)}</p><div class="data-heading">Oczekiwany rezultat</div><p>${e(n.desired_outcome||'Nie wskazano.')}</p><div class="data-heading">Kontekst organizacji</div><p>${e(n.context||'Brak opisu kontekstu.')}</p><div class="data-heading">Ograniczenia</div><p>${e(n.constraints||'Wymagane doprecyzowanie.')}</p><p class="small-note">Organizacja: ${e(orgName(n.organization_id,d.organizations))}</p></section>
@@ -142,6 +172,12 @@ function field(name, label, value='', opts={}) {
   return `<div class="field ${opts.full?'full':''}"><label for="f-${name}">${e(label)}${opts.required?'<span class="required-mark" aria-hidden="true"> *</span>':''}</label>${opts.textarea?`<textarea id="f-${name}" name="${name}" placeholder="${e(opts.placeholder||'')}" ${attrs}>${e(value)}</textarea>`:`<input id="f-${name}" name="${name}" value="${e(value)}" type="text" placeholder="${e(opts.placeholder||'')}" ${attrs}>`}${opts.hint?`<small>${e(opts.hint)}</small>`:''}</div>`;
 }
 function innovationForm() {
+  if (renderShell) {
+    root.innerHTML = '';
+    renderShell('/innovations/new', 'Dodaj innowację', window.RadarStore.folderName, window.RadarStore.storageWarning, undefined, undefined, undefined, { kind:'innovation', state });
+    document.title = 'Dodaj innowację · Innovation Radar';
+    return;
+  }
   const d=state.draft;
   const content = heading('NOWA KARTA','Dodaj innowację','Opisz lokalny pomysł lub wczytaj tekstowy PDF. Wszystkie dane można sprawdzić i poprawić przed zapisem.')+
     `<div class="form-layout"><div><section class="form-section"><h2>01 / Analiza dokumentu</h2><p>Opcjonalny import PDF z warstwą tekstową. Ekstrakcja działa offline, na prostych regułach.</p>
@@ -166,6 +202,12 @@ function innovationForm() {
   shell(content,'/innovations/new','Dodaj innowację');
 }
 function needForm() {
+  if (renderShell) {
+    root.innerHTML = '';
+    renderShell('/needs/new', 'Zgłoś potrzebę', window.RadarStore.folderName, window.RadarStore.storageWarning, undefined, undefined, undefined, { kind:'need', state });
+    document.title = 'Zgłoś potrzebę · Innovation Radar';
+    return;
+  }
   const content = heading('NOWA POTRZEBA','Zgłoś problem','Dodaj potrzebę organizacji i sprawdź, jakie rozwiązania już znajdują się w katalogu.')+
     `<form data-form="new-need" class="form-layout"><div><section class="form-section"><h2>Opis potrzeby</h2><div class="form-grid">
     ${field('title','Nazwa potrzeby','',{full:true,required:true,minlength:6,placeholder:'np. Mniej zużytej energii w szkołach'})}
