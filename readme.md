@@ -40,6 +40,39 @@ Backend czyta `agent/results/projects.json` przy kazdym zadaniu. Plik moze zosta
 
 Ocena potencjalu jest ostrozna i heurystyczna. Rozpoznaje wybrane fakty z tekstu i podaje wynik oraz pokrycie rozpoznanych kryteriow. Prawdopodobienstwo klasyfikatora `ProjectAgent` dotyczy wykrycia projektu w artykule, a nie jego wartosci ani szans wdrozenia. Oba wyniki wymagaja weryfikacji zrodel i ekspertow.
 
+### Metodologia oceny w systemie „Radar innowacji”
+
+Ocena ma charakter wstepnej selekcji merytorycznej. Algorytm odrzuca relacje z wydarzen, takie jak wycieczki czy apele, i wyodrebnia opisane rozwiazania technologiczne, procesowe, organizacyjne, edukacyjne lub spoleczne. Z relacji o konkursie studenckim zostaje zatem wyciagniety tylko opis konkretnego prototypu lub metody badawczej.
+
+Ocena opiera sie wylacznie na faktach zawartych w zrodle. Brak danych o wdrozeniu nie powoduje sztucznego zanizenia punktacji. Sformulowania oceniające, takie jak „nowatorski”, oraz nagrody w lokalnych konkursach nie podwyzsaja punktacji. Ocena marketingowa nie zastępuje weryfikacji nowosci i dojrzałości projektu.
+
+Każde kryterium ocenia się w skali od 1 do 5 punktów i ma następującą wagę:
+
+| Kryterium | Waga | Przedmiot oceny | Przykłady punktacji |
+| --- | ---: | --- | --- |
+| Potencjal wdrozeniowy | 45% | Mozliwosc skalowania i transferu rozwiazania do innych organizacji lub firm oraz obecnosc sciezki odbioru. | **1 pkt:** działanie jednorazowe, możliwe wyłącznie w jednej placówce.<br>**3 pkt:** ustandaryzowany schemat możliwy do przeniesienia po adaptacji.<br>**5 pkt:** gotowy do powielenia model ze wskazanym partnerem lub sektorem odbiorców. |
+| Innowacyjnosc i unikalnosc | 35% | Obiektywna nowosc weryfikowana w bazach patentowych UPRP i EPO, naukowych PBN oraz projektowych NCBiR i Interreg, aby eliminowac dublowanie prac. | **1 pkt:** identyczne rozwiazanie jest juz w rejestrze patentowym lub bazie projektów.<br>**3 pkt:** adaptacja istniejacej technologii o nowa zmienna lub lokalny surowiec.<br>**5 pkt:** brak bezpośrednich odpowiedników w bazach patentowych i naukowych. |
+| Wykonalnosc i dojrzalosc | 20% | Aktualny etap prac (koncepcja, prototyp, pilotaż) oraz realnosc zasobów potrzebnych do uruchomienia rozwiazania. | **1 pkt:** ogólnikowe hasło bez opisanej mechaniki działania.<br>**3 pkt:** ustrukturyzowana koncepcja, np. wynik hackathonu, wymagająca walidacji.<br>**5 pkt:** działający prototyp, przetestowany pilotaż lub udokumentowana procedura gotowa do wdrozenia. |
+
+W przypadku niepełnego opisu system publikuje dwa niezależne wskaźniki:
+
+- **Wynik potencjału (%)** — średnia ważona wyliczona wyłącznie z kryteriów potwierdzonych faktami w tekście.
+- **Pewność oceny (%)** — suma wag kryteriów, dla których źródło zawiera twarde dane.
+
+Gdy pewność jest niższa niż 70%, rekord otrzymuje etykietę `Niepewna ocena`, wskazanie brakującego obszaru oraz dwie możliwe akcje:
+
+1. wstępna analiza tematu z Asystentem AI;
+2. bezpośredni kontakt ze wskazanymi w tekście twórcami lub jednostką.
+
+Przykład: artykuł opisuje cel projektu badawczego, ale pomija sposób jego komercjalizacji. Pewność oceny wynosi 55%, dlatego karta pokazuje ostrzeżenie i umożliwia szybki kontakt z wydziałem uczelni.
+
+| Wynik potencjału | Pewność | Status na karcie | Rekomendowane działanie |
+| --- | ---: | --- | --- |
+| 75%–100% | co najmniej 70% | Wysoki potencjał | Przekazanie do programów akceleracyjnych, transferu lub bezpośrednich rozmów z partnerami wdrożeniowymi. |
+| 50%–74% | co najmniej 70% | Potencjał rozwojowy | Skierowanie na mentoring, do laboratoriów prototypowania lub doprecyzowanie założeń. |
+| Dowolny wynik | poniżej 70% | Niepewna ocena | Weryfikacja tematu z Asystentem AI lub bezpośredni kontakt z autorami rozwiązania. |
+| Poniżej 50% | co najmniej 70% | Niski potencjał / Duplikat | Weryfikacja podobnych projektów wskazanych przez system w bazach, np. Interreg i NCBiR, w celu współpracy zamiast powielania prac. |
+
 Porownanie zewnetrzne moze korzystac z:
 
 | Zrodlo                                    | Stan                                                    |
