@@ -2521,6 +2521,47 @@
       "extraction_method": "local_rules"
     },
     {
+      "domain": "szkolawchmurze.org",
+      "url": "https://szkolawchmurze.org/edukacja-domowa/szkola-podstawowa",
+      "source_title": "Odkryj potencjał swojego dziecka.",
+      "is_article": true,
+      "crawler_category": "article",
+      "local_prediction": "article",
+      "classification_source": "crawler_agent",
+      "relevant": true,
+      "discard_reason": "",
+      "published_at": "",
+      "project_type": "inne",
+      "project_title": "Odkryj potencjał swojego dziecka.",
+      "summary": "Odkryj potencjał swojego dziecka. Każdy człowiek powinien mieć warunki, by móc korzystać z wolności.",
+      "stage": "nieustalony",
+      "people": [],
+      "organization": "",
+      "investment": "190 zł",
+      "facts": [
+        "Uwalniamy czas na odkrywanie pasji, realizację marzeń, utrzymywanie kontaktów z rówieśnikami, angażowanie się w wybrane projekty albo inne ważne dla Was sprawy!",
+        "Dodatkowo uczniowie, którzy starają się o przyjęcie do klas od 4 szkoły podstawowej do 4 liceum przygotowują projekt w dowolnej formie – to prezentacja o sobie.",
+        "Może także stworzyć własny projekt oraz wziąć udział w olimpiadzie lub konkursie.",
+        "To innowacyjna przestrzeń Laboratorium Przyszłości.",
+        "To miejsce, w którym masz szansę spotkać się z innymi uczniami edukacji domowej, zdać egzamin, poznać nauczycieli, zrealizować swój projekt."
+      ],
+      "missing_information": [
+        "osoby odpowiedzialne",
+        "data publikacji lub realizacji",
+        "etap projektu"
+      ],
+      "evidence": [
+        "Uwalniamy czas na odkrywanie pasji, realizację marzeń, utrzymywanie kontaktów z rówieśnikami, angażowanie się w wybrane projekty albo inne ważne dla Was sprawy!",
+        "Dodatkowo uczniowie, którzy starają się o przyjęcie do klas od 4 szkoły podstawowej do 4 liceum przygotowują projekt w dowolnej formie – to prezentacja o sobie.",
+        "Może także stworzyć własny projekt oraz wziąć udział w olimpiadzie lub konkursie."
+      ],
+      "probabilities": {
+        "junk": 0.4844364821910858,
+        "article": 0.5155635476112366
+      },
+      "extraction_method": "local_rules"
+    },
+    {
       "domain": "twoja-szkola.pl",
       "url": "https://twoja-szkola.pl/oferta-edukacyjna/opiekun-medyczny.html",
       "source_title": "Prywatne Szkoły dla Dorosłych Twoja Szkoła",
@@ -2800,7 +2841,7 @@
     {
       "domain": "zak.edu.pl",
       "url": "https://zak.edu.pl/aktualnosci/silver-economy-rynek-opieki-nad-seniorami-i-powiazane-zawody",
-      "source_title": "Silver economy: rynek opieki nad seniorami i powiązane zawody | Szkoła Żak",
+      "source_title": "Silver economy: rynek opieki nad seniorami i powiązane zawody",
       "is_article": true,
       "crawler_category": "article",
       "local_prediction": "junk",
@@ -2810,7 +2851,7 @@
       "published_at": "",
       "project_type": "inne",
       "project_title": "",
-      "summary": "Silver economy: rynek opieki nad seniorami i powiązane zawody | Szkoła Żak\nSilver economy: rynek opieki nad seniorami i powiązane zawody\nKategorieKierunki i zawody\nKategorieKierunki i zawody\nPoznaj rynek silver economy oraz rolę opiekuna medycznego i środowiskowego. Sprawdź perspektywy zawodowe w branży opiekuńczej i razem z Żakiem wybierz pewny fach.",
+      "summary": "Silver economy: rynek opieki nad seniorami i powiązane zawody\nSilver economy: rynek opieki nad seniorami i powiązane zawody\nKategorieKierunki i zawody\nKategorieKierunki i zawody\nPoznaj rynek silver economy oraz rolę opiekuna medycznego i środowiskowego. Sprawdź perspektywy zawodowe w branży opiekuńczej i razem z Żakiem wybierz pewny fach.",
       "stage": "nieustalony",
       "people": [],
       "organization": "",
@@ -2819,8 +2860,8 @@
       "missing_information": [],
       "evidence": [],
       "probabilities": {
-        "junk": 0.654826819896698,
-        "article": 0.3451732099056244
+        "junk": 0.6929602026939392,
+        "article": 0.3070398271083832
       },
       "extraction_method": "local_rules"
     },
@@ -2881,7 +2922,7 @@
     {
       "domain": "zak.edu.pl",
       "url": "https://zak.edu.pl/aktualnosci/nowy-skill",
-      "source_title": "Nowy skill? Zdobądź go 10% taniej w Żaku!",
+      "source_title": "Nowy skill? Zdobądź go 10% taniej w Żaku",
       "is_article": true,
       "crawler_category": "article",
       "local_prediction": "junk",
@@ -2891,7 +2932,7 @@
       "published_at": "",
       "project_type": "inne",
       "project_title": "",
-      "summary": "Nowy skill? Zdobądź go 10% taniej w Żaku!",
+      "summary": "Nowy skill? Zdobądź go 10% taniej w Żaku\nNowy skill?",
       "stage": "nieustalony",
       "people": [],
       "organization": "",
@@ -2935,7 +2976,7 @@
     {
       "domain": "zak.edu.pl",
       "url": "https://zak.edu.pl/aktualnosci/zawody-ktore-mozesz-zdobyc-w-rok",
-      "source_title": "Jeden krok w rok – zawody, które możesz zdobyć w rok, jeśli zapiszesz się już teraz | Szkoła Żak",
+      "source_title": "Jeden krok w rok – zawody, które możesz zdobyć w rok, jeśli zapiszesz się już teraz",
       "is_article": true,
       "crawler_category": "article",
       "local_prediction": "junk",
@@ -2945,7 +2986,7 @@
       "published_at": "",
       "project_type": "inne",
       "project_title": "",
-      "summary": "Jeden krok w rok – zawody, które możesz zdobyć w rok, jeśli zapiszesz się już teraz | Szkoła Żak\nJeden krok w rok – zawody, które możesz zdobyć w rok, jeśli zapiszesz się już teraz\nKategorieEdukacja i rozwój\nKategorieEdukacja i rozwój\nChcesz szybko zdobyć nowy zawód i otworzyć sobie drogę do nowych możliwości? Sprawdź kierunki w szkole Żak, które możesz ukończyć już w rok.",
+      "summary": "Jeden krok w rok – zawody, które możesz zdobyć w rok, jeśli zapiszesz się już teraz\nJeden krok w rok – zawody, które możesz zdobyć w rok, jeśli zapiszesz się już teraz\nKategorieEdukacja i rozwój\nKategorieEdukacja i rozwój\nChcesz szybko zdobyć nowy zawód i otworzyć sobie drogę do nowych możliwości? Sprawdź kierunki w szkole Żak, które możesz ukończyć już w rok.",
       "stage": "nieustalony",
       "people": [],
       "organization": "",
@@ -2954,8 +2995,8 @@
       "missing_information": [],
       "evidence": [],
       "probabilities": {
-        "junk": 0.5331935882568359,
-        "article": 0.4668063819408417
+        "junk": 0.5760650634765625,
+        "article": 0.4239349663257599
       },
       "extraction_method": "local_rules"
     },
@@ -3016,7 +3057,7 @@
     {
       "domain": "zak.edu.pl",
       "url": "https://zak.edu.pl/aktualnosci/chcesz-pracowac-zdalnie-sprawdz-te-kursy-online-w-zaku",
-      "source_title": "Chcesz pracować zdalnie? Sprawdź te kursy online w Żaku",
+      "source_title": "Chcesz pracować zdalnie? Sprawdź te kursy online w Żaku | Szkoły Żak",
       "is_article": true,
       "crawler_category": "article",
       "local_prediction": "article",
@@ -3026,7 +3067,7 @@
       "published_at": "",
       "project_type": "inne",
       "project_title": "",
-      "summary": "Chcesz pracować zdalnie? Sprawdź te kursy online w Żaku\nChcesz pracować zdalnie?",
+      "summary": "Chcesz pracować zdalnie? Sprawdź te kursy online w Żaku | Szkoły Żak\nChcesz pracować zdalnie?",
       "stage": "nieustalony",
       "people": [],
       "organization": "",
@@ -3035,8 +3076,8 @@
       "missing_information": [],
       "evidence": [],
       "probabilities": {
-        "junk": 0.4677771031856537,
-        "article": 0.5322229266166687
+        "junk": 0.35410505533218384,
+        "article": 0.6458948850631714
       },
       "extraction_method": "local_rules"
     },
@@ -3091,6 +3132,35 @@
       "probabilities": {
         "junk": 0.5090582966804504,
         "article": 0.49094173312187195
+      },
+      "extraction_method": "local_rules"
+    },
+    {
+      "domain": "zs33.bydgoszcz.pl",
+      "url": "https://zs33.bydgoszcz.pl/komunikaty/standardy-ochrony-maloletnich--w-zespole-szkol-nr-33--dla-dzieci-i-mlodziezy-przewlekle-chorej--w-bydgoszczy",
+      "source_title": "Standardy Ochrony Małoletnich w Zespole Szkół nr 33 dla Dzieci i Młodzieży Przewlekle Chorej w Bydgoszczy.",
+      "is_article": true,
+      "crawler_category": "article",
+      "local_prediction": "article",
+      "classification_source": "crawler_agent",
+      "relevant": false,
+      "discard_reason": "",
+      "published_at": "2026-09-11",
+      "project_type": "inne",
+      "project_title": "",
+      "summary": "Standardy Ochrony Małoletnich w Zespole Szkół nr 33 dla Dzieci i Młodzieży Przewlekle Chorej w Bydgoszczy. Komunikaty\n>>  więcej\nKomunikaty\npowrót\n2026-09-11\nStandardy Ochrony Małoletnich  w Zespole Szkół nr 33  dla Dzieci i Młodzieży Przewlekle Chorej  w Bydgoszczy.",
+      "stage": "nieustalony",
+      "people": [],
+      "organization": "",
+      "investment": "",
+      "facts": [
+        "Komunikaty\n>>  więcej\nKomunikaty\npowrót\n2026-09-11\nStandardy Ochrony Małoletnich  w Zespole Szkół nr 33  dla Dzieci i Młodzieży Przewlekle Chorej  w Bydgoszczy."
+      ],
+      "missing_information": [],
+      "evidence": [],
+      "probabilities": {
+        "junk": 0.12526212632656097,
+        "article": 0.8747379183769226
       },
       "extraction_method": "local_rules"
     },
@@ -3177,33 +3247,6 @@
     },
     {
       "domain": "zs33.bydgoszcz.pl",
-      "url": "https://zs33.bydgoszcz.pl/komunikaty/serdecznie-zapraszamy-na-wyjatkowe-spotkanie-autorskie",
-      "source_title": "Serdecznie zapraszamy na wyjątkowe spotkanie autorskie!",
-      "is_article": true,
-      "crawler_category": "article",
-      "local_prediction": "article",
-      "classification_source": "crawler_agent",
-      "relevant": false,
-      "discard_reason": "",
-      "published_at": "",
-      "project_type": "inne",
-      "project_title": "",
-      "summary": "Serdecznie zapraszamy na wyjątkowe spotkanie autorskie! Mamy ogromną przyjemność zaprosić Was na spotkanie otwarte z Vincentem Viktorem Severskim – byłym oficerem polskiego wywiadu, pisarzem i autorem popularnych powieści szpiegowskich.",
-      "stage": "nieustalony",
-      "people": [],
-      "organization": "",
-      "investment": "",
-      "facts": [],
-      "missing_information": [],
-      "evidence": [],
-      "probabilities": {
-        "junk": 0.15247952938079834,
-        "article": 0.8475204110145569
-      },
-      "extraction_method": "local_rules"
-    },
-    {
-      "domain": "zs33.bydgoszcz.pl",
       "url": "https://zs33.bydgoszcz.pl/komunikaty/zapraszamy-na-spotkanie-autorskie",
       "source_title": "Zapraszamy na spotkanie autorskie!",
       "is_article": true,
@@ -3253,6 +3296,35 @@
       "probabilities": {
         "junk": 0.4670654535293579,
         "article": 0.5329346060752869
+      },
+      "extraction_method": "local_rules"
+    },
+    {
+      "domain": "zs33.bydgoszcz.pl",
+      "url": "https://zs33.bydgoszcz.pl/komunikaty/zobacz-wideoklip-zespolu-szkol-nr-33---szkola-z-pasja",
+      "source_title": "Zobacz wideoklip Zespołu Szkół nr 33 - szkoła z pasją",
+      "is_article": true,
+      "crawler_category": "article",
+      "local_prediction": "article",
+      "classification_source": "crawler_agent",
+      "relevant": false,
+      "discard_reason": "",
+      "published_at": "2017-10-02",
+      "project_type": "inne",
+      "project_title": "",
+      "summary": "Zobacz wideoklip Zespołu Szkół nr 33 - szkoła z pasją\nKomunikaty\n>>  więcej\nKomunikaty\npowrót\n2017-10-02\nZobacz wideoklip Zespołu Szkół nr 33 - szkoła z pasją",
+      "stage": "nieustalony",
+      "people": [],
+      "organization": "",
+      "investment": "",
+      "facts": [
+        "Zobacz wideoklip Zespołu Szkół nr 33 - szkoła z pasją\nKomunikaty\n>>  więcej\nKomunikaty\npowrót\n2017-10-02\nZobacz wideoklip Zespołu Szkół nr 33 - szkoła z pasją"
+      ],
+      "missing_information": [],
+      "evidence": [],
+      "probabilities": {
+        "junk": 0.4985139071941376,
+        "article": 0.5014861226081848
       },
       "extraction_method": "local_rules"
     },
@@ -5875,66 +5947,6 @@
       "probabilities": {
         "junk": 0.9974971413612366,
         "article": 0.0025028057862073183
-      },
-      "extraction_method": "local_rules"
-    },
-    {
-      "domain": "zspkruszwica.pl",
-      "url": "http://www.zspkruszwica.pl/2013/03/rada-rodzicow",
-      "source_title": "Rada rodziców",
-      "is_article": true,
-      "crawler_category": "article",
-      "local_prediction": "junk",
-      "classification_source": "crawler_agent",
-      "relevant": false,
-      "discard_reason": "",
-      "published_at": "24.09.2026",
-      "project_type": "inne",
-      "project_title": "",
-      "summary": "Rada rodziców\nSkład Rady Rodziców:\nPrzewodniczący: p. Katarzyna Pamfil\nZastępca przewodniczącego: p.",
-      "stage": "nieustalony",
-      "people": [],
-      "organization": "",
-      "investment": "150zł",
-      "facts": [
-        "Sylwia Budziak\nOpłata na Radę Rodziców wynosi 150zł wpłat można dokonywać w sekretariacie szkoły lub na konto\nSzkolna Kasa Oszczędnościowa przy ZSP ul.",
-        "24.09.2026 g.",
-        "11.02.2027 g.",
-        "15.06.2027 g.",
-        "07.09.2026 g."
-      ],
-      "missing_information": [],
-      "evidence": [],
-      "probabilities": {
-        "junk": 0.9994528889656067,
-        "article": 0.0005471613258123398
-      },
-      "extraction_method": "local_rules"
-    },
-    {
-      "domain": "zspkruszwica.pl",
-      "url": "http://www.zspkruszwica.pl/2026/04/technik-lotniskowych-sluzb-operacyjnych-0",
-      "source_title": "TECHNIK LOTNISKOWYCH SŁUŻB OPERACYJNYCH",
-      "is_article": true,
-      "crawler_category": "article",
-      "local_prediction": "junk",
-      "classification_source": "crawler_agent",
-      "relevant": false,
-      "discard_reason": "",
-      "published_at": "",
-      "project_type": "inne",
-      "project_title": "",
-      "summary": "TECHNIK LOTNISKOWYCH SŁUŻB OPERACYJNYCH\nJesteś tutaj\n         \t\t\t \t\tTECHNIK LOTNISKOWYCH SŁUŻB OPERACYJNYCH",
-      "stage": "nieustalony",
-      "people": [],
-      "organization": "",
-      "investment": "",
-      "facts": [],
-      "missing_information": [],
-      "evidence": [],
-      "probabilities": {
-        "junk": 0.5472847819328308,
-        "article": 0.4527151882648468
       },
       "extraction_method": "local_rules"
     },
@@ -10378,6 +10390,47 @@
       "extraction_method": "local_rules"
     },
     {
+      "domain": "szkolawchmurze.org",
+      "url": "https://szkolawchmurze.org/edukacja-domowa/szkola-podstawowa",
+      "source_title": "Odkryj potencjał swojego dziecka.",
+      "is_article": true,
+      "crawler_category": "article",
+      "local_prediction": "article",
+      "classification_source": "crawler_agent",
+      "relevant": true,
+      "discard_reason": "",
+      "published_at": "",
+      "project_type": "inne",
+      "project_title": "Odkryj potencjał swojego dziecka.",
+      "summary": "Odkryj potencjał swojego dziecka. Każdy człowiek powinien mieć warunki, by móc korzystać z wolności.",
+      "stage": "nieustalony",
+      "people": [],
+      "organization": "",
+      "investment": "190 zł",
+      "facts": [
+        "Uwalniamy czas na odkrywanie pasji, realizację marzeń, utrzymywanie kontaktów z rówieśnikami, angażowanie się w wybrane projekty albo inne ważne dla Was sprawy!",
+        "Dodatkowo uczniowie, którzy starają się o przyjęcie do klas od 4 szkoły podstawowej do 4 liceum przygotowują projekt w dowolnej formie – to prezentacja o sobie.",
+        "Może także stworzyć własny projekt oraz wziąć udział w olimpiadzie lub konkursie.",
+        "To innowacyjna przestrzeń Laboratorium Przyszłości.",
+        "To miejsce, w którym masz szansę spotkać się z innymi uczniami edukacji domowej, zdać egzamin, poznać nauczycieli, zrealizować swój projekt."
+      ],
+      "missing_information": [
+        "osoby odpowiedzialne",
+        "data publikacji lub realizacji",
+        "etap projektu"
+      ],
+      "evidence": [
+        "Uwalniamy czas na odkrywanie pasji, realizację marzeń, utrzymywanie kontaktów z rówieśnikami, angażowanie się w wybrane projekty albo inne ważne dla Was sprawy!",
+        "Dodatkowo uczniowie, którzy starają się o przyjęcie do klas od 4 szkoły podstawowej do 4 liceum przygotowują projekt w dowolnej formie – to prezentacja o sobie.",
+        "Może także stworzyć własny projekt oraz wziąć udział w olimpiadzie lub konkursie."
+      ],
+      "probabilities": {
+        "junk": 0.4844364821910858,
+        "article": 0.5155635476112366
+      },
+      "extraction_method": "local_rules"
+    },
+    {
       "domain": "twoja-szkola.pl",
       "url": "https://twoja-szkola.pl/oferta-edukacyjna/opiekun-medyczny.html",
       "source_title": "Prywatne Szkoły dla Dorosłych Twoja Szkoła",
@@ -10657,7 +10710,7 @@
     {
       "domain": "zak.edu.pl",
       "url": "https://zak.edu.pl/aktualnosci/silver-economy-rynek-opieki-nad-seniorami-i-powiazane-zawody",
-      "source_title": "Silver economy: rynek opieki nad seniorami i powiązane zawody | Szkoła Żak",
+      "source_title": "Silver economy: rynek opieki nad seniorami i powiązane zawody",
       "is_article": true,
       "crawler_category": "article",
       "local_prediction": "junk",
@@ -10667,7 +10720,7 @@
       "published_at": "",
       "project_type": "inne",
       "project_title": "",
-      "summary": "Silver economy: rynek opieki nad seniorami i powiązane zawody | Szkoła Żak\nSilver economy: rynek opieki nad seniorami i powiązane zawody\nKategorieKierunki i zawody\nKategorieKierunki i zawody\nPoznaj rynek silver economy oraz rolę opiekuna medycznego i środowiskowego. Sprawdź perspektywy zawodowe w branży opiekuńczej i razem z Żakiem wybierz pewny fach.",
+      "summary": "Silver economy: rynek opieki nad seniorami i powiązane zawody\nSilver economy: rynek opieki nad seniorami i powiązane zawody\nKategorieKierunki i zawody\nKategorieKierunki i zawody\nPoznaj rynek silver economy oraz rolę opiekuna medycznego i środowiskowego. Sprawdź perspektywy zawodowe w branży opiekuńczej i razem z Żakiem wybierz pewny fach.",
       "stage": "nieustalony",
       "people": [],
       "organization": "",
@@ -10676,8 +10729,8 @@
       "missing_information": [],
       "evidence": [],
       "probabilities": {
-        "junk": 0.654826819896698,
-        "article": 0.3451732099056244
+        "junk": 0.6929602026939392,
+        "article": 0.3070398271083832
       },
       "extraction_method": "local_rules"
     },
@@ -10738,7 +10791,7 @@
     {
       "domain": "zak.edu.pl",
       "url": "https://zak.edu.pl/aktualnosci/nowy-skill",
-      "source_title": "Nowy skill? Zdobądź go 10% taniej w Żaku!",
+      "source_title": "Nowy skill? Zdobądź go 10% taniej w Żaku",
       "is_article": true,
       "crawler_category": "article",
       "local_prediction": "junk",
@@ -10748,7 +10801,7 @@
       "published_at": "",
       "project_type": "inne",
       "project_title": "",
-      "summary": "Nowy skill? Zdobądź go 10% taniej w Żaku!",
+      "summary": "Nowy skill? Zdobądź go 10% taniej w Żaku\nNowy skill?",
       "stage": "nieustalony",
       "people": [],
       "organization": "",
@@ -10792,7 +10845,7 @@
     {
       "domain": "zak.edu.pl",
       "url": "https://zak.edu.pl/aktualnosci/zawody-ktore-mozesz-zdobyc-w-rok",
-      "source_title": "Jeden krok w rok – zawody, które możesz zdobyć w rok, jeśli zapiszesz się już teraz | Szkoła Żak",
+      "source_title": "Jeden krok w rok – zawody, które możesz zdobyć w rok, jeśli zapiszesz się już teraz",
       "is_article": true,
       "crawler_category": "article",
       "local_prediction": "junk",
@@ -10802,7 +10855,7 @@
       "published_at": "",
       "project_type": "inne",
       "project_title": "",
-      "summary": "Jeden krok w rok – zawody, które możesz zdobyć w rok, jeśli zapiszesz się już teraz | Szkoła Żak\nJeden krok w rok – zawody, które możesz zdobyć w rok, jeśli zapiszesz się już teraz\nKategorieEdukacja i rozwój\nKategorieEdukacja i rozwój\nChcesz szybko zdobyć nowy zawód i otworzyć sobie drogę do nowych możliwości? Sprawdź kierunki w szkole Żak, które możesz ukończyć już w rok.",
+      "summary": "Jeden krok w rok – zawody, które możesz zdobyć w rok, jeśli zapiszesz się już teraz\nJeden krok w rok – zawody, które możesz zdobyć w rok, jeśli zapiszesz się już teraz\nKategorieEdukacja i rozwój\nKategorieEdukacja i rozwój\nChcesz szybko zdobyć nowy zawód i otworzyć sobie drogę do nowych możliwości? Sprawdź kierunki w szkole Żak, które możesz ukończyć już w rok.",
       "stage": "nieustalony",
       "people": [],
       "organization": "",
@@ -10811,8 +10864,8 @@
       "missing_information": [],
       "evidence": [],
       "probabilities": {
-        "junk": 0.5331935882568359,
-        "article": 0.4668063819408417
+        "junk": 0.5760650634765625,
+        "article": 0.4239349663257599
       },
       "extraction_method": "local_rules"
     },
@@ -10873,7 +10926,7 @@
     {
       "domain": "zak.edu.pl",
       "url": "https://zak.edu.pl/aktualnosci/chcesz-pracowac-zdalnie-sprawdz-te-kursy-online-w-zaku",
-      "source_title": "Chcesz pracować zdalnie? Sprawdź te kursy online w Żaku",
+      "source_title": "Chcesz pracować zdalnie? Sprawdź te kursy online w Żaku | Szkoły Żak",
       "is_article": true,
       "crawler_category": "article",
       "local_prediction": "article",
@@ -10883,7 +10936,7 @@
       "published_at": "",
       "project_type": "inne",
       "project_title": "",
-      "summary": "Chcesz pracować zdalnie? Sprawdź te kursy online w Żaku\nChcesz pracować zdalnie?",
+      "summary": "Chcesz pracować zdalnie? Sprawdź te kursy online w Żaku | Szkoły Żak\nChcesz pracować zdalnie?",
       "stage": "nieustalony",
       "people": [],
       "organization": "",
@@ -10892,8 +10945,8 @@
       "missing_information": [],
       "evidence": [],
       "probabilities": {
-        "junk": 0.4677771031856537,
-        "article": 0.5322229266166687
+        "junk": 0.35410505533218384,
+        "article": 0.6458948850631714
       },
       "extraction_method": "local_rules"
     },
@@ -10948,6 +11001,35 @@
       "probabilities": {
         "junk": 0.5090582966804504,
         "article": 0.49094173312187195
+      },
+      "extraction_method": "local_rules"
+    },
+    {
+      "domain": "zs33.bydgoszcz.pl",
+      "url": "https://zs33.bydgoszcz.pl/komunikaty/standardy-ochrony-maloletnich--w-zespole-szkol-nr-33--dla-dzieci-i-mlodziezy-przewlekle-chorej--w-bydgoszczy",
+      "source_title": "Standardy Ochrony Małoletnich w Zespole Szkół nr 33 dla Dzieci i Młodzieży Przewlekle Chorej w Bydgoszczy.",
+      "is_article": true,
+      "crawler_category": "article",
+      "local_prediction": "article",
+      "classification_source": "crawler_agent",
+      "relevant": false,
+      "discard_reason": "",
+      "published_at": "2026-09-11",
+      "project_type": "inne",
+      "project_title": "",
+      "summary": "Standardy Ochrony Małoletnich w Zespole Szkół nr 33 dla Dzieci i Młodzieży Przewlekle Chorej w Bydgoszczy. Komunikaty\n>>  więcej\nKomunikaty\npowrót\n2026-09-11\nStandardy Ochrony Małoletnich  w Zespole Szkół nr 33  dla Dzieci i Młodzieży Przewlekle Chorej  w Bydgoszczy.",
+      "stage": "nieustalony",
+      "people": [],
+      "organization": "",
+      "investment": "",
+      "facts": [
+        "Komunikaty\n>>  więcej\nKomunikaty\npowrót\n2026-09-11\nStandardy Ochrony Małoletnich  w Zespole Szkół nr 33  dla Dzieci i Młodzieży Przewlekle Chorej  w Bydgoszczy."
+      ],
+      "missing_information": [],
+      "evidence": [],
+      "probabilities": {
+        "junk": 0.12526212632656097,
+        "article": 0.8747379183769226
       },
       "extraction_method": "local_rules"
     },
@@ -11034,33 +11116,6 @@
     },
     {
       "domain": "zs33.bydgoszcz.pl",
-      "url": "https://zs33.bydgoszcz.pl/komunikaty/serdecznie-zapraszamy-na-wyjatkowe-spotkanie-autorskie",
-      "source_title": "Serdecznie zapraszamy na wyjątkowe spotkanie autorskie!",
-      "is_article": true,
-      "crawler_category": "article",
-      "local_prediction": "article",
-      "classification_source": "crawler_agent",
-      "relevant": false,
-      "discard_reason": "",
-      "published_at": "",
-      "project_type": "inne",
-      "project_title": "",
-      "summary": "Serdecznie zapraszamy na wyjątkowe spotkanie autorskie! Mamy ogromną przyjemność zaprosić Was na spotkanie otwarte z Vincentem Viktorem Severskim – byłym oficerem polskiego wywiadu, pisarzem i autorem popularnych powieści szpiegowskich.",
-      "stage": "nieustalony",
-      "people": [],
-      "organization": "",
-      "investment": "",
-      "facts": [],
-      "missing_information": [],
-      "evidence": [],
-      "probabilities": {
-        "junk": 0.15247952938079834,
-        "article": 0.8475204110145569
-      },
-      "extraction_method": "local_rules"
-    },
-    {
-      "domain": "zs33.bydgoszcz.pl",
       "url": "https://zs33.bydgoszcz.pl/komunikaty/zapraszamy-na-spotkanie-autorskie",
       "source_title": "Zapraszamy na spotkanie autorskie!",
       "is_article": true,
@@ -11110,6 +11165,35 @@
       "probabilities": {
         "junk": 0.4670654535293579,
         "article": 0.5329346060752869
+      },
+      "extraction_method": "local_rules"
+    },
+    {
+      "domain": "zs33.bydgoszcz.pl",
+      "url": "https://zs33.bydgoszcz.pl/komunikaty/zobacz-wideoklip-zespolu-szkol-nr-33---szkola-z-pasja",
+      "source_title": "Zobacz wideoklip Zespołu Szkół nr 33 - szkoła z pasją",
+      "is_article": true,
+      "crawler_category": "article",
+      "local_prediction": "article",
+      "classification_source": "crawler_agent",
+      "relevant": false,
+      "discard_reason": "",
+      "published_at": "2017-10-02",
+      "project_type": "inne",
+      "project_title": "",
+      "summary": "Zobacz wideoklip Zespołu Szkół nr 33 - szkoła z pasją\nKomunikaty\n>>  więcej\nKomunikaty\npowrót\n2017-10-02\nZobacz wideoklip Zespołu Szkół nr 33 - szkoła z pasją",
+      "stage": "nieustalony",
+      "people": [],
+      "organization": "",
+      "investment": "",
+      "facts": [
+        "Zobacz wideoklip Zespołu Szkół nr 33 - szkoła z pasją\nKomunikaty\n>>  więcej\nKomunikaty\npowrót\n2017-10-02\nZobacz wideoklip Zespołu Szkół nr 33 - szkoła z pasją"
+      ],
+      "missing_information": [],
+      "evidence": [],
+      "probabilities": {
+        "junk": 0.4985139071941376,
+        "article": 0.5014861226081848
       },
       "extraction_method": "local_rules"
     },
@@ -13732,66 +13816,6 @@
       "probabilities": {
         "junk": 0.9974971413612366,
         "article": 0.0025028057862073183
-      },
-      "extraction_method": "local_rules"
-    },
-    {
-      "domain": "zspkruszwica.pl",
-      "url": "http://www.zspkruszwica.pl/2013/03/rada-rodzicow",
-      "source_title": "Rada rodziców",
-      "is_article": true,
-      "crawler_category": "article",
-      "local_prediction": "junk",
-      "classification_source": "crawler_agent",
-      "relevant": false,
-      "discard_reason": "",
-      "published_at": "24.09.2026",
-      "project_type": "inne",
-      "project_title": "",
-      "summary": "Rada rodziców\nSkład Rady Rodziców:\nPrzewodniczący: p. Katarzyna Pamfil\nZastępca przewodniczącego: p.",
-      "stage": "nieustalony",
-      "people": [],
-      "organization": "",
-      "investment": "150zł",
-      "facts": [
-        "Sylwia Budziak\nOpłata na Radę Rodziców wynosi 150zł wpłat można dokonywać w sekretariacie szkoły lub na konto\nSzkolna Kasa Oszczędnościowa przy ZSP ul.",
-        "24.09.2026 g.",
-        "11.02.2027 g.",
-        "15.06.2027 g.",
-        "07.09.2026 g."
-      ],
-      "missing_information": [],
-      "evidence": [],
-      "probabilities": {
-        "junk": 0.9994528889656067,
-        "article": 0.0005471613258123398
-      },
-      "extraction_method": "local_rules"
-    },
-    {
-      "domain": "zspkruszwica.pl",
-      "url": "http://www.zspkruszwica.pl/2026/04/technik-lotniskowych-sluzb-operacyjnych-0",
-      "source_title": "TECHNIK LOTNISKOWYCH SŁUŻB OPERACYJNYCH",
-      "is_article": true,
-      "crawler_category": "article",
-      "local_prediction": "junk",
-      "classification_source": "crawler_agent",
-      "relevant": false,
-      "discard_reason": "",
-      "published_at": "",
-      "project_type": "inne",
-      "project_title": "",
-      "summary": "TECHNIK LOTNISKOWYCH SŁUŻB OPERACYJNYCH\nJesteś tutaj\n         \t\t\t \t\tTECHNIK LOTNISKOWYCH SŁUŻB OPERACYJNYCH",
-      "stage": "nieustalony",
-      "people": [],
-      "organization": "",
-      "investment": "",
-      "facts": [],
-      "missing_information": [],
-      "evidence": [],
-      "probabilities": {
-        "junk": 0.5472847819328308,
-        "article": 0.4527151882648468
       },
       "extraction_method": "local_rules"
     },

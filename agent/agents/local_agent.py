@@ -1,6 +1,5 @@
 import csv
 import json
-import logging
 import os
 import re
 from collections import Counter
@@ -11,6 +10,7 @@ import torch
 from dotenv import load_dotenv
 from torch import nn
 
+from logging_utils import get_logger
 from .content_utils import extract_main_text
 
 
@@ -55,20 +55,7 @@ _PROJECT_KEYWORDS = (
     "projekt", "badani", "badawc", "innowac", "wdroż", "patent", "prototyp",
     "inwestyc", "grant", "pilotaż", "opracowano", "uruchomiono",
 )
-LOGGER = logging.getLogger("local_agent")
-LOGGER.setLevel(logging.INFO)
-LOGGER.propagate = False
-if not LOGGER.handlers:
-    formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
-    log_path = Path(os.getenv("LOG_FILE", "logs/logs.txt"))
-    if not log_path.is_absolute():
-        log_path = PROJECT_DIR / log_path
-    file_handler = logging.FileHandler(log_path, encoding="utf-8")
-    file_handler.setFormatter(formatter)
-    console_handler = logging.StreamHandler()
-    console_handler.setFormatter(formatter)
-    LOGGER.addHandler(file_handler)
-    LOGGER.addHandler(console_handler)
+LOGGER = get_logger("local_agent")
 csv.field_size_limit(2**31 - 1)
 
 
@@ -318,30 +305,8 @@ class LocalAgent:
             return "pomysł"
         return "nieustalony"
 
-    @classmethod
-    def _format_record(
-        cls,
-        record: dict[str, str],
-        probabilities: dict[str, float],
-        threshold: float,
-    ) -> dict[str, Any]:
-        main_text = extract_main_text(record["content"])
-        text = f"{record['title']}\n{main_text}".strip()
-        folded = text.casefold()
-        sentences = cls._sentences(text)
-        crawler_category = record.get("crawler_category", "")
-        crawler_labeled = crawler_category in {"article", "listing", "sitemap", "other"}
-        is_article = (
-            crawler_category == "article"
-            if crawler_labeled
-            else probabilities["article"] >= threshold
-        )
-        crawler_approved = crawler_labeled and crawler_category == "article"
-        relevant = is_article and any(keyword in folded for keyword in _PROJECT_KEYWORDS)
-        local_prediction = max(probabilities, key=probabilities.get)
-        if local_prediction == "junk" and probabilities["junk"] > 0.85:
-            relevant = False
-
+    @staticmethod
+    def _extract_people(sentences: list[str]) -> list[dict[str, str]]:
         people: list[dict[str, str]] = []
         for sentence in sentences:
             responsibility = _RESPONSIBILITY_PATTERN.search(sentence)
@@ -361,9 +326,33 @@ class LocalAgent:
                 if all(person["name"] != name for person in people):
                     people.append({"name": name, "role": role})
                     if len(people) == 5:
-                        break
-            if len(people) == 5:
-                break
+                        return people
+        return people
+
+    @classmethod
+    def _format_record(
+        cls,
+        record: dict[str, str],
+        probabilities: dict[str, float],
+        threshold: float,
+    ) -> dict[str, Any]:
+        main_text = extract_main_text(record["content"])
+        text = f"{record['title']}\n{main_text}".strip()
+        folded = text.casefold()
+        sentences = cls._sentences(text)
+        crawler_category = record.get("crawler_category", "")
+        crawler_labeled = crawler_category in {"article", "listing", "sitemap", "other"}
+        is_article = (
+            crawler_category == "article"
+            if crawler_labeled
+            else probabilities["article"] >= threshold
+        )
+        relevant = is_article and any(keyword in folded for keyword in _PROJECT_KEYWORDS)
+        local_prediction = max(probabilities, key=probabilities.get)
+        if local_prediction == "junk" and probabilities["junk"] > 0.85:
+            relevant = False
+        stage = cls._project_stage(text) if relevant else "nieustalony"
+        people = cls._extract_people(sentences)
 
         date_match = _DATE_PATTERN.search(text)
         amount_match = _AMOUNT_PATTERN.search(text)
@@ -386,7 +375,7 @@ class LocalAgent:
                 missing_information.append("data publikacji lub realizacji")
             if not amount_match:
                 missing_information.append("wartość finansowania")
-            if cls._project_stage(text) == "nieustalony":
+            if stage == "nieustalony":
                 missing_information.append("etap projektu")
 
         return {
@@ -403,7 +392,7 @@ class LocalAgent:
             "project_type": cls._project_type(text) if relevant else "inne",
             "project_title": record["title"] if relevant else "",
             "summary": summary,
-            "stage": cls._project_stage(text) if relevant else "nieustalony",
+            "stage": stage,
             "people": people,
             "organization": "",
             "investment": amount_match.group(0) if amount_match else "",

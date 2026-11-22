@@ -2,6 +2,5 @@ trafilatura
 beautifulsoup4
 httpx
 python-dotenv
-ollama
 torch
 playwright

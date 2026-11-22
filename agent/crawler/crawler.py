@@ -2,7 +2,6 @@ import asyncio
 import csv
 import gzip
 import json
-import logging
 import os
 import xml.etree.ElementTree as ET
 from html.parser import HTMLParser
@@ -15,6 +14,7 @@ from dotenv import load_dotenv
 from playwright.async_api import async_playwright, TimeoutError as PlaywrightTimeoutError
 
 from agents.content_utils import extract_main_html
+from logging_utils import get_logger
 from .crawler_agent import CrawlerAgent
 
 
@@ -28,20 +28,7 @@ JS_RENDER_TIMEOUT_SECONDS = int(os.getenv("JS_RENDER_TIMEOUT_SECONDS", "20"))
 JS_RENDER_MIN_ARTICLE_CHARS = int(os.getenv("JS_RENDER_MIN_ARTICLE_CHARS", "200"))
 LISTING_MIN_ARTICLE_LINKS = int(os.getenv("LISTING_MIN_ARTICLE_LINKS", "3"))
 UI_QUERY_KEYS = {"mini", "blindfriendly", "contrast", "fontsize", "width"}
-LOG_FILE = Path(os.getenv("LOG_FILE", "logs/logs.txt"))
-if not LOG_FILE.is_absolute():
-    LOG_FILE = PROJECT_DIR / LOG_FILE
-LOGGER = logging.getLogger("crawler")
-LOGGER.setLevel(logging.INFO)
-LOGGER.propagate = False
-if not LOGGER.handlers:
-    formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
-    file_handler = logging.FileHandler(LOG_FILE, encoding="utf-8")
-    file_handler.setFormatter(formatter)
-    console_handler = logging.StreamHandler()
-    console_handler.setFormatter(formatter)
-    LOGGER.addHandler(file_handler)
-    LOGGER.addHandler(console_handler)
+LOGGER = get_logger("crawler")
 
 
 class _LinkParser(HTMLParser):

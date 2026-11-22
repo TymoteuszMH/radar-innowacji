@@ -1,3 +1,4 @@
+import argparse
 import json
 import random
 import re
@@ -154,6 +155,9 @@ def _make_synthetic_records(category: str, count: int, offset: int) -> list[dict
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--output", type=Path, default=PROJECT_DIR / "data" / "crawler_agent_data.json")
+    output_path = parser.parse_args().output
     real_records, conflict_count = _load_real_records()
     real_by_category: dict[str, list[dict[str, str | bool]]] = {
         category: [record for record in real_records if record["category"] == category]
@@ -198,7 +202,7 @@ def main() -> None:
         "synthetic_counts_by_category": synthetic_counts,
         "records": output_records,
     }
-    output_path = PROJECT_DIR / "data" / "crawler_agent_data.json"
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     temporary_path = output_path.with_suffix(".json.tmp")
     try:
         temporary_path.write_text(

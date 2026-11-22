@@ -1,3 +1,4 @@
+import argparse
 import json
 import random
 import re
@@ -411,16 +412,19 @@ def validate_dataset(dataset: dict[str, Any]) -> None:
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--output", type=Path, default=OUTPUT_PATH)
+    output_path = parser.parse_args().output
     dataset = build_dataset()
     validate_dataset(dataset)
-    OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    OUTPUT_PATH.write_text(
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(
         json.dumps(dataset, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
     # Re-read with UTF-8 to validate the actual serialized artifact.
-    validate_dataset(json.loads(OUTPUT_PATH.read_text(encoding="utf-8")))
-    print(f"Dataset: {OUTPUT_PATH}")
+    validate_dataset(json.loads(output_path.read_text(encoding="utf-8")))
+    print(f"Dataset: {output_path}")
     print(f"Records: {len(dataset['records'])}")
     print(f"Synthetic: {dataset['synthetic_count']} (500 article / 500 junk)")
     print(f"Unique real: {dataset['real_unique_count']} x {REAL_OVERSAMPLE} = {dataset['real_unique_count'] * REAL_OVERSAMPLE}")

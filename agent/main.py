@@ -1,4 +1,3 @@
-import logging
 import os
 import shutil
 from pathlib import Path
@@ -11,18 +10,9 @@ load_dotenv(PROJECT_DIR / ".env")
 
 from agents.local_agent import LocalAgent
 from crawler import Crawler
+from logging_utils import get_logger
 
-LOGGER = logging.getLogger("pipeline")
-LOGGER.setLevel(logging.INFO)
-LOGGER.propagate = False
-if not LOGGER.handlers:
-    formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
-    log_path = Path(os.getenv("LOG_FILE", "logs/logs.txt"))
-    if not log_path.is_absolute():
-        log_path = PROJECT_DIR / log_path
-    handler = logging.FileHandler(log_path, encoding="utf-8")
-    handler.setFormatter(formatter)
-    LOGGER.addHandler(handler)
+LOGGER = get_logger("pipeline", console=False)
 
 
 def _delete_scrapped_data(scrapped_dir: Path, project_dir: Path) -> bool:
