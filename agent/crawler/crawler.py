@@ -26,6 +26,8 @@ CRAWLER_TIMEOUT_SECONDS = int(os.getenv("CRAWLER_TIMEOUT_SECONDS", "15"))
 JS_RENDER_FALLBACK = os.getenv("JS_RENDER_FALLBACK", "1").strip().lower() in {"1", "true", "yes", "on"}
 JS_RENDER_TIMEOUT_SECONDS = int(os.getenv("JS_RENDER_TIMEOUT_SECONDS", "20"))
 JS_RENDER_MIN_ARTICLE_CHARS = int(os.getenv("JS_RENDER_MIN_ARTICLE_CHARS", "200"))
+JS_PAGINATION_MAX_PAGES = int(os.getenv("JS_PAGINATION_MAX_PAGES", "10"))
+JS_PAGINATION_SCROLLS = int(os.getenv("JS_PAGINATION_SCROLLS", "3"))
 LISTING_MIN_ARTICLE_LINKS = int(os.getenv("LISTING_MIN_ARTICLE_LINKS", "3"))
 UI_QUERY_KEYS = {"mini", "blindfriendly", "contrast", "fontsize", "width"}
 LOGGER = get_logger("crawler")
@@ -113,10 +115,7 @@ class Crawler:
 
     async def _get(self, client: httpx.AsyncClient, url: str) -> httpx.Response | None:
         try:
-            response = await client.get(url)
-            if 300 <= response.status_code < 400:
-                LOGGER.warning("Pominięto przekierowanie: %s", url)
-                return None
+            response = await client.get(url, follow_redirects=True)
             if response.status_code >= 400:
                 LOGGER.warning("%s: HTTP %s", url, response.status_code)
                 return None
@@ -125,7 +124,7 @@ class Crawler:
             LOGGER.error("Błąd pobierania %s: %s", url, error)
             return None
 
-    async def _render_page(self, url: str) -> str | None:
+    async def _render_page(self, url: str) -> tuple[str, str] | None:
         if not JS_RENDER_FALLBACK:
             return None
         try:
@@ -135,24 +134,14 @@ class Crawler:
                     self._browser = await self._playwright.chromium.launch(headless=True)
             page = await self._browser.new_page()
 
-            async def block_redirects(route) -> None:
-                if route.request.redirected_from is not None:
-                    await route.abort()
-                else:
-                    await route.continue_()
-
-            await page.route("**/*", block_redirects)
             try:
                 response = await page.goto(
                     url,
                     wait_until="domcontentloaded",
                     timeout=JS_RENDER_TIMEOUT_SECONDS * 1000,
                 )
-                if response and 300 <= response.status < 400:
-                    LOGGER.warning("Pominięto przekierowanie JS: %s", url)
-                    return None
-                if self._normalize_url(page.url) != self._normalize_url(url):
-                    LOGGER.warning("Pominięto stronę po przekierowaniu JS: %s -> %s", url, page.url)
+                if response and response.status >= 400:
+                    LOGGER.warning("%s: HTTP %s", page.url, response.status)
                     return None
                 try:
                     await page.wait_for_load_state(
@@ -161,7 +150,71 @@ class Crawler:
                     )
                 except PlaywrightTimeoutError:
                     pass
-                return await page.content()
+
+                html_snapshots: list[str] = []
+                seen_urls = {self._normalize_url(page.url)}
+
+                async def scroll_for_lazy_load() -> str:
+                    previous_size = -1
+                    for _ in range(JS_PAGINATION_SCROLLS):
+                        await page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+                        await page.wait_for_timeout(250)
+                        current_html = await page.content()
+                        current_size = len(current_html)
+                        if current_size == previous_size:
+                            break
+                        previous_size = current_size
+                    return await page.content()
+
+                initial_html = await scroll_for_lazy_load()
+                if initial_html not in html_snapshots:
+                    html_snapshots.append(initial_html)
+
+                next_selectors = (
+                    "a[rel='next']",
+                    "button[rel='next']",
+                    "a[aria-label*='następ' i]",
+                    "a[aria-label*='next' i]",
+                    "button[aria-label*='następ' i]",
+                    "button[aria-label*='next' i]",
+                    ".pagination-next:not(.disabled)",
+                    ".next:not(.disabled)",
+                )
+                for _ in range(max(0, JS_PAGINATION_MAX_PAGES - 1)):
+                    next_button = None
+                    for selector in next_selectors:
+                        locator = page.locator(selector)
+                        count = await locator.count()
+                        if isinstance(count, int) and count:
+                            candidate = locator.last
+                            if await candidate.is_visible() and await candidate.is_enabled():
+                                next_button = candidate
+                                break
+                    if next_button is None:
+                        break
+
+                    before_url = self._normalize_url(page.url)
+                    before_html = await page.content()
+                    try:
+                        await next_button.click()
+                        await page.wait_for_load_state(
+                            "domcontentloaded",
+                            timeout=JS_RENDER_TIMEOUT_SECONDS * 1000,
+                        )
+                        await page.wait_for_timeout(500)
+                    except Exception:
+                        break
+
+                    after_url = self._normalize_url(page.url)
+                    after_html = await scroll_for_lazy_load()
+                    if after_url in seen_urls or after_html == before_html:
+                        break
+                    seen_urls.add(after_url)
+                    if after_html not in html_snapshots:
+                        html_snapshots.append(after_html)
+
+                combined_html = "\n".join(html_snapshots)
+                return page.url, combined_html
             finally:
                 await page.close()
         except Exception as error:
@@ -177,16 +230,17 @@ class Crawler:
             self._playwright = None
 
     @staticmethod
-    def _extract_article(url: str, html: str) -> tuple[str, str]:
+    def _extract_article(url: str, html: str) -> tuple[str, str, str]:
         metadata = trafilatura.extract_metadata(html, default_url=url)
         title = (metadata.title or "").strip() if metadata else ""
+        published_at = (metadata.date or "").strip() if metadata else ""
         content = trafilatura.extract(
             extract_main_html(html),
             url=url,
             include_comments=False,
             include_tables=False,
         )
-        return title or url, (content or "").strip()
+        return title or url, (content or "").strip(), published_at
 
     def _append_article(
         self,
@@ -194,6 +248,7 @@ class Crawler:
         url: str,
         title: str,
         content: str,
+        published_at: str,
     ) -> bool:
         self.output_dir.mkdir(parents=True, exist_ok=True)
         file_path = self.output_dir / f"{domain}.json"
@@ -209,16 +264,23 @@ class Crawler:
             None,
         )
         if existing:
-            if existing.get("crawler_category") == "article":
+            if existing.get("crawler_category") == "article" and (
+                not published_at or existing.get("published_at") == published_at
+            ):
                 return False
             existing["crawler_category"] = "article"
+            if published_at:
+                existing["published_at"] = published_at
         else:
-            data["articles"].append({
+            article = {
                 "url": url,
                 "title": title,
                 "content": content,
                 "crawler_category": "article",
-            })
+            }
+            if published_at:
+                article["published_at"] = published_at
+            data["articles"].append(article)
 
         temporary_path = file_path.with_suffix(".json.tmp")
         try:
@@ -259,6 +321,7 @@ class Crawler:
         url: str,
         title: str,
         content: str,
+        published_at: str,
     ) -> None:
         domain = (urlsplit(site).hostname or "").lower().removeprefix("www.")
         if not domain:
@@ -273,6 +336,7 @@ class Crawler:
                 url,
                 title,
                 content,
+                published_at,
             )
         if saved:
             LOGGER.info("Zapisano artykuł: %s", url)
@@ -313,57 +377,6 @@ class Crawler:
             if self._same_host(url, site)
         ))
 
-    async def _render_page(self, url: str) -> str | None:
-        if not JS_RENDER_FALLBACK:
-            return None
-        try:
-            async with self._browser_lock:
-                if self._browser is None:
-                    self._playwright = await async_playwright().start()
-                    self._browser = await self._playwright.chromium.launch(headless=True)
-            page = await self._browser.new_page()
-
-            async def block_redirects(route) -> None:
-                if route.request.redirected_from is not None:
-                    await route.abort()
-                else:
-                    await route.continue_()
-
-            await page.route("**/*", block_redirects)
-            try:
-                response = await page.goto(
-                    url,
-                    wait_until="domcontentloaded",
-                    timeout=JS_RENDER_TIMEOUT_SECONDS * 1000,
-                )
-                if response and 300 <= response.status < 400:
-                    LOGGER.warning("Pominięto przekierowanie JS: %s", url)
-                    return None
-                if self._normalize_url(page.url) != self._normalize_url(url):
-                    LOGGER.warning("Pominięto stronę po przekierowaniu JS: %s -> %s", url, page.url)
-                    return None
-                try:
-                    await page.wait_for_load_state(
-                        "networkidle",
-                        timeout=min(JS_RENDER_TIMEOUT_SECONDS * 1000, 3000),
-                    )
-                except PlaywrightTimeoutError:
-                    pass
-                return await page.content()
-            finally:
-                await page.close()
-        except Exception as error:
-            LOGGER.warning("Nie udało się wyrenderować strony JS %s: %s", url, error)
-            return None
-
-    async def _close_browser(self) -> None:
-        if self._browser is not None:
-            await self._browser.close()
-            self._browser = None
-        if self._playwright is not None:
-            await self._playwright.stop()
-            self._playwright = None
-
     async def _crawl_site(self, client: httpx.AsyncClient, site: str) -> list[str]:
         site = site if "://" in site else f"https://{site}"
         site = self._normalize_url(site)
@@ -385,7 +398,7 @@ class Crawler:
                 open_list.append(key)
                 open_keys.add(key)
 
-        def page_links(html: str, page_url: str) -> tuple[list[str], int, int]:
+        def page_links(html: str, page_url: str, base_url: str) -> tuple[list[str], int, int]:
             parser = _LinkParser()
             parser.feed(html)
             links: list[str] = []
@@ -393,7 +406,7 @@ class Crawler:
             article_links: set[str] = set()
             page_path = urlsplit(page_url).path.rstrip("/")
             for href in parser.links:
-                link = self._normalize_url(urljoin(page_url, href))
+                link = self._normalize_url(urljoin(base_url, href))
                 if self._is_ignored_url(link) or not self._in_scope(link, site):
                     continue
                 links.append(link)
@@ -407,12 +420,12 @@ class Crawler:
         def reclassify_hub(
             page_url: str,
             category: str,
-            nested_count: int,
+            article_count: int,
         ) -> str:
-            if category == "article" and nested_count >= LISTING_MIN_ARTICLE_LINKS:
+            if category == "article" and article_count >= LISTING_MIN_ARTICLE_LINKS:
                 LOGGER.info(
-                    "Zmiana article -> listing na podstawie %d zagnieżdżonych linków: %s",
-                    nested_count,
+                    "Zmiana article -> listing na podstawie %d linków do artykułów: %s",
+                    article_count,
                     page_url,
                 )
                 return "listing"
@@ -429,15 +442,25 @@ class Crawler:
                 continue
             closed_list.append(page)
             closed_keys.add(page_key)
-            category = agent.classify(page)
-            if category == "other":
-                LOGGER.info("Pominięto bez pobierania [other]: %s", page)
-                await self._remove_article(site, page)
-                continue
-            LOGGER.info("Odwiedzam [%s]: %s", category, page)
-
             response = await self._get(client, page)
             if not response:
+                continue
+            base_url = str(response.url)
+            final_page = self._normalize_url(base_url)
+            if final_page != page_key:
+                if final_page in closed_keys:
+                    continue
+                closed_list.append(final_page)
+                closed_keys.add(final_page)
+                if page_key == site:
+                    site = final_page
+                    for sitemap_url in await self._sitemap_candidates(client, site):
+                        enqueue(sitemap_url, is_sitemap=True)
+                page = final_page
+            category = agent.classify(page)
+            LOGGER.info("Odwiedzam [%s]: %s", category, page)
+            if category == "other":
+                await self._remove_article(site, page)
                 continue
             if category == "sitemap":
                 content = response.content
@@ -452,18 +475,21 @@ class Crawler:
                 is_index = root.tag.rsplit("}", 1)[-1].lower() == "sitemapindex"
                 for element in root.iter():
                     if element.tag.rsplit("}", 1)[-1].lower() == "loc" and element.text:
-                        link = urljoin(page, element.text.strip())
+                        link = urljoin(base_url, element.text.strip())
                         enqueue(link, is_sitemap=is_index)
                 continue
 
-            if "html" not in response.headers.get("content-type", "text/html").lower():
+            content_type = response.headers.get("content-type", "text/html").lower()
+            if "html" not in content_type:
+                await self._remove_article(site, page)
                 continue
             html = response.text
             extracted_title = page
             extracted_content = ""
+            extracted_published_at = ""
             if category == "article":
                 try:
-                    extracted_title, extracted_content = await asyncio.to_thread(
+                    extracted_title, extracted_content, extracted_published_at = await asyncio.to_thread(
                         self._extract_article,
                         page,
                         html,
@@ -471,21 +497,37 @@ class Crawler:
                 except Exception:
                     LOGGER.exception("Nie udało się wyodrębnić artykułu: %s", page)
                     extracted_title, extracted_content = page, ""
+                    extracted_published_at = ""
 
-            links, nested_count, article_link_count = page_links(html, page)
-            category = reclassify_hub(page, category, nested_count)
+            links, nested_count, article_link_count = page_links(html, page, base_url)
+            category = reclassify_hub(page, category, article_link_count)
             needs_render = (
                 category == "article"
                 and len(extracted_content) < JS_RENDER_MIN_ARTICLE_CHARS
             ) or (category == "listing" and article_link_count == 0)
             if needs_render:
-                rendered_html = await self._render_page(page)
-                if rendered_html:
-                    html = rendered_html
-                    links, nested_count, article_link_count = page_links(html, page)
-                    category = reclassify_hub(page, category, nested_count)
+                rendered = await self._render_page(page)
+                if rendered:
+                    base_url, html = rendered
+                    rendered_page = self._normalize_url(base_url)
+                    if rendered_page != page:
+                        if rendered_page in closed_keys:
+                            continue
+                        closed_list.append(rendered_page)
+                        closed_keys.add(rendered_page)
+                        if page == site:
+                            site = rendered_page
+                            for sitemap_url in await self._sitemap_candidates(client, site):
+                                enqueue(sitemap_url, is_sitemap=True)
+                        page = rendered_page
+                        category = agent.classify(page)
+                        if category == "other":
+                            await self._remove_article(site, page)
+                            continue
+                    links, nested_count, article_link_count = page_links(html, page, base_url)
+                    category = reclassify_hub(page, category, article_link_count)
                     if category == "article":
-                        extracted_title, extracted_content = await asyncio.to_thread(
+                        extracted_title, extracted_content, extracted_published_at = await asyncio.to_thread(
                             self._extract_article,
                             page,
                             html,
@@ -499,19 +541,20 @@ class Crawler:
 
             if (
                 category == "article"
-                and nested_count >= LISTING_MIN_ARTICLE_LINKS
                 and article_link_count >= LISTING_MIN_ARTICLE_LINKS
             ):
                 category = "listing"
                 LOGGER.info(
-                    "Zmiana article -> listing: %s (linki zagnieżdżone: %d)",
+                    "Zmiana article -> listing: %s (linki do artykułów: %d)",
                     page,
-                    nested_count,
+                    article_link_count,
                 )
 
             if category == "article":
                 if extracted_content:
-                    await self._save_article(site, page, extracted_title, extracted_content)
+                    await self._save_article(
+                        site, page, extracted_title, extracted_content, extracted_published_at
+                    )
                 else:
                     LOGGER.warning("Nie udało się wyodrębnić treści artykułu: %s", page)
 
@@ -541,7 +584,7 @@ class Crawler:
             async with httpx.AsyncClient(
                 timeout=self.timeout,
                 limits=limits,
-                follow_redirects=False,
+                follow_redirects=True,
             ) as client:
                 await asyncio.gather(*(crawl_site(site) for site in sites))
         finally:

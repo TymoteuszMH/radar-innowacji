@@ -4,12 +4,15 @@ import random
 import sys
 from pathlib import Path
 
+from dotenv import load_dotenv
+
 
 PROJECT_DIR = Path(__file__).resolve().parent.parent
 if str(PROJECT_DIR) not in sys.path:
     sys.path.insert(0, str(PROJECT_DIR))
 
-from agents.project_agent import ProjectAgent
+from agents.project_agent import ProjectAgent, innovation_evidence
+from models.evaluation import best_fbeta_threshold, configured_beta
 
 
 def split_by_domain(records: list[dict], seed: int = 42) -> tuple[list[dict], list[dict]]:
@@ -28,27 +31,43 @@ def split_by_domain(records: list[dict], seed: int = 42) -> tuple[list[dict], li
     raise ValueError("Nie udało się podzielić domen tak, aby obie części zawierały obie klasy")
 
 
+def undersample_training(records: list[dict], seed: int = 42) -> list[dict]:
+    if any(not isinstance(record.get("text"), str) or not record["text"].strip()
+           or type(record.get("label")) is not int or record["label"] not in (0, 1)
+           for record in records):
+        raise ValueError("Każdy rekord treningowy musi mieć tekst i etykietę 0 lub 1")
+    positive = [index for index, record in enumerate(records) if record["label"] == 1]
+    negative = [index for index, record in enumerate(records) if record["label"] == 0]
+    count = min(len(positive), len(negative))
+    if count == 0:
+        raise ValueError("Trening 50/50 wymaga pozytywnych i negatywnych przykładów")
+    generator = random.Random(seed)
+    selected = set(generator.sample(positive, count) + generator.sample(negative, count))
+    return [record for index, record in enumerate(records) if index in selected]
+
+
 def train_project(dataset_path: Path, model_path: Path, epochs: int = 50) -> None:
+    beta = configured_beta()
     records = json.loads(dataset_path.read_text(encoding="utf-8"))["records"]
     train, validation = split_by_domain(records)
+    train = undersample_training(train)
     agent = ProjectAgent()
     agent.fit(train, epochs=epochs)
-    predictions = [agent.predict_proba(record["text"]) for record in validation]
-    true_positive = sum(probability is not None and probability >= 0.5 and record["label"] == 1
-                        for probability, record in zip(predictions, validation))
-    predicted_positive = sum(probability is not None and probability >= 0.5 for probability in predictions)
-    actual_positive = sum(record["label"] == 1 for record in validation)
-    print(f"Walidacja na etykietach bootstrapowych: rekordy={len(validation)}, "
-          f"precision={true_positive / predicted_positive if predicted_positive else 0:.3f}, "
-          f"recall={true_positive / actual_positive:.3f}")
-    agent.fit(records, epochs=epochs)
+    predictions = [agent.predict_proba(record["text"]) if innovation_evidence(record["text"]) else None
+                   for record in validation]
+    agent.threshold, score = best_fbeta_threshold(
+        predictions, [record["label"] == 1 for record in validation], beta)
+    print(f"Walidacja i dobór progu ProjectAgent: rekordy={len(validation)}, "
+          f"F{beta:g}={score:.3f}, próg={agent.threshold:.6f}")
     agent.save(model_path)
-    print(f"Zapisano model wytrenowany na {len(records)} rekordach: {model_path}")
+    print(f"Zapisano model wytrenowany na {len(train)} rekordach "
+          f"(pozytywne={len(train) // 2}, negatywne={len(train) // 2}): {model_path}")
 
 
 def main() -> None:
+    load_dotenv(PROJECT_DIR / ".env")
     parser = argparse.ArgumentParser(description="Trenuje niezależny model wykrywania projektów.")
-    parser.add_argument("--input", type=Path, default=PROJECT_DIR / "data" / "project_dataset.json")
+    parser.add_argument("--input", type=Path, default=PROJECT_DIR / "data" / "innovation_dataset.json")
     parser.add_argument("--output", type=Path, default=PROJECT_DIR / "models" / "project_agent.pt")
     parser.add_argument("--epochs", type=int, default=50)
     args = parser.parse_args()

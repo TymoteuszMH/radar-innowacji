@@ -1,0 +1,75 @@
+@if (view.kind === 'innovation') {
+  <a routerLink="/innovations" class="back">← Powrót do katalogu</a>
+  <div class="page-heading"><div><div class="eyebrow">ANALIZA INNOWACJI</div><h1 id="page-title" tabindex="-1">{{ view.innovation.title }}</h1><p>Każda rekomendacja wymaga weryfikacji przez autora lub eksperta.</p></div></div>
+  <div class="card-meta" style="margin:-11px 0 21px">
+    <span [class]="view.innovation.is_demo ? 'tag tag-demo' : 'tag tag-slate'">{{ view.innovation.is_demo ? 'DANE DEMONSTRACYJNE' : 'Dane niezweryfikowane' }}</span>
+    @if (view.innovation.prior_art?.status === 'matches_found') { <span class="tag tag-demo">Możliwe podobne rozwiązanie</span> }
+    @for (tag of (view.innovation.domain_tags || []).slice(0, 4); track $index) { <span class="tag">{{ tag }}</span> }
+    @if (stageName(view.innovation.stage)) { <span class="tag tag-outline">{{ stageName(view.innovation.stage) }}</span> }
+  </div>
+  <div class="detail-grid">
+    <div class="stack">
+      <section class="detail-card">
+        <h2>Opis rozwiązania</h2>
+        <div class="data-heading">Problem</div><p>{{ view.innovation.problem || 'Brak danych.' }}</p>
+        <div class="data-heading">Opis projektu</div><p>{{ view.innovation.solution || 'Brak danych.' }}</p>
+        @if (view.innovation.keywords?.length) { <div class="data-heading">Słowa kluczowe</div><p>{{ view.innovation.keywords?.join(', ') }}</p> }
+        <div class="data-heading">Deklarowany wpływ</div><p>{{ view.innovation.claimed_impact || 'Brak deklarowanych efektów.' }}</p>
+        <div class="data-heading">Warunki wdrożenia</div><p>{{ view.innovation.requirements || 'Brak danych — wymagane uzupełnienie.' }}</p>
+        <div class="line"></div>
+        <div class="card-meta">@for (tag of (view.innovation.target_groups || []).slice(0, 6); track $index) { <span class="tag">{{ tag }}</span> }</div>
+        <p class="small-note">Źródło: {{ sourceName(view.innovation.source_mode) }} · {{ organizationName(view.innovation.organization_id) }}</p>
+        @if (safeHttps(view.innovation.source_url)) {
+          <p class="small-note">Oryginalne źródło: <a target="_blank" rel="noopener noreferrer" [href]="view.innovation.source_url">{{ view.innovation.source_provider || 'Otwórz stronę źródłową' }}</a> · {{ view.innovation.source_published_at || 'Data publikacji nieznana' }}@if (view.innovation.source_retrieved_at) { · pozyskano {{ view.innovation.source_retrieved_at.slice(0, 10) }} }</p>
+        }
+      </section>
+      <section class="detail-card">
+        <h2>Możliwie podobne projekty <span class="counter">{{ view.similar.length + (view.innovation.prior_art?.matches?.length || 0) }}</span></h2>
+        @if (view.innovation.prior_art; as priorArt) {
+          @if (priorArt.status === 'matches_found') {
+          <p class="small-note">Znaleziono potencjalnie podobne publikacje, patenty lub projekty. Podobieństwo wymaga weryfikacji i nie potwierdza ochrony patentowej.</p>
+          @for (match of priorArt.matches; track $index) {
+            <div class="match-row">
+              <div class="match-title">
+                @if (safeHttps(match.url)) { <a [href]="match.url" target="_blank" rel="noopener noreferrer">{{ match.title || 'Rekord bez tytułu' }} ↗</a> }
+                @else { <strong>{{ match.title || 'Rekord bez tytułu' }}</strong> }
+              </div>
+              <div class="small-note">{{ match.type === 'patent' ? 'Patent' : match.type === 'publication' ? 'Publikacja' : 'Projekt' }} · {{ match.source }}</div>
+            </div>
+          }
+          }
+        }
+        @for (similar of view.similar; track similar.innovation.id) {
+          <div class="match-row"><div class="match-title"><a [routerLink]="['/innovations', similar.innovation.id]">{{ similar.innovation.title }}</a><span class="tag tag-slate">{{ similar.similarity_score }} / 100*</span></div><p class="match-reason">{{ similar.reasons.join(' ') || 'Potencjalne podobieństwo tekstowe.' }}</p><div class="small-note">*Podobieństwo heurystyczne, nie dowód duplikatu.</div></div>
+        } @empty { @if (view.innovation.prior_art?.status !== 'matches_found') { <div class="empty">Brak potwierdzonych danych o podobnych projektach.</div> } }
+      </section>
+    </div>
+    <div class="stack"><section class="detail-card">
+      <h2>Ocena potencjału</h2>
+      <div class="stat-highlight"><div><span class="small-note">Wynik potencjału</span><div><strong>{{ view.assessment.score === null ? '—' : view.assessment.score }}</strong><span class="small-note"> / 100</span></div><p>Pewność oceny: {{ round(view.assessment.coverage * 100) }}%</p></div><span [class]="view.assessment.status === 'high' ? 'tag tag-good' : 'tag tag-demo'">{{ assessmentStatus(view.assessment.status) }}</span></div>
+      @for (dimension of view.assessment.dimensions; track $index) {
+        <div class="assessment-row"><div class="assessment-top"><div class="assessment-name">{{ dimension.label }} <span class="small-note">{{ round(dimension.weight * 100) }}%</span></div><span class="assessment-score">{{ dimension.grade === null ? 'Brak danych' : dimension.grade + ' / 5' }}</span></div><div class="progress" role="meter" [attr.aria-label]="dimension.label" aria-valuemin="0" aria-valuemax="5" [attr.aria-valuenow]="dimension.grade === null ? 0 : dimension.grade"><div [style.width.%]="dimension.grade === null ? 0 : dimension.grade / 5 * 100"></div></div><div class="assessment-note">{{ dimension.reason }}</div></div>
+      }
+      <p class="small-note" style="margin-top:16px">{{ view.assessment.disclaimer }}</p>
+      @if (view.assessment.missing_questions.length) { <div class="notice" style="margin-top:12px"><b>Do uzupełnienia:</b> {{ view.assessment.missing_questions.join(' ') }}</div> }
+      @if (view.assessment.recommendation) { <p>{{ view.assessment.recommendation }}</p> }
+      @if (view.assessment.status === 'uncertain') {
+        @if (view.innovation.people?.length) { <p class="small-note">Twórcy: @for (person of view.innovation.people; track $index) { {{ person.name }}{{ $last ? '' : ', ' }} }</p> }
+        @if (view.innovation.contact_email) { <a class="btn btn-sm" [href]="'mailto:' + view.innovation.contact_email">Kontakt podany w źródle</a> }
+        @else if (safeHttps(view.innovation.source_url)) { <a class="btn btn-sm" [href]="view.innovation.source_url" target="_blank" rel="noopener noreferrer">Sprawdź kontakt w źródle</a> }
+      }
+    </section></div>
+  </div>
+  @if (view.evidence.records.length) {
+    <section class="detail-card evidence-section"><h2>Źródła opisu <span class="counter">{{ view.evidence.records.length }}</span></h2><p>{{ view.evidence.disclaimer }}</p><div class="evidence-list">
+      @for (record of view.evidence.records; track $index) {
+        <div class="evidence-item"><strong>{{ record.field }} · {{ record.source_name }} · {{ record.line_number ? 'wiersz ' + record.line_number : 'metadane źródła' }}</strong><blockquote>{{ record.quote }}</blockquote>@if (safeHttps(record.source_url)) { <a [href]="record.source_url" target="_blank" rel="noopener noreferrer">Sprawdź źródło ↗</a> }</div>
+      }
+    </div></section>
+  }
+  <section class="detail-card"><h2>Następne kroki</h2><p>Co powinien zrobić człowiek, zanim rozpocznie wdrożenie?</p><div class="steps">
+    @for (step of view.actions; track $index; let index = $index) {
+      <div class="step"><div class="step-num">{{ index + 1 }}</div><div><div class="step-title">{{ step.title }}</div><p class="step-p">{{ step.reason }}</p><p class="step-p"><b>Kryterium:</b> {{ step.success_check }}</p></div></div>
+    } @empty { <div class="empty">Brak danych o następnych krokach.</div> }
+  </div></section>
+}

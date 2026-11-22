@@ -1,32 +1,7 @@
 import { ChangeDetectorRef, Component, DestroyRef, Input, OnChanges } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { RadarApiService, apiError } from './radar-api.service';
-
-interface Organization {
-  id: string;
-  name: string;
-}
-
-interface CatalogItem {
-  id: string;
-  organization_id: string;
-  title: string;
-  problem?: string | null;
-  is_demo: boolean;
-  domain_tags?: string[];
-  stage?: string;
-  innovation_type?: string;
-}
-
-export interface CatalogData {
-  items: CatalogItem[];
-  organizations: Organization[];
-  total: number;
-}
-
-export interface CatalogView extends CatalogData {
-  kind: 'innovations' | 'needs';
-}
+import { RadarApiService, apiError } from '../../services/radar-api.service';
+import type { CatalogData, CatalogView } from '../../interfaces/catalog.interfaces';
 
 @Component({
   selector: 'app-catalog',
@@ -35,6 +10,7 @@ export interface CatalogView extends CatalogData {
   templateUrl: './catalog.component.html',
 })
 export class CatalogComponent implements OnChanges {
+  readonly round = Math.round;
   constructor(private readonly changeDetector: ChangeDetectorRef, private readonly destroyRef: DestroyRef, private readonly api: RadarApiService) {}
   @Input({ required: true }) view!: CatalogView;
   data!: CatalogData;
@@ -86,6 +62,11 @@ export class CatalogComponent implements OnChanges {
 
   stageName(stage: string | undefined): string {
     return this.stageNames[stage || ''] || stage || '';
+  }
+
+  assessmentStatus(status: string): string {
+    return ({ uncertain: 'Niepewna ocena', high: 'Wysoki potencjał',
+      development: 'Potencjał rozwojowy', low: 'Niski potencjał / Duplikat' } as Record<string, string>)[status] || 'Brak oceny';
   }
 
   typeName(type: string | undefined): string {

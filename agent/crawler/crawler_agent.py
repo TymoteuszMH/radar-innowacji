@@ -33,7 +33,12 @@ _OTHER_HINTS = (
     "regulamin",
     "terms",
 )
-_ASSET_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg", ".pdf"}
+_ASSET_EXTENSIONS = {
+    ".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg", ".svgz", ".bmp", ".tif", ".tiff", ".ico", ".heic",
+    ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx", ".odt", ".ods", ".odp",
+    ".zip", ".rar", ".7z", ".tar", ".gz",
+    ".mp3", ".wav", ".ogg", ".mp4", ".avi", ".mov", ".wmv", ".webm",
+}
 _DATE_PATTERN = re.compile(r"(?:19|20)\d{2}")
 _SITEMAP_PATTERN = re.compile(r"(?:^|[/_-])sitemap(?:[_-][^/]*)?\.xml(?:\.gz)?$")
 
@@ -62,6 +67,7 @@ class CrawlerAgent:
         self.biases = [-4.0, -1.5, -0.7, 0.5]
         self.hidden_size = int(os.getenv("CRAWLER_AGENT_HIDDEN_SIZE", "32"))
         self.model: _CrawlerNetwork | None = None
+        self.article_threshold: float | None = None
         if self.hidden_size < 1:
             raise ValueError("CRAWLER_AGENT_HIDDEN_SIZE musi wynosić co najmniej 1")
 
@@ -116,6 +122,10 @@ class CrawlerAgent:
 
     def classify(self, link: str) -> CrawlerCategory:
         probabilities = self.predict_proba(link)
+        if self.article_threshold is not None:
+            if probabilities["article"] >= self.article_threshold:
+                return "article"
+            return max((category for category in _CATEGORIES if category != "article"), key=probabilities.get)
         return max(probabilities, key=probabilities.get)
 
     def analyze(self, link: str) -> float:
@@ -183,6 +193,7 @@ class CrawlerAgent:
                     "categories": list(_CATEGORIES),
                     "input_size": len(self._features("https://example.test/")),
                     "hidden_size": self.hidden_size,
+                    "article_threshold": self.article_threshold,
                     "state_dict": self.model.state_dict(),
                 },
                 temporary_path,
@@ -202,6 +213,10 @@ class CrawlerAgent:
             raise ValueError("Nieobsługiwany format modelu CrawlerAgent")
         agent = cls()
         agent.hidden_size = int(data["hidden_size"])
+        threshold = data.get("article_threshold")
+        if threshold is not None and (not isinstance(threshold, (float, int)) or not 0 <= threshold <= 1):
+            raise ValueError("Nieprawidłowy próg CrawlerAgent")
+        agent.article_threshold = threshold
         agent.model = _CrawlerNetwork(data["input_size"], agent.hidden_size)
         agent.model.load_state_dict(data["state_dict"])
         agent.model.eval()

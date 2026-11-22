@@ -1,0 +1,80 @@
+<div class="page-heading">
+  <div>
+    <div class="eyebrow">WYSZUKIWANIE PROJEKTÓW</div>
+    <h1 id="page-title" tabindex="-1">Wyszukaj innowacje</h1>
+    <p>Znajdź projekty i sprawdź ich źródła.</p>
+  </div>
+</div>
+
+<div class="detail-grid">
+  <section class="detail-card">
+    <h2>Wyszukaj materiały</h2>
+    <form (submit)="online($event, query.value)">
+      <div class="field">
+        <label for="online-query">Temat, problem lub technologia</label>
+        <input
+          #query
+          id="online-query"
+          name="query"
+          required
+          maxlength="180"
+          [value]="view.state.onlineQuery"
+          placeholder="np. nauczanie adaptacyjne"
+        >
+      </div>
+      <div class="buttons" style="margin-top:14px">
+        <button type="submit" class="btn btn-primary" [disabled]="loading">
+          {{ loading ? 'Wyszukiwanie…' : 'Szukaj' }}
+        </button>
+      </div>
+      <div role="status" aria-live="polite">
+        @if (error) {
+          <div class="form-alert">{{ error }}</div>
+        }
+      </div>
+    </form>
+  </section>
+  <section class="detail-card">
+    <h2>Weryfikacja wyników</h2>
+    <div class="notice neutral">Wyniki wymagają weryfikacji w materiałach źródłowych.</div>
+  </section>
+</div>
+
+@if (view.state.online; as results) {
+  <section class="discovery-report">
+    <div class="section-head">
+      <div>
+        <h2>Wyniki <span class="counter">{{ results.length }}</span></h2>
+      </div>
+    </div>
+    @for (item of results; track $index) {
+      <article class="detail-card online-result">
+        <div class="discovery-result-head">
+          @for (tag of item.project.tags; track $index) { <span class="tag">{{ tag }}</span> }
+        </div>
+        <h3>{{ item.project.project_title || item.project.source_title || 'Projekt bez tytułu' }}</h3>
+        <p><strong>Opis projektu:</strong> {{ excerpt(item.project.summary || 'Brak opisu.', 1100) }}</p>
+        @if (item.project.assessment; as assessment) {
+          <p class="small-note">Ocena: {{ assessmentStatus(assessment.status) }} · Potencjał: {{ assessment.score === null ? 'brak danych' : assessment.score + '%' }}@if (assessment.coverage !== null) { · Pewność: {{ round(assessment.coverage * 100) }}% }</p>
+        } @else {
+          <p class="small-note">Ocena: brak danych</p>
+        }
+        <div class="buttons online-actions">
+          @if (item.project.uuid) {
+            <a class="btn btn-secondary" [routerLink]="['/innovations', item.project.uuid]">Szczegóły projektu</a>
+          }
+          @if (safeHttps(item.project.url)) {
+            <a class="btn btn-secondary" target="_blank" rel="noopener noreferrer" [href]="item.project.url">
+              Otwórz źródło ↗
+            </a>
+          }
+          @if (safeEmail(item.project.contact_email)) {
+            <a class="btn btn-secondary" [href]="'mailto:' + item.project.contact_email">Kontakt</a>
+          }
+        </div>
+      </article>
+    } @empty {
+      <div class="empty">Nie znaleziono pasujących innowacji</div>
+    }
+  </section>
+}

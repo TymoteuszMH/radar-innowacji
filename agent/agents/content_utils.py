@@ -21,12 +21,19 @@ _BOILERPLATE_SELECTORS = (
 _MAIN_SELECTORS = (
     "article",
     "main",
+    "#main",
     "#main-content",
+    "#page-content",
     "#content",
+    ".main",
+    ".main-content",
+    ".page-content",
     ".field-name-body",
     ".entry-content",
     ".post-content",
     ".article-content",
+    ".site-content",
+    ".content",
 )
 
 

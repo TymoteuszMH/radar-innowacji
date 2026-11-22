@@ -12,11 +12,8 @@ import { filter } from 'rxjs';
 })
 export class AppComponent implements OnInit {
   readonly navigation = [
-    { path: '/online', icon: '◎', label: 'Szukaj w internecie' },
+    { path: '/online', icon: '◎', label: 'Wyszukaj innowacje' },
     { path: '/innovations', icon: '◫', label: 'Katalog innowacji' },
-    { path: '/needs', icon: '⌕', label: 'Potrzeby organizacji' },
-    { path: '/innovations/new', icon: '＋', label: 'Zgłoś innowację' },
-    { path: '/needs/new', icon: '＋', label: 'Zgłoś potrzebę' },
   ];
   current = '/';
   crumb = 'Przegląd';
@@ -29,17 +26,21 @@ export class AppComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.router.events.pipe(filter((event) => event instanceof NavigationEnd), takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-      const data = this.route.firstChild?.snapshot.data;
-      this.current = typeof data?.['current'] === 'string' ? data['current'] : '';
-      this.crumb = typeof data?.['crumb'] === 'string' ? data['crumb'] : 'Przegląd';
-      this.title.setTitle(`${this.crumb} · Innovation Radar`);
-    });
+    this.router.events
+      .pipe(
+        filter((event) => event instanceof NavigationEnd),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(() => {
+        const data = this.route.firstChild?.snapshot.data;
+        this.current = typeof data?.['current'] === 'string' ? data['current'] : '';
+        this.crumb = typeof data?.['crumb'] === 'string' ? data['crumb'] : 'Przegląd';
+        this.title.setTitle(`${this.crumb} · Innovation Radar`);
+      });
   }
 
   focusMain(event: MouseEvent): void {
     event.preventDefault();
     document.getElementById('main-content')?.focus();
   }
-
 }

@@ -1,6 +1,7 @@
 import csv
 import json
 import os
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -12,6 +13,17 @@ PROJECT_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(PROJECT_DIR / ".env")
 LOGGER = get_logger("raw_data_formatter")
 csv.field_size_limit(2**31 - 1)
+
+
+def _is_recent_article(published_at: str, now: datetime, max_age: timedelta) -> bool:
+    try:
+        parsed = datetime.fromisoformat(published_at.replace("Z", "+00:00"))
+    except ValueError:
+        return False
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    parsed = parsed.astimezone(timezone.utc)
+    return now - max_age <= parsed <= now
 
 
 class RawDataFormatter:
@@ -60,6 +72,7 @@ class RawDataFormatter:
                             "url": values.get("url", ""),
                             "source_title": values.get("title", ""),
                             "content": values.get("content", ""),
+                            "published_at": values.get("published_at", ""),
                         }.items()
                     })
             except (OSError, csv.Error, json.JSONDecodeError, TypeError) as error:
@@ -68,10 +81,17 @@ class RawDataFormatter:
         return records
 
     def analyze_all(self) -> dict[str, int]:
-        records = self._load_records()
+        loaded_records = self._load_records()
+        now = datetime.now(timezone.utc)
+        max_age = timedelta(days=int(os.getenv("ARTICLE_MAX_AGE_DAYS", "7")))
+        records = [
+            record for record in loaded_records
+            if _is_recent_article(record["published_at"], now, max_age)
+        ]
         max_records = int(os.getenv("MAX_ARTICLES_TO_PROCESS", "0"))
-        skipped = max(0, len(records) - max_records) if max_records else 0
+        skipped = len(loaded_records) - len(records)
         if max_records:
+            skipped += max(0, len(records) - max_records)
             records = records[:max_records]
 
         self.output_file.parent.mkdir(parents=True, exist_ok=True)

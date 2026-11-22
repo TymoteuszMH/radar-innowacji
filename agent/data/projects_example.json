@@ -1,0 +1,1282 @@
+{
+  "metadane_zestawienia": {
+    "nazwa_systemu": "Radar innowacji – Podkarpackie Centrum Innowacji (PCI)",
+    "data_analizy": "2026-11-22",
+    "liczba_przeanalizowanych_wpisow": 33,
+    "podsumowanie_zgodnosci_pci": {
+      "zgodne": 23,
+      "niezgodne_lub_do_odrzucenia": 10
+    },
+    "podsumowanie_statusow_oceny": {
+      "Wysoki potencjał": 6,
+      "Potencjał rozwojowy": 9,
+      "Niepewna ocena": 18,
+      "Niski potencjał / Duplikat": 0
+    }
+  },
+  "wpisy": [
+    {
+      "id": 1,
+      "domena": "www.lo3.gdynia.pl",
+      "url": "https://www.lo3.gdynia.pl/2026/10/26/ogromny-sukces-uczennicy-z-gdynskiej-trojki/",
+      "kategoria_wejsciowa": "Licea ogólnokształcące (TOP 5) – BioRegen Healing System",
+      "nazwa_projektu": "BioRegen Healing System",
+      "typ_podmiotu": "Szkoła ponadpodstawowa (III LO w Gdyni)",
+      "tworcy_i_wiek": "Kateryna Maksymykhina (uczennica liceum – grupa 16–30 lat); opiekunowie: UG/GUMed, Pracownia 3LAB",
+      "typ_innowacji": "Technologiczna / Medyczna (biomimetyczny proszek do leczenia ran)",
+      "keywords": [
+        "biotechnologia",
+        "medycyna",
+        "leczenie ran",
+        "biomimetyka",
+        "stopa cukrzycowa",
+        "opatrunki",
+        "3LAB",
+        "Explory 2026",
+        "liceum"
+      ],
+      "zgodnosc_z_wymogami_pci": {
+        "czy_zgodny": true,
+        "status": "Zgodny",
+        "uzasadnienie": "Innowacja powstała w szkole publicznej (pracownia 3LAB przy wsparciu uczelni UG/GUMed), autorka mieści się w grupie wiekowej 16–30 lat, rozwiązanie ma konkretny cel wdrożeniowy w ochronie zdrowia i potwierdzoną skuteczność laboratoryjną."
+      },
+      "ocena_metodologia": {
+        "potencjal_wdrozeniowy_pkt": 4,
+        "potencjal_wdrozeniowy_waga": 0.45,
+        "innowacyjnosc_i_unikalnosc_pkt": 4,
+        "innowacyjnosc_i_unikalnosc_waga": 0.35,
+        "wykonalnosc_i_dojrzalosc_pkt": 4,
+        "wykonalnosc_i_dojrzalosc_waga": 0.2,
+        "wynik_potencjalu_proc": 80.0,
+        "pewnosc_oceny_proc": 100.0,
+        "brakujacy_obszar_danych": null,
+        "status_na_karcie": "Wysoki potencjał",
+        "rekomendowane_dzialanie": "Przekazanie do programów akceleracyjnych, transferu lub bezpośrednich rozmów z partnerami wdrożeniowymi."
+      },
+      "sugerowane_instytucje_dalszego_rozwoju": ""
+    },
+    {
+      "id": 2,
+      "domena": "2lo.legnica.eu",
+      "url": "https://2lo.legnica.eu/projekt-badawczy-antoniny-jareckiej/",
+      "kategoria_wejsciowa": "Licea ogólnokształcące (TOP 5) – BioShield",
+      "nazwa_projektu": "BioShield: Biopolimerowe folie z melaniną grzybową o właściwościach ochronnych",
+      "typ_podmiotu": "Szkoła ponadpodstawowa (II LO w Legnicy)",
+      "tworcy_i_wiek": "Antonina Jarecka (uczennica liceum – grupa 16–30 lat)",
+      "typ_innowacji": "Technologiczna / Materiałowa (biopolimerowe folie ochronne)",
+      "keywords": [
+        "biopolimery",
+        "melanina grzybowa",
+        "folie ochronne",
+        "inżynieria materiałowa",
+        "ekologia",
+        "opakowania",
+        "Explory 2026",
+        "liceum"
+      ],
+      "zgodnosc_z_wymogami_pci": {
+        "czy_zgodny": true,
+        "status": "Zgodny (niepełny opis techniczny na stronie)",
+        "uzasadnienie": "Projekt badawczy uczennicy szkoły publicznej (wiek 16–30 lat), jednak sam wpis źródłowy ma charakter bardzo krótkiej notatki informacyjnej (brakuje szczegółów dot. etapu prac i modelu wdrożenia)."
+      },
+      "ocena_metodologia": {
+        "potencjal_wdrozeniowy_pkt": null,
+        "potencjal_wdrozeniowy_waga": 0.45,
+        "innowacyjnosc_i_unikalnosc_pkt": 4,
+        "innowacyjnosc_i_unikalnosc_waga": 0.35,
+        "wykonalnosc_i_dojrzalosc_pkt": null,
+        "wykonalnosc_i_dojrzalosc_waga": 0.2,
+        "wynik_potencjalu_proc": 80.0,
+        "pewnosc_oceny_proc": 35.0,
+        "brakujacy_obszar_danych": "Potencjał wdrożeniowy (45%), Wykonalność i dojrzałość (20%)",
+        "status_na_karcie": "Niepewna ocena",
+        "rekomendowane_dzialanie": "Weryfikacja zagadnienia przy wsparciu Asystenta AI lub bezpośredni kontakt z autorami rozwiązania."
+      },
+      "sugerowane_instytucje_dalszego_rozwoju": ""
+    },
+    {
+      "id": 3,
+      "domena": "2lo.legnica.eu",
+      "url": "https://2lo.legnica.eu/finalu-explory-2026/",
+      "kategoria_wejsciowa": "Licea ogólnokształcące (TOP 5) – BioShield (wpis o finale Explory 2026)",
+      "nazwa_projektu": "BioShield: Biopolimerowe folie z melaniną grzybową o właściwościach ochronnych",
+      "typ_podmiotu": "Szkoła ponadpodstawowa (II LO w Legnicy)",
+      "tworcy_i_wiek": "Antonina Jarecka (uczennica liceum – grupa 16–30 lat)",
+      "typ_innowacji": "Technologiczna / Materiałowa (duplikat wpisu o tym samym projekcie)",
+      "keywords": [
+        "biopolimery",
+        "melanina grzybowa",
+        "folie ochronne",
+        "Explory 2026",
+        "duplikat wpisu",
+        "liceum"
+      ],
+      "zgodnosc_z_wymogami_pci": {
+        "czy_zgodny": true,
+        "status": "Zgodny (wpis powielony względem rekordu nr 2)",
+        "uzasadnienie": "Dotyczy tej samej innowacji ze szkoły publicznej co rekord nr 2 (informacja o kwalifikacji do finału Explory 2026). W bazie docelowej należy połączyć z rekordem nr 2, aby uniknąć dublowania."
+      },
+      "ocena_metodologia": {
+        "potencjal_wdrozeniowy_pkt": null,
+        "potencjal_wdrozeniowy_waga": 0.45,
+        "innowacyjnosc_i_unikalnosc_pkt": 4,
+        "innowacyjnosc_i_unikalnosc_waga": 0.35,
+        "wykonalnosc_i_dojrzalosc_pkt": null,
+        "wykonalnosc_i_dojrzalosc_waga": 0.2,
+        "wynik_potencjalu_proc": 80.0,
+        "pewnosc_oceny_proc": 35.0,
+        "brakujacy_obszar_danych": "Potencjał wdrożeniowy (45%), Wykonalność i dojrzałość (20%)",
+        "status_na_karcie": "Niepewna ocena",
+        "rekomendowane_dzialanie": "Weryfikacja zagadnienia przy wsparciu Asystenta AI lub bezpośredni kontakt z autorami rozwiązania."
+      },
+      "sugerowane_instytucje_dalszego_rozwoju": ""
+    },
+    {
+      "id": 4,
+      "domena": "hoffmanowa.pl",
+      "url": "https://hoffmanowa.pl/2026/10/21/mlodzi-naukowcy-z-hoffmanowej-walcza-w-finale-explory-2026/",
+      "kategoria_wejsciowa": "Licea ogólnokształcące (TOP 5) – Genetycznie zmodyfikowane bakteriofagi T7",
+      "nazwa_projektu": "Genetically Enhanced T7 Phages Targeting and Disrupting Bacterial Biofilms (Genetycznie zmodyfikowane bakteriofagi T7)",
+      "typ_podmiotu": "Szkoła ponadpodstawowa (IX LO im. Klementyny Hoffmanowej w Warszawie)",
+      "tworcy_i_wiek": "Nikodem Zyga, Franciszek Szmidt (uczniowie liceum – grupa 16–30 lat); opiekun: dr hab. Piotr Golec",
+      "typ_innowacji": "Technologiczna / Biotechnologiczna",
+      "keywords": [
+        "bakteriofagi T7",
+        "biofilm bakteryjny",
+        "antybiotykooporność",
+        "biotechnologia",
+        "medycyna",
+        "Explory 2026",
+        "liceum"
+      ],
+      "zgodnosc_z_wymogami_pci": {
+        "czy_zgodny": true,
+        "status": "Zgodny",
+        "uzasadnienie": "Rozwiązanie opracowane przez uczniów szkoły publicznej (wiek 16–30 lat) pod opieką naukową. Wpis opisuje mechanizm (rozkład biofilmów bakteryjnych) oraz potencjalne obszary zastosowań (terapia zakażeń, redukcja biofilmów na powierzchniach i sprzęcie)."
+      },
+      "ocena_metodologia": {
+        "potencjal_wdrozeniowy_pkt": 4,
+        "potencjal_wdrozeniowy_waga": 0.45,
+        "innowacyjnosc_i_unikalnosc_pkt": 4,
+        "innowacyjnosc_i_unikalnosc_waga": 0.35,
+        "wykonalnosc_i_dojrzalosc_pkt": 4,
+        "wykonalnosc_i_dojrzalosc_waga": 0.2,
+        "wynik_potencjalu_proc": 80.0,
+        "pewnosc_oceny_proc": 100.0,
+        "brakujacy_obszar_danych": null,
+        "status_na_karcie": "Wysoki potencjał",
+        "rekomendowane_dzialanie": "Przekazanie do programów akceleracyjnych, transferu lub bezpośrednich rozmów z partnerami wdrożeniowymi."
+      },
+      "sugerowane_instytucje_dalszego_rozwoju": ""
+    },
+    {
+      "id": 5,
+      "domena": "vilo.bydgoszcz.pl",
+      "url": "https://vilo.bydgoszcz.pl/sukces-jowity-detmer-w-finale-explory-2026-w1,80,118988.html",
+      "kategoria_wejsciowa": "Licea ogólnokształcące (TOP 5) – Stacja SKA",
+      "nazwa_projektu": "Autonomiczna Stacja Sieciocentrycznej Komunikacji Awaryjnej – Stacja SKA",
+      "typ_podmiotu": "Szkoła ponadpodstawowa (VI LO w Bydgoszczy)",
+      "tworcy_i_wiek": "Jowita Detmer i zespół (uczniowie liceum – grupa 16–30 lat)",
+      "typ_innowacji": "Technologiczna / Teleinformatyczna (łączność kryzysowa off-grid LoRa)",
+      "keywords": [
+        "komunikacja awaryjna",
+        "off-grid",
+        "LoRa",
+        "łączność kryzysowa",
+        "telekomunikacja",
+        "bezpieczeństwo",
+        "Explory 2026",
+        "liceum"
+      ],
+      "zgodnosc_z_wymogami_pci": {
+        "czy_zgodny": true,
+        "status": "Zgodny (lakoniczny opis na samej podstronie finałowej)",
+        "uzasadnienie": "Projekt uczniów szkoły publicznej (wiek 16–30 lat) dotyczący łączności awaryjnej bez internetu. Sama podstrona z linku podaje jedynie tytuł i nagrodę, bez opisu technicznego i wdrożeniowego."
+      },
+      "ocena_metodologia": {
+        "potencjal_wdrozeniowy_pkt": null,
+        "potencjal_wdrozeniowy_waga": 0.45,
+        "innowacyjnosc_i_unikalnosc_pkt": 3,
+        "innowacyjnosc_i_unikalnosc_waga": 0.35,
+        "wykonalnosc_i_dojrzalosc_pkt": null,
+        "wykonalnosc_i_dojrzalosc_waga": 0.2,
+        "wynik_potencjalu_proc": 60.0,
+        "pewnosc_oceny_proc": 35.0,
+        "brakujacy_obszar_danych": "Potencjał wdrożeniowy (45%), Wykonalność i dojrzałość (20%)",
+        "status_na_karcie": "Niepewna ocena",
+        "rekomendowane_dzialanie": "Weryfikacja zagadnienia przy wsparciu Asystenta AI lub bezpośredni kontakt z autorami rozwiązania."
+      },
+      "sugerowane_instytucje_dalszego_rozwoju": ""
+    },
+    {
+      "id": 6,
+      "domena": "slokwidzyn.edupage.org",
+      "url": "https://slokwidzyn.edupage.org/news/?gtnid=1082",
+      "kategoria_wejsciowa": "Licea ogólnokształcące (TOP 5) – IDLEK",
+      "nazwa_projektu": "IDLEK – inteligentny system/dystrybutor dozowania leków",
+      "typ_podmiotu": "Szkoła ponadpodstawowa (Społeczne Liceum Ogólnokształcące im. Polskich Noblistów w Kwidzynie)",
+      "tworcy_i_wiek": "Uczniowie liceum (grupa 16–30 lat)",
+      "typ_innowacji": "Technologiczna / Społeczna / Jakość życia",
+      "keywords": [
+        "dozownik leków",
+        "seniorzy",
+        "jakość życia",
+        "ochrona zdrowia",
+        "automatyzacja",
+        "IoT",
+        "liceum"
+      ],
+      "zgodnosc_z_wymogami_pci": {
+        "czy_zgodny": true,
+        "status": "Zgodny (wymaga weryfikacji statusu szkoły niepublicznej/społecznej oraz szczegółów technicznych)",
+        "uzasadnienie": "Rozwiązanie wpisuje się w sektor jakość życia i grupę wiekową młodych innowatorów (16–30 lat), natomiast wpis pochodzi ze szkoły społecznej i zawiera krótki opis funkcjonalny bez danych o wdrożeniu i etapie prototypu."
+      },
+      "ocena_metodologia": {
+        "potencjal_wdrozeniowy_pkt": null,
+        "potencjal_wdrozeniowy_waga": 0.45,
+        "innowacyjnosc_i_unikalnosc_pkt": 3,
+        "innowacyjnosc_i_unikalnosc_waga": 0.35,
+        "wykonalnosc_i_dojrzalosc_pkt": 3,
+        "wykonalnosc_i_dojrzalosc_waga": 0.2,
+        "wynik_potencjalu_proc": 60.0,
+        "pewnosc_oceny_proc": 55.0,
+        "brakujacy_obszar_danych": "Potencjał wdrożeniowy (45%)",
+        "status_na_karcie": "Niepewna ocena",
+        "rekomendowane_dzialanie": "Weryfikacja zagadnienia przy wsparciu Asystenta AI lub bezpośredni kontakt z autorami rozwiązania."
+      },
+      "sugerowane_instytucje_dalszego_rozwoju": ""
+    },
+    {
+      "id": 7,
+      "domena": "pk.edu.pl",
+      "url": "https://pk.edu.pl/politechnika-komercjalizuje-opatentowane-technologie-wytwarzania-i-magazynowania-wodoru/",
+      "kategoria_wejsciowa": "Uczelnie wyższe (TOP 5) – Uwalnianie i separacja wodoru LOHC",
+      "nazwa_projektu": "Urządzenie do katalitycznego uwalniania i separacji wodoru oraz system LOHC",
+      "typ_podmiotu": "Uczelnia wyższa (Politechnika Krakowska – Wydział Inżynierii i Technologii Chemicznej)",
+      "tworcy_i_wiek": "Zespół naukowców PK (dr hab. inż. Piotr Michorczyk, prof. PK i in.)",
+      "typ_innowacji": "Technologiczna / Energetyczna (skomercjalizowany patent UPRP nr 250576)",
+      "keywords": [
+        "wodór",
+        "LOHC",
+        "magazynowanie energii",
+        "kataliza",
+        "patent UPRP",
+        "komercjalizacja",
+        "uczelnia wyższa",
+        "energetyka"
+      ],
+      "zgodnosc_z_wymogami_pci": {
+        "czy_zgodny": false,
+        "status": "Niezgodny z ideą 'ukrytej' innowacji na wczesnym etapie (już opatentowane i sprzedane)",
+        "uzasadnienie": "Choć pochodzi z uczelni publicznej, nie jest to 'ukryta' wczesna innowacja wymagająca wykrycia i wsparcia we wdrożeniu – wynalazek uzyskał już ochronę patentową UPRP i w listopadzie 2026 r. został oficjalnie skomercjalizowany (sprzedaż praw spółce REENERGOLOGY)."
+      },
+      "ocena_metodologia": {
+        "potencjal_wdrozeniowy_pkt": 5,
+        "potencjal_wdrozeniowy_waga": 0.45,
+        "innowacyjnosc_i_unikalnosc_pkt": 5,
+        "innowacyjnosc_i_unikalnosc_waga": 0.35,
+        "wykonalnosc_i_dojrzalosc_pkt": 5,
+        "wykonalnosc_i_dojrzalosc_waga": 0.2,
+        "wynik_potencjalu_proc": 100.0,
+        "pewnosc_oceny_proc": 100.0,
+        "brakujacy_obszar_danych": null,
+        "status_na_karcie": "Wysoki potencjał",
+        "rekomendowane_dzialanie": "Przekazanie do programów akceleracyjnych, transferu lub bezpośrednich rozmów z partnerami wdrożeniowymi."
+      },
+      "sugerowane_instytucje_dalszego_rozwoju": "REENERGOLOGY sp. z o.o. (podmiot, któremu sprzedano prawa do wdrożenia i dalszego rozwoju), Centrum Transferu Technologii Politechniki Krakowskiej"
+    },
+    {
+      "id": 8,
+      "domena": "pg.edu.pl",
+      "url": "https://pg.edu.pl/aktualnosci/2026-11/academix-inteligentny-planer-ktory-dopasowuje-dzien-do-twojej-energii",
+      "kategoria_wejsciowa": "Uczelnie wyższe (TOP 5) – AcademiX",
+      "nazwa_projektu": "AcademiX – inteligentny planer dopasowujący dzień do poziomu energii użytkownika",
+      "typ_podmiotu": "Uczelnia wyższa (Politechnika Gdańska)",
+      "tworcy_i_wiek": "Joachim Woźniak, Tomasz Rydz-Kozłowski (studenci I/II roku PG – grupa 16–30 lat)",
+      "typ_innowacji": "Technologiczna / ICT (aplikacja mobilna / AI do zarządzania czasem i regeneracją)",
+      "keywords": [
+        "ICT",
+        "aplikacja mobilna",
+        "planowanie dnia",
+        "zarządzanie energią",
+        "AI",
+        "prywatność danych",
+        "studenci",
+        "Uczelnie Przyszłości"
+      ],
+      "zgodnosc_z_wymogami_pci": {
+        "czy_zgodny": true,
+        "status": "Zgodny",
+        "uzasadnienie": "W pełni zgodny z wyzwaniem PCI: projekt studentów uczelni publicznej (wiek 16–30 lat) w obszarze ICT i jakości życia, posiada opis mechanizmu działania (analiza snu/tętna lokalnie na urządzeniu, sugestie w kalendarzu) oraz wyraźny potencjał komercjalizacyjny."
+      },
+      "ocena_metodologia": {
+        "potencjal_wdrozeniowy_pkt": 4,
+        "potencjal_wdrozeniowy_waga": 0.45,
+        "innowacyjnosc_i_unikalnosc_pkt": 3,
+        "innowacyjnosc_i_unikalnosc_waga": 0.35,
+        "wykonalnosc_i_dojrzalosc_pkt": 4,
+        "wykonalnosc_i_dojrzalosc_waga": 0.2,
+        "wynik_potencjalu_proc": 73.0,
+        "pewnosc_oceny_proc": 100.0,
+        "brakujacy_obszar_danych": null,
+        "status_na_karcie": "Potencjał rozwojowy",
+        "rekomendowane_dzialanie": "Skierowanie na mentoring, do laboratoriów prototypowania lub doprecyzowanie założeń."
+      },
+      "sugerowane_instytucje_dalszego_rozwoju": "Program „Uczelnie Przyszłości” na Politechnice Gdańskiej (projekt realizowany i finansowany w ramach tego programu)"
+    },
+    {
+      "id": 9,
+      "domena": "www.uw.edu.pl",
+      "url": "https://www.uw.edu.pl/inteligentny-sensor-kwantowy-z-odpornoscia-na-straty/",
+      "kategoria_wejsciowa": "Uczelnie wyższe (TOP 5) – Inteligentny sensor kwantowy (atomy rydbergowskie)",
+      "nazwa_projektu": "Inteligentny sensor kwantowy z odpornością na straty (oparty na atomach rydbergowskich)",
+      "typ_podmiotu": "Uczelnia wyższa (Uniwersytet Warszawski – Wydział Fizyki / CeNT)",
+      "tworcy_i_wiek": "Zespół naukowy z udziałem prof. Rafała Demkowicza-Dobrzańskiego (UW)",
+      "typ_innowacji": "Technologiczna / Naukowa (fizyka kwantowa, sensoryka)",
+      "keywords": [
+        "technologie kwantowe",
+        "sensory kwantowe",
+        "atomy rydbergowskie",
+        "fizyka",
+        "badania podstawowe",
+        "uczelnia wyższa"
+      ],
+      "zgodnosc_z_wymogami_pci": {
+        "czy_zgodny": true,
+        "status": "Zgodny (badania podstawowe na wczesnym etapie)",
+        "uzasadnienie": "Innowacja powstała na uczelni publicznej, wpis opisuje zasadę działania (wykorzystanie atomów rydbergowskich do detekcji pola i przetwarzania informacji), natomiast są to badania podstawowe bez określonej jeszcze ścieżki komercjalizacji."
+      },
+      "ocena_metodologia": {
+        "potencjal_wdrozeniowy_pkt": null,
+        "potencjal_wdrozeniowy_waga": 0.45,
+        "innowacyjnosc_i_unikalnosc_pkt": 5,
+        "innowacyjnosc_i_unikalnosc_waga": 0.35,
+        "wykonalnosc_i_dojrzalosc_pkt": 3,
+        "wykonalnosc_i_dojrzalosc_waga": 0.2,
+        "wynik_potencjalu_proc": 85.0,
+        "pewnosc_oceny_proc": 55.0,
+        "brakujacy_obszar_danych": "Potencjał wdrożeniowy (45%)",
+        "status_na_karcie": "Niepewna ocena",
+        "rekomendowane_dzialanie": "Weryfikacja zagadnienia przy wsparciu Asystenta AI lub bezpośredni kontakt z autorami rozwiązania."
+      },
+      "sugerowane_instytucje_dalszego_rozwoju": ""
+    },
+    {
+      "id": 10,
+      "domena": "www.agh.edu.pl",
+      "url": "https://www.agh.edu.pl/aktualnosci/detail/studenci-agh-skonstruowali-rower-mtb-z-systemem-rekuperacji-energii",
+      "kategoria_wejsciowa": "Uczelnie wyższe (TOP 5) – Rower elektryczny MTB z rekuperacją",
+      "nazwa_projektu": "Rower elektryczny MTB z systemem rekuperacji energii podczas hamowania",
+      "typ_podmiotu": "Uczelnia wyższa (Akademia Górniczo-Hutnicza w Krakowie – KN AGH ECOnstruction)",
+      "tworcy_i_wiek": "Studenci koła naukowego AGH ECOnstruction (grupa 16–30 lat)",
+      "typ_innowacji": "Technologiczna / Elektromobilność (prototyp pojazdu z odzyskiem energii)",
+      "keywords": [
+        "elektromobilność",
+        "rower elektryczny",
+        "MTB",
+        "rekuperacja energii",
+        "odzysk energii",
+        "prototyp",
+        "koło naukowe",
+        "AGH"
+      ],
+      "zgodnosc_z_wymogami_pci": {
+        "czy_zgodny": true,
+        "status": "Zgodny",
+        "uzasadnienie": "W pełni wpisuje się w sektor motoryzacji/elektromobilności wspierany przez PCI oraz grupę wiekową 16–30 lat; studenci uczelni publicznej zaprojektowali i zbudowali fizyczny prototyp."
+      },
+      "ocena_metodologia": {
+        "potencjal_wdrozeniowy_pkt": 3,
+        "potencjal_wdrozeniowy_waga": 0.45,
+        "innowacyjnosc_i_unikalnosc_pkt": 3,
+        "innowacyjnosc_i_unikalnosc_waga": 0.35,
+        "wykonalnosc_i_dojrzalosc_pkt": 5,
+        "wykonalnosc_i_dojrzalosc_waga": 0.2,
+        "wynik_potencjalu_proc": 68.0,
+        "pewnosc_oceny_proc": 100.0,
+        "brakujacy_obszar_danych": null,
+        "status_na_karcie": "Potencjał rozwojowy",
+        "rekomendowane_dzialanie": "Skierowanie na mentoring, do laboratoriów prototypowania lub doprecyzowanie założeń."
+      },
+      "sugerowane_instytucje_dalszego_rozwoju": ""
+    },
+    {
+      "id": 11,
+      "domena": "zu.p.lodz.pl",
+      "url": "https://zu.p.lodz.pl/mechaton-trzy-dni-pomyslow-pasji-i-wielkich-wyzwan-na-wydziale-mechanicznym",
+      "kategoria_wejsciowa": "Uczelnie wyższe (TOP 5) – Mechanizm Tilt & Lift",
+      "nazwa_projektu": "Mechanizm Tilt & Lift do elektrycznego wózka inwalidzkiego",
+      "typ_podmiotu": "Uczelnia wyższa (Politechnika Łódzka – Wydział Mechaniczny)",
+      "tworcy_i_wiek": "Studenci – uczestnicy hackathonu MECHATON (grupa 16–30 lat)",
+      "typ_innowacji": "Technologiczna / Rehabilitacyjna / Jakość życia",
+      "keywords": [
+        "wózek inwalidzki",
+        "Tilt & Lift",
+        "rehabilitacja",
+        "mechatronika",
+        "jakość życia",
+        "dostępność",
+        "MECHATON",
+        "studenci"
+      ],
+      "zgodnosc_z_wymogami_pci": {
+        "czy_zgodny": true,
+        "status": "Zgodny",
+        "uzasadnienie": "Autorska koncepcja inżynierska wypracowana przez studentów uczelni publicznej (16–30 lat) podczas 48-godzinnego hackathonu. Rozwiązuje realny problem osób z niepełnosprawnościami i posiada zdefiniowane funkcje (pionowe podnoszenie LIFT i pochylanie TILT)."
+      },
+      "ocena_metodologia": {
+        "potencjal_wdrozeniowy_pkt": 4,
+        "potencjal_wdrozeniowy_waga": 0.45,
+        "innowacyjnosc_i_unikalnosc_pkt": 3,
+        "innowacyjnosc_i_unikalnosc_waga": 0.35,
+        "wykonalnosc_i_dojrzalosc_pkt": 3,
+        "wykonalnosc_i_dojrzalosc_waga": 0.2,
+        "wynik_potencjalu_proc": 69.0,
+        "pewnosc_oceny_proc": 100.0,
+        "brakujacy_obszar_danych": null,
+        "status_na_karcie": "Potencjał rozwojowy",
+        "rekomendowane_dzialanie": "Skierowanie na mentoring, do laboratoriów prototypowania lub doprecyzowanie założeń."
+      },
+      "sugerowane_instytucje_dalszego_rozwoju": ""
+    },
+    {
+      "id": 12,
+      "domena": "www.gdynia.pl",
+      "url": "https://www.gdynia.pl/mieszkaniec/co-nowego,2774/59-kamer-nowe-mozliwosci-nowoczesny-sposob-monitorowania-miasta,599855",
+      "kategoria_wejsciowa": "JST (TOP 5) – Integracja monitoringu z systemem ITS TRISTAR",
+      "nazwa_projektu": "Integracja miejskiego monitoringu wizyjnego z systemem ITS TRISTAR oraz Miejskim Centrum Zarządzania Mobilnością i Bezpieczeństwem Publicznym",
+      "typ_podmiotu": "Jednostka Samorządu Terytorialnego (Urząd Miasta Gdyni)",
+      "tworcy_i_wiek": "Urząd Miasta Gdyni we współpracy z wykonawcą Sprint S.A.",
+      "typ_innowacji": "Organizacyjna / Procesowa / Infrastrukturalna (Smart City)",
+      "keywords": [
+        "JST",
+        "Smart City",
+        "ITS",
+        "TRISTAR",
+        "monitoring miejski",
+        "zarządzanie ruchem",
+        "bezpieczeństwo publiczne",
+        "Gdynia"
+      ],
+      "zgodnosc_z_wymogami_pci": {
+        "czy_zgodny": false,
+        "status": "Niezgodny (zamówienie publiczne na modernizację infrastruktury, a nie wczesna lokalna innowacja)",
+        "uzasadnienie": "Wpis dotyczy podpisania umowy przetargowej (3,4 mln zł, wykonawca Sprint S.A.) na modernizację 59 kamer i infrastruktury światłowodowej finansowanej z FEnIKS. Jest to standardowa inwestycja samorządowa, a nie nieodkryty lokalny pomysł."
+      },
+      "ocena_metodologia": {
+        "potencjal_wdrozeniowy_pkt": 4,
+        "potencjal_wdrozeniowy_waga": 0.45,
+        "innowacyjnosc_i_unikalnosc_pkt": 2,
+        "innowacyjnosc_i_unikalnosc_waga": 0.35,
+        "wykonalnosc_i_dojrzalosc_pkt": 5,
+        "wykonalnosc_i_dojrzalosc_waga": 0.2,
+        "wynik_potencjalu_proc": 70.0,
+        "pewnosc_oceny_proc": 100.0,
+        "brakujacy_obszar_danych": null,
+        "status_na_karcie": "Potencjał rozwojowy",
+        "rekomendowane_dzialanie": "Skierowanie na mentoring, do laboratoriów prototypowania lub doprecyzowanie założeń."
+      },
+      "sugerowane_instytucje_dalszego_rozwoju": ""
+    },
+    {
+      "id": 13,
+      "domena": "mieszkancy.chorzow.eu",
+      "url": "https://mieszkancy.chorzow.eu/article/chorzow-testuje-nowy-model-selektywnej-zbiorki-bioodpadow",
+      "kategoria_wejsciowa": "JST (TOP 5) – Pilotażowy model zbiórki bioodpadów",
+      "nazwa_projektu": "Pilotażowy model selektywnej zbiórki odpadów kuchennych w zabudowie wielorodzinnej",
+      "typ_podmiotu": "Jednostka Samorządu Terytorialnego (Urząd Miasta Chorzów + GZM)",
+      "tworcy_i_wiek": "Miasto Chorzów, Górnośląsko-Zagłębiowska Metropolia, PTS ALBA, Bioodpady.pl",
+      "typ_innowacji": "Procesowa / Organizacyjna / Ekologiczna (pilotaż komunalny)",
+      "keywords": [
+        "JST",
+        "gospodarka odpadami",
+        "bioodpady",
+        "zabudowa wielorodzinna",
+        "pilotaż",
+        "ekologia",
+        "Chorzów",
+        "GZM"
+      ],
+      "zgodnosc_z_wymogami_pci": {
+        "czy_zgodny": true,
+        "status": "Zgodny",
+        "uzasadnienie": "Zgodny z opisem wyzwania PCI (innowacja procesowa/organizacyjna w JST): roczny pilotaż nowego modelu zbiórki bioodpadów w zabudowie wielorodzinnej (4 tys. pojemników 6l), możliwy do powielenia w innych gminach po ewaluacji."
+      },
+      "ocena_metodologia": {
+        "potencjal_wdrozeniowy_pkt": 4,
+        "potencjal_wdrozeniowy_waga": 0.45,
+        "innowacyjnosc_i_unikalnosc_pkt": 3,
+        "innowacyjnosc_i_unikalnosc_waga": 0.35,
+        "wykonalnosc_i_dojrzalosc_pkt": 5,
+        "wykonalnosc_i_dojrzalosc_waga": 0.2,
+        "wynik_potencjalu_proc": 77.0,
+        "pewnosc_oceny_proc": 100.0,
+        "brakujacy_obszar_danych": null,
+        "status_na_karcie": "Wysoki potencjał",
+        "rekomendowane_dzialanie": "Przekazanie do programów akceleracyjnych, transferu lub bezpośrednich rozmów z partnerami wdrożeniowymi."
+      },
+      "sugerowane_instytucje_dalszego_rozwoju": ""
+    },
+    {
+      "id": 14,
+      "domena": "msip.krakow.pl",
+      "url": "https://msip.krakow.pl/polecamy/344587,2224,komunikat,sukcesywne_wygaszanie_starej_przegladarki_map_-_czas_na_stale_przeniesc_sie_do_nowej_wersji_.html",
+      "kategoria_wejsciowa": "JST (TOP 5) – Nowa generacja przeglądarki map MSIP Kraków",
+      "nazwa_projektu": "Nowa wersja przeglądarki mapowej Miejskiego Systemu Informacji Przestrzennej (MSIP Kraków)",
+      "typ_podmiotu": "Jednostka Samorządu Terytorialnego (Urząd Miasta Krakowa)",
+      "tworcy_i_wiek": "Zespół MSIP Kraków (Urząd Miasta Krakowa)",
+      "typ_innowacji": "Komunikat techniczny / Utrzymanie systemu GIS",
+      "keywords": [
+        "JST",
+        "GIS",
+        "mapy miejskie",
+        "MSIP",
+        "komunikat techniczny",
+        "administracja",
+        "Kraków"
+      ],
+      "zgodnosc_z_wymogami_pci": {
+        "czy_zgodny": false,
+        "status": "Niezgodny (komunikat eksploatacyjny o wygaszaniu starej aplikacji, brak opisu innowacji)",
+        "uzasadnienie": "Wpis to wyłącznie ogłoszenie dla mieszkańców o harmonogramie wyłączania starej przeglądarki mapowej (16 i 30 listopada 2026 r.) oraz usterce drukowania. Nie opisuje mechanizmu ani nowości rozwiązania."
+      },
+      "ocena_metodologia": {
+        "potencjal_wdrozeniowy_pkt": null,
+        "potencjal_wdrozeniowy_waga": 0.45,
+        "innowacyjnosc_i_unikalnosc_pkt": null,
+        "innowacyjnosc_i_unikalnosc_waga": 0.35,
+        "wykonalnosc_i_dojrzalosc_pkt": 1,
+        "wykonalnosc_i_dojrzalosc_waga": 0.2,
+        "wynik_potencjalu_proc": 20.0,
+        "pewnosc_oceny_proc": 20.0,
+        "brakujacy_obszar_danych": "Potencjał wdrożeniowy (45%), Innowacyjność i unikalność (35%)",
+        "status_na_karcie": "Niepewna ocena",
+        "rekomendowane_dzialanie": "Weryfikacja zagadnienia przy wsparciu Asystenta AI lub bezpośredni kontakt z autorami rozwiązania."
+      },
+      "sugerowane_instytucje_dalszego_rozwoju": ""
+    },
+    {
+      "id": 15,
+      "domena": "www.inowroclaw.pl",
+      "url": "https://www.inowroclaw.pl/aktualnosc-8948-uruchamiamy_aplikacje_mmieszkaniec.html",
+      "kategoria_wejsciowa": "JST (TOP 5) – Aplikacja mobilna mMieszkaniec",
+      "nazwa_projektu": "Aplikacja mobilna mMieszkaniec w Inowrocławiu",
+      "typ_podmiotu": "Jednostka Samorządu Terytorialnego (Urząd Miasta Inowrocławia)",
+      "tworcy_i_wiek": "Urząd Miasta Inowrocławia (wdrożenie gotowego produktu komercyjnego)",
+      "typ_innowacji": "Organizacyjna / Cyfryzacja usług publicznych (wdrożenie komercyjnej platformy)",
+      "keywords": [
+        "JST",
+        "aplikacja miejska",
+        "mMieszkaniec",
+        "e-administracja",
+        "komunikacja z mieszkańcami",
+        "Inowrocław"
+      ],
+      "zgodnosc_z_wymogami_pci": {
+        "czy_zgodny": false,
+        "status": "Niezgodny (zakup/uruchomienie istniejącego na rynku rozwiązania dla samorządów)",
+        "uzasadnienie": "mMieszkaniec to gotowy, komercyjny system wdrażany w wielu polskich miastach, a nie oryginalna innowacja wytworzona wewnętrznie w JST w Inowrocławiu."
+      },
+      "ocena_metodologia": {
+        "potencjal_wdrozeniowy_pkt": 4,
+        "potencjal_wdrozeniowy_waga": 0.45,
+        "innowacyjnosc_i_unikalnosc_pkt": 1,
+        "innowacyjnosc_i_unikalnosc_waga": 0.35,
+        "wykonalnosc_i_dojrzalosc_pkt": 5,
+        "wykonalnosc_i_dojrzalosc_waga": 0.2,
+        "wynik_potencjalu_proc": 63.0,
+        "pewnosc_oceny_proc": 100.0,
+        "brakujacy_obszar_danych": null,
+        "status_na_karcie": "Potencjał rozwojowy",
+        "rekomendowane_dzialanie": "Skierowanie na mentoring, do laboratoriów prototypowania lub doprecyzowanie założeń."
+      },
+      "sugerowane_instytucje_dalszego_rozwoju": ""
+    },
+    {
+      "id": 16,
+      "domena": "loniow.pl",
+      "url": "https://loniow.pl/innowacje-w-samorzadzie/",
+      "kategoria_wejsciowa": "JST (TOP 5) – Program Innowacje w samorządzie",
+      "nazwa_projektu": "Centrum Kultury i Rozwoju – to Ty decydujesz! (projekt w ramach programu „Innowacje w samorządzie”)",
+      "typ_podmiotu": "Jednostka Samorządu Terytorialnego / Instytucja kultury (Gminny Ośrodek Kultury w Łoniowie / Urząd Gminy Łoniów)",
+      "tworcy_i_wiek": "GOK w Łoniowie + młodzież w wieku 12–18 lat",
+      "typ_innowacji": "Społeczna / Partycypacyjna / Edukacyjna",
+      "keywords": [
+        "JST",
+        "partycypacja młodzieży",
+        "przestrzeń młodzieżowa",
+        "kultura",
+        "warsztaty",
+        "FERS",
+        "Łoniów"
+      ],
+      "zgodnosc_z_wymogami_pci": {
+        "czy_zgodny": true,
+        "status": "Zgodny (innowacja społeczna w JST, ale uczestnicy w wieku 12–18 lat częściowo poniżej progu 16–30 lat)",
+        "uzasadnienie": "Wpis opisuje ustrukturyzowany proces współtworzenia instytucji kultury przez młodzież (harmonogram warsztatów, wizyta w Urban Lab w Lublinie, wdrożenie). Jest to innowacja społeczna/organizacyjna w JST, choć skierowana do grupy 12–18 lat."
+      },
+      "ocena_metodologia": {
+        "potencjal_wdrozeniowy_pkt": 4,
+        "potencjal_wdrozeniowy_waga": 0.45,
+        "innowacyjnosc_i_unikalnosc_pkt": 2,
+        "innowacyjnosc_i_unikalnosc_waga": 0.35,
+        "wykonalnosc_i_dojrzalosc_pkt": 4,
+        "wykonalnosc_i_dojrzalosc_waga": 0.2,
+        "wynik_potencjalu_proc": 66.0,
+        "pewnosc_oceny_proc": 100.0,
+        "brakujacy_obszar_danych": null,
+        "status_na_karcie": "Potencjał rozwojowy",
+        "rekomendowane_dzialanie": "Skierowanie na mentoring, do laboratoriów prototypowania lub doprecyzowanie założeń."
+      },
+      "sugerowane_instytucje_dalszego_rozwoju": ""
+    },
+    {
+      "id": 17,
+      "domena": "ilot.lukasiewicz.gov.pl",
+      "url": "https://ilot.lukasiewicz.gov.pl/awionika-kosmiczna-lukasiewicz-ilot-nagrodzona-w-konkursie-eureka-dgp/",
+      "kategoria_wejsciowa": "Inne instytucje publiczne 16-30 lat (TOP 5) – System awioniki kosmicznej",
+      "nazwa_projektu": "System awioniki kosmicznej Łukasiewicz – ILOT",
+      "typ_podmiotu": "Inna instytucja publiczna / Instytut badawczy (Sieć Badawcza Łukasiewicz – Instytut Lotnictwa)",
+      "tworcy_i_wiek": "Zespół inżynierów Łukasiewicz – ILOT (brak informacji o wieku twórców w zindeksowanym fragmencie)",
+      "typ_innowacji": "Technologiczna / Lotnictwo i branża kosmiczna",
+      "keywords": [
+        "awionika kosmiczna",
+        "branża kosmiczna",
+        "lotnictwo",
+        "Łukasiewicz ILOT",
+        "Eureka DGP",
+        "instytut badawczy"
+      ],
+      "zgodnosc_z_wymogami_pci": {
+        "czy_zgodny": true,
+        "status": "Zgodny tematycznie (branża kosmiczna), ale niepełny opis w źródle i brak potwierdzenia wieku 16–30 lat",
+        "uzasadnienie": "Rozwiązanie pochodzi z publicznego instytutu badawczego i dotyczy priorytetowego dla PCI sektora kosmicznego, jednak dostępna treść strony jest bardzo skrótowa (brak szczegółów mechanizmu oraz wieku autorów)."
+      },
+      "ocena_metodologia": {
+        "potencjal_wdrozeniowy_pkt": null,
+        "potencjal_wdrozeniowy_waga": 0.45,
+        "innowacyjnosc_i_unikalnosc_pkt": 4,
+        "innowacyjnosc_i_unikalnosc_waga": 0.35,
+        "wykonalnosc_i_dojrzalosc_pkt": null,
+        "wykonalnosc_i_dojrzalosc_waga": 0.2,
+        "wynik_potencjalu_proc": 80.0,
+        "pewnosc_oceny_proc": 35.0,
+        "brakujacy_obszar_danych": "Potencjał wdrożeniowy (45%), Wykonalność i dojrzałość (20%)",
+        "status_na_karcie": "Niepewna ocena",
+        "rekomendowane_dzialanie": "Weryfikacja zagadnienia przy wsparciu Asystenta AI lub bezpośredni kontakt z autorami rozwiązania."
+      },
+      "sugerowane_instytucje_dalszego_rozwoju": ""
+    },
+    {
+      "id": 18,
+      "domena": "www.nask.pl",
+      "url": "https://www.nask.pl/aktualnosci/kto-stworzyl-najlepsza-inzynierke-nask-nagrodzil-mlode-talenty",
+      "kategoria_wejsciowa": "Inne instytucje publiczne 16-30 lat (TOP 5) – System wykrywania obecności dla robotów",
+      "nazwa_projektu": "System wykrywania obecności dla platform robotów (oraz inne nagrodzone prace inżynierskie PTI/NASK)",
+      "typ_podmiotu": "Inna instytucja publiczna + Uczelnie wyższe (NASK – PIB / PTI / AGH)",
+      "tworcy_i_wiek": "Jan Rzadkosz (student/absolwent AGH – grupa 16–30 lat; promotor: dr inż. Marek Wilkus)",
+      "typ_innowacji": "Technologiczna / Robotyka / ICT (relacja z konkursu z wyodrębnionymi pracami inżynierskimi)",
+      "keywords": [
+        "robotyka",
+        "wykrywanie obecności",
+        "AI",
+        "praca inżynierska",
+        "NASK",
+        "PTI",
+        "AGH",
+        "młodzi naukowcy"
+      ],
+      "zgodnosc_z_wymogami_pci": {
+        "czy_zgodny": true,
+        "status": "Zgodny (po selekcji merytorycznej relacji z konkursu)",
+        "uzasadnienie": "Zgodnie z zasadą selekcji merytorycznej z pliku kryteriów (wyodrębnienie konkretnego rozwiązania z relacji o konkursie studenckim), wpis wskazuje konkretne wdrożeniowe prace dyplomowe młodych twórców (16–30 lat), choć brak w nim szczegółów technicznych samego algorytmu."
+      },
+      "ocena_metodologia": {
+        "potencjal_wdrozeniowy_pkt": null,
+        "potencjal_wdrozeniowy_waga": 0.45,
+        "innowacyjnosc_i_unikalnosc_pkt": 3,
+        "innowacyjnosc_i_unikalnosc_waga": 0.35,
+        "wykonalnosc_i_dojrzalosc_pkt": 4,
+        "wykonalnosc_i_dojrzalosc_waga": 0.2,
+        "wynik_potencjalu_proc": 67.3,
+        "pewnosc_oceny_proc": 55.0,
+        "brakujacy_obszar_danych": "Potencjał wdrożeniowy (45%)",
+        "status_na_karcie": "Niepewna ocena",
+        "rekomendowane_dzialanie": "Weryfikacja zagadnienia przy wsparciu Asystenta AI lub bezpośredni kontakt z autorami rozwiązania."
+      },
+      "sugerowane_instytucje_dalszego_rozwoju": ""
+    },
+    {
+      "id": 19,
+      "domena": "impib.lukasiewicz.gov.pl",
+      "url": "https://impib.lukasiewicz.gov.pl/sukces-zespolu-lukasiewicz-impib-w-konkursie-eureka-dgp-odkrywamy-polskie-wynalazki/",
+      "kategoria_wejsciowa": "Inne instytucje publiczne 16-30 lat (TOP 5) – Recykling odpadów z łopat turbin wiatrowych",
+      "nazwa_projektu": "Sposób recyklingu zużytych łopat turbin wiatrowych",
+      "typ_podmiotu": "Inna instytucja publiczna / Instytut badawczy (Sieć Badawcza Łukasiewicz – Instytut Inżynierii Materiałów Polimerowych i Barwników)",
+      "tworcy_i_wiek": "Zespół pod kierownictwem dr inż. Krzysztofa Bajera (Łukasiewicz – IMPIB)",
+      "typ_innowacji": "Technologiczna / Ekologiczna / Gospodarka o obiegu zamkniętym",
+      "keywords": [
+        "recykling",
+        "łopaty turbin wiatrowych",
+        "OZE",
+        "kompozyty",
+        "polimery",
+        "Łukasiewicz IMPIB",
+        "Eureka DGP"
+      ],
+      "zgodnosc_z_wymogami_pci": {
+        "czy_zgodny": true,
+        "status": "Zgodny tematycznie (instytut publiczny), ale brak potwierdzenia kryterium wieku 16–30 lat i lakoniczny opis na stronie IMPIB",
+        "uzasadnienie": "Wynalazek pochodzi z publicznego instytutu badawczego i rozwiązuje istotny problem przemysłowy (recykling łopat turbin), ale na samej podstronie IMPIB opis jest skrótowy i nie wskazuje młodych innowatorów (16–30 lat)."
+      },
+      "ocena_metodologia": {
+        "potencjal_wdrozeniowy_pkt": 4,
+        "potencjal_wdrozeniowy_waga": 0.45,
+        "innowacyjnosc_i_unikalnosc_pkt": 4,
+        "innowacyjnosc_i_unikalnosc_waga": 0.35,
+        "wykonalnosc_i_dojrzalosc_pkt": null,
+        "wykonalnosc_i_dojrzalosc_waga": 0.2,
+        "wynik_potencjalu_proc": 80.0,
+        "pewnosc_oceny_proc": 80.0,
+        "brakujacy_obszar_danych": "Wykonalność i dojrzałość (20%)",
+        "status_na_karcie": "Wysoki potencjał",
+        "rekomendowane_dzialanie": "Przekazanie do programów akceleracyjnych, transferu lub bezpośrednich rozmów z partnerami wdrożeniowymi."
+      },
+      "sugerowane_instytucje_dalszego_rozwoju": ""
+    },
+    {
+      "id": 20,
+      "domena": "ilot.lukasiewicz.gov.pl",
+      "url": "https://ilot.lukasiewicz.gov.pl/droniada-future-forum-2026-by-lukasiewicz-instytut-lotnictwa-dwa-dni-rozmow-o-przyszlosci-technologii-bezzalogowych/",
+      "kategoria_wejsciowa": "Inne instytucje publiczne 16-30 lat (TOP 5) – Autonomiczne systemy bezzałogowe",
+      "nazwa_projektu": "Droniada Future Forum 2026 – relacja z konferencji branżowej dot. technologii bezzałogowych",
+      "typ_podmiotu": "Inna instytucja publiczna / Instytut badawczy (Łukasiewicz – Instytut Lotnictwa)",
+      "tworcy_i_wiek": "Łukasiewicz – ILOT, Fundacja Instytut Mikromakro (organizatorzy konferencji)",
+      "typ_innowacji": "Odrzucony – relacja z wydarzenia / konferencji (brak pojedynczego autorskiego projektu do wdrożenia)",
+      "keywords": [
+        "drony",
+        "UAV",
+        "konferencja",
+        "relacja z wydarzenia",
+        "Łukasiewicz ILOT",
+        "Droniada",
+        "lotnictwo"
+      ],
+      "zgodnosc_z_wymogami_pci": {
+        "czy_zgodny": false,
+        "status": "Niezgodny (relacja z konferencji – podlega odrzuceniu wg pkt 1 metodologii)",
+        "uzasadnienie": "Zgodnie z zasadą selekcji merytorycznej algorytm odrzuca relacje z wydarzeń. Artykuł jest podsumowaniem dwudniowej konferencji i paneli dyskusyjnych, a nie opisem konkretnego ukrytego wynalazku czy prototypu."
+      },
+      "ocena_metodologia": {
+        "potencjal_wdrozeniowy_pkt": null,
+        "potencjal_wdrozeniowy_waga": 0.45,
+        "innowacyjnosc_i_unikalnosc_pkt": null,
+        "innowacyjnosc_i_unikalnosc_waga": 0.35,
+        "wykonalnosc_i_dojrzalosc_pkt": 1,
+        "wykonalnosc_i_dojrzalosc_waga": 0.2,
+        "wynik_potencjalu_proc": 20.0,
+        "pewnosc_oceny_proc": 20.0,
+        "brakujacy_obszar_danych": "Potencjał wdrożeniowy (45%), Innowacyjność i unikalność (35%)",
+        "status_na_karcie": "Niepewna ocena",
+        "rekomendowane_dzialanie": "Weryfikacja zagadnienia przy wsparciu Asystenta AI lub bezpośredni kontakt z autorami rozwiązania."
+      },
+      "sugerowane_instytucje_dalszego_rozwoju": ""
+    },
+    {
+      "id": 21,
+      "domena": "brpd.gov.pl",
+      "url": "https://brpd.gov.pl/2026/04/28/gala-solve-for-tomorrow-2026-mlodzi-tworza-rozwiazania/",
+      "kategoria_wejsciowa": "Inne instytucje publiczne 16-30 lat (TOP 5) – Prototypy finalistów Solve for Tomorrow",
+      "nazwa_projektu": "Gala Solve for Tomorrow 2026 – relacja z finału konkursu młodzieżowego",
+      "typ_podmiotu": "Inna instytucja publiczna (Biuro Rzecznika Praw Dziecka)",
+      "tworcy_i_wiek": "Uczniowie / młodzież (uczestnicy konkursu Samsung Solve for Tomorrow)",
+      "typ_innowacji": "Odrzucony / Niepełny – ogólna relacja z gali bez nazw i opisów konkretnych prototypów w źródle",
+      "keywords": [
+        "Solve for Tomorrow",
+        "Rzecznik Praw Dziecka",
+        "młodzież",
+        "konkurs",
+        "relacja z wydarzenia"
+      ],
+      "zgodnosc_z_wymogami_pci": {
+        "czy_zgodny": false,
+        "status": "Niezgodny (relacja z gali bez wyodrębnionych opisów konkretnych innowacji)",
+        "uzasadnienie": "Wpis na stronie BRPD to krótka relacja z udziału Rzecznika w gali finałowej konkursu. Nie zawiera nazw, mechanizmów działania ani danych o konkretnych rozwiązaniach finalistów."
+      },
+      "ocena_metodologia": {
+        "potencjal_wdrozeniowy_pkt": null,
+        "potencjal_wdrozeniowy_waga": 0.45,
+        "innowacyjnosc_i_unikalnosc_pkt": null,
+        "innowacyjnosc_i_unikalnosc_waga": 0.35,
+        "wykonalnosc_i_dojrzalosc_pkt": 1,
+        "wykonalnosc_i_dojrzalosc_waga": 0.2,
+        "wynik_potencjalu_proc": 20.0,
+        "pewnosc_oceny_proc": 20.0,
+        "brakujacy_obszar_danych": "Potencjał wdrożeniowy (45%), Innowacyjność i unikalność (35%)",
+        "status_na_karcie": "Niepewna ocena",
+        "rekomendowane_dzialanie": "Weryfikacja zagadnienia przy wsparciu Asystenta AI lub bezpośredni kontakt z autorami rozwiązania."
+      },
+      "sugerowane_instytucje_dalszego_rozwoju": ""
+    },
+    {
+      "id": 22,
+      "domena": "vilo.bydgoszcz.pl",
+      "url": "https://vilo.bydgoszcz.pl/mlodzi-projektuja-miasto-w-ktorym-chca-zyc-w1,80,120533.html",
+      "kategoria_wejsciowa": "Płytki opis / Niepewna ocena (Licea) – Przestrzeń miejska przyjazna młodzieży",
+      "nazwa_projektu": "Młodzi projektują miasto, w którym chcą żyć! – warsztaty dot. przestrzeni miejskiej przyjaznej młodzieży",
+      "typ_podmiotu": "Szkoła ponadpodstawowa (VI LO w Bydgoszczy)",
+      "tworcy_i_wiek": "Uczniowie VI LO w Bydgoszczy (grupa 16–30 lat)",
+      "typ_innowacji": "Społeczna / Partycypacyjna (płytki opis bez konkretnego wdrożeniowego modelu)",
+      "keywords": [
+        "przestrzeń miejska",
+        "partycypacja młodzieży",
+        "miasto przyjazne młodzieży",
+        "warsztaty",
+        "liceum",
+        "Bydgoszcz"
+      ],
+      "zgodnosc_z_wymogami_pci": {
+        "czy_zgodny": false,
+        "status": "Niezgodny / Zbyt ogólnikowy (relacja z zajęć warsztatowych bez konkretnego rozwiązania)",
+        "uzasadnienie": "Wpis stanowi relację ze spotkania/warsztatów uczniowskich i zawiera wyłącznie ogólne hasła o mieście przyjaznym młodzieży, bez opisu konkretnego narzędzia, procedury lub prototypu."
+      },
+      "ocena_metodologia": {
+        "potencjal_wdrozeniowy_pkt": null,
+        "potencjal_wdrozeniowy_waga": 0.45,
+        "innowacyjnosc_i_unikalnosc_pkt": null,
+        "innowacyjnosc_i_unikalnosc_waga": 0.35,
+        "wykonalnosc_i_dojrzalosc_pkt": 1,
+        "wykonalnosc_i_dojrzalosc_waga": 0.2,
+        "wynik_potencjalu_proc": 20.0,
+        "pewnosc_oceny_proc": 20.0,
+        "brakujacy_obszar_danych": "Potencjał wdrożeniowy (45%), Innowacyjność i unikalność (35%)",
+        "status_na_karcie": "Niepewna ocena",
+        "rekomendowane_dzialanie": "Weryfikacja zagadnienia przy wsparciu Asystenta AI lub bezpośredni kontakt z autorami rozwiązania."
+      },
+      "sugerowane_instytucje_dalszego_rozwoju": ""
+    },
+    {
+      "id": 23,
+      "domena": "www.marynka.edu.pl",
+      "url": "https://www.marynka.edu.pl/1499-hackathon-poznan",
+      "kategoria_wejsciowa": "Płytki opis / Niepewna ocena (Licea) – Aplikacja wspierająca oszczędzanie",
+      "nazwa_projektu": "Aplikacja wspierająca oszczędzanie (Hackathon Poznań)",
+      "typ_podmiotu": "Szkoła ponadpodstawowa (LO św. Marii Magdaleny w Poznaniu)",
+      "tworcy_i_wiek": "Uczennica/uczniowie LO św. Marii Magdaleny w Poznaniu (grupa 16–30 lat)",
+      "typ_innowacji": "Technologiczna / FinTech / Edukacyjna (koncepcja z hackathonu)",
+      "keywords": [
+        "oszczędzanie",
+        "finanse osobiste",
+        "aplikacja mobilna",
+        "hackathon",
+        "startup",
+        "liceum",
+        "Poznań"
+      ],
+      "zgodnosc_z_wymogami_pci": {
+        "czy_zgodny": true,
+        "status": "Zgodny (ale bardzo płytki opis w źródle)",
+        "uzasadnienie": "Koncepcja wypracowana przez młodzież ze szkoły publicznej (16–30 lat) zakwalifikowana do finału konkursu startupowego, jednak notatka na stronie szkoły ogranicza się do jednego zdania bez opisu funkcji aplikacji."
+      },
+      "ocena_metodologia": {
+        "potencjal_wdrozeniowy_pkt": null,
+        "potencjal_wdrozeniowy_waga": 0.45,
+        "innowacyjnosc_i_unikalnosc_pkt": null,
+        "innowacyjnosc_i_unikalnosc_waga": 0.35,
+        "wykonalnosc_i_dojrzalosc_pkt": 3,
+        "wykonalnosc_i_dojrzalosc_waga": 0.2,
+        "wynik_potencjalu_proc": 60.0,
+        "pewnosc_oceny_proc": 20.0,
+        "brakujacy_obszar_danych": "Potencjał wdrożeniowy (45%), Innowacyjność i unikalność (35%)",
+        "status_na_karcie": "Niepewna ocena",
+        "rekomendowane_dzialanie": "Weryfikacja zagadnienia przy wsparciu Asystenta AI lub bezpośredni kontakt z autorami rozwiązania."
+      },
+      "sugerowane_instytucje_dalszego_rozwoju": ""
+    },
+    {
+      "id": 24,
+      "domena": "hetman.edu.pl",
+      "url": "https://hetman.edu.pl/aktualnosci/37231/",
+      "kategoria_wejsciowa": "Płytki opis / Niepewna ocena (Licea) – Uwolnić od Samotności",
+      "nazwa_projektu": "„Uwolnić od Samotności” – inicjatywa uczennic klasy 1D",
+      "typ_podmiotu": "Szkoła ponadpodstawowa (I Społeczne Liceum Ogólnokształcące im. Hetmana Jana Tarnowskiego w Tarnobrzegu)",
+      "tworcy_i_wiek": "Uczennice klasy 1D (wiek ok. 15–16 lat)",
+      "typ_innowacji": "Społeczna (brak opisu tekstowego mechanizmu – materiał wideo na stronie)",
+      "keywords": [
+        "samotność",
+        "inicjatywa społeczna",
+        "zdrowie psychiczne",
+        "młodzież",
+        "liceum",
+        "Tarnobrzeg"
+      ],
+      "zgodnosc_z_wymogami_pci": {
+        "czy_zgodny": false,
+        "status": "Niezgodny / Nieweryfikowalny tekstowo (szkoła niepubliczna, wiek ok. 15 lat, brak opisu tekstowego rozwiązania)",
+        "uzasadnienie": "Wpis zawiera głównie osadzony plik wideo bez tekstowego opisu mechanizmu działania czy możliwości skalowania; dotyczy uczennic 1 klasy liceum społecznego."
+      },
+      "ocena_metodologia": {
+        "potencjal_wdrozeniowy_pkt": null,
+        "potencjal_wdrozeniowy_waga": 0.45,
+        "innowacyjnosc_i_unikalnosc_pkt": null,
+        "innowacyjnosc_i_unikalnosc_waga": 0.35,
+        "wykonalnosc_i_dojrzalosc_pkt": 1,
+        "wykonalnosc_i_dojrzalosc_waga": 0.2,
+        "wynik_potencjalu_proc": 20.0,
+        "pewnosc_oceny_proc": 20.0,
+        "brakujacy_obszar_danych": "Potencjał wdrożeniowy (45%), Innowacyjność i unikalność (35%)",
+        "status_na_karcie": "Niepewna ocena",
+        "rekomendowane_dzialanie": "Weryfikacja zagadnienia przy wsparciu Asystenta AI lub bezpośredni kontakt z autorami rozwiązania."
+      },
+      "sugerowane_instytucje_dalszego_rozwoju": ""
+    },
+    {
+      "id": 25,
+      "domena": "wit.pwr.edu.pl",
+      "url": "https://wit.pwr.edu.pl/aktualnosci/studenci-wit-zwyciezcami-smart-water-challenge-2026-626.html",
+      "kategoria_wejsciowa": "Płytki opis / Niepewna ocena (Uczelnie) – Rozwiązanie zespołu CitySense",
+      "nazwa_projektu": "Rozwiązanie zespołu CitySense (zwycięzca Smart Water Challenge 2026)",
+      "typ_podmiotu": "Uczelnia wyższa (Politechnika Wrocławska – Wydział Informatyki i Telekomunikacji oraz Wydział Geoinżynierii, Górnictwa i Geologii)",
+      "tworcy_i_wiek": "Maciej Klossek, Martyna Krawiec, Patryk Łuszczek, Jędrzej Radłowski (studenci PWr – grupa 16–30 lat); opiekun: dr hab. inż. Jolanta Dąbrowska",
+      "typ_innowacji": "Technologiczna / Smart City / Gospodarka wodna",
+      "keywords": [
+        "Smart Water",
+        "gospodarka wodna",
+        "Smart City",
+        "geoinformatyka",
+        "ICT",
+        "CitySense",
+        "hackathon",
+        "studenci",
+        "PWr"
+      ],
+      "zgodnosc_z_wymogami_pci": {
+        "czy_zgodny": true,
+        "status": "Zgodny (ale brak szczegółów technicznych samego rozwiązania w notatce prasowej)",
+        "uzasadnienie": "Zespół studentów uczelni publicznej (16–30 lat) nagrodzony za rozwiązanie dla inteligentnych miast i gospodarki wodnej, ale artykuł skupia się na samym sukcesie konkursowym i składzie zespołu, pomijając opis działania systemu."
+      },
+      "ocena_metodologia": {
+        "potencjal_wdrozeniowy_pkt": null,
+        "potencjal_wdrozeniowy_waga": 0.45,
+        "innowacyjnosc_i_unikalnosc_pkt": null,
+        "innowacyjnosc_i_unikalnosc_waga": 0.35,
+        "wykonalnosc_i_dojrzalosc_pkt": 3,
+        "wykonalnosc_i_dojrzalosc_waga": 0.2,
+        "wynik_potencjalu_proc": 60.0,
+        "pewnosc_oceny_proc": 20.0,
+        "brakujacy_obszar_danych": "Potencjał wdrożeniowy (45%), Innowacyjność i unikalność (35%)",
+        "status_na_karcie": "Niepewna ocena",
+        "rekomendowane_dzialanie": "Weryfikacja zagadnienia przy wsparciu Asystenta AI lub bezpośredni kontakt z autorami rozwiązania."
+      },
+      "sugerowane_instytucje_dalszego_rozwoju": ""
+    },
+    {
+      "id": 26,
+      "domena": "wsiz.edu.pl",
+      "url": "https://wsiz.edu.pl/aktualnosci/mocna-reprezentacja-wsiiz-na-hackyeah-2026/",
+      "kategoria_wejsciowa": "Płytki opis / Niepewna ocena (Uczelnie) – System koordynacji akcji kryzysowych",
+      "nazwa_projektu": "System zarządzania akcjami i przepływem informacji w sytuacjach kryzysowych (zwycięski projekt Smart City na HackYeah 2026)",
+      "typ_podmiotu": "Uczelnia wyższa (Wyższa Szkoła Informatyki i Zarządzania w Rzeszowie – Podkarpacie)",
+      "tworcy_i_wiek": "Dmytrii Zherebtsov (student WSIiZ w Rzeszowie – grupa 16–30 lat)",
+      "typ_innowacji": "Technologiczna / ICT / Zarządzanie kryzysowe / Smart City",
+      "keywords": [
+        "zarządzanie kryzysowe",
+        "Smart City",
+        "ICT",
+        "przepływ informacji",
+        "HackYeah 2026",
+        "WSIiZ",
+        "Rzeszów",
+        "Podkarpacie",
+        "studenci"
+      ],
+      "zgodnosc_z_wymogami_pci": {
+        "czy_zgodny": true,
+        "status": "Zgodny (bezpośrednio z regionu podkarpackiego – WSIiZ Rzeszów, ale lakoniczny opis techniczny)",
+        "uzasadnienie": "Student uczelni z Rzeszowa (grupa 16–30 lat) stworzył rozwiązanie z obszaru ICT/Smart City do zarządzania akcjami ratunkowymi/kryzysowymi i deklaruje chęć wdrożenia, lecz wpis nie podaje architektury ani szczegółów technicznych systemu."
+      },
+      "ocena_metodologia": {
+        "potencjal_wdrozeniowy_pkt": 4,
+        "potencjal_wdrozeniowy_waga": 0.45,
+        "innowacyjnosc_i_unikalnosc_pkt": null,
+        "innowacyjnosc_i_unikalnosc_waga": 0.35,
+        "wykonalnosc_i_dojrzalosc_pkt": 3,
+        "wykonalnosc_i_dojrzalosc_waga": 0.2,
+        "wynik_potencjalu_proc": 73.8,
+        "pewnosc_oceny_proc": 65.0,
+        "brakujacy_obszar_danych": "Innowacyjność i unikalność (35%)",
+        "status_na_karcie": "Niepewna ocena",
+        "rekomendowane_dzialanie": "Weryfikacja zagadnienia przy wsparciu Asystenta AI lub bezpośredni kontakt z autorami rozwiązania."
+      },
+      "sugerowane_instytucje_dalszego_rozwoju": ""
+    },
+    {
+      "id": 27,
+      "domena": "w.prz.edu.pl",
+      "url": "https://w.prz.edu.pl/uczelnia/aktualnosci/sukces-studentow-kola-naukowego-machine-learninga-2978.html",
+      "kategoria_wejsciowa": "Płytki opis / Niepewna ocena (Uczelnie) – Sieć węzłów detekcyjnych dronów",
+      "nazwa_projektu": "Inteligentna sieć małych urządzeń (węzłów sensorycznych) do wykrywania dronów",
+      "typ_podmiotu": "Uczelnia wyższa (Politechnika Rzeszowska – Wydział Matematyki i Fizyki Stosowanej / Rzeszów Design Factory)",
+      "tworcy_i_wiek": "Studenci Koła Naukowego Machine Learning PRz (grupa 16–30 lat)",
+      "typ_innowacji": "Technologiczna / Lotnictwo / Bezpieczeństwo / AI (prototyp z hackathonu obronnego)",
+      "keywords": [
+        "detekcja dronów",
+        "anty-UAV",
+        "machine learning",
+        "czujniki",
+        "sieć sensoryczna",
+        "prototyp",
+        "Politechnika Rzeszowska",
+        "Podkarpacie"
+      ],
+      "zgodnosc_z_wymogami_pci": {
+        "czy_zgodny": true,
+        "status": "Zgodny (idealne dopasowanie do PCI: uczelnia z Podkarpacia, wiek 16–30 lat, sektor lotniczy/ICT, istniejący prototyp)",
+        "uzasadnienie": "Studenci Politechniki Rzeszowskiej opracowali projekt i prototyp sieci węzłów (kamery, mikrofony, ML) do wykrywania dronów. W pełni spełnia kryteria podmiotowe, wiekowe i sektorowe PCI."
+      },
+      "ocena_metodologia": {
+        "potencjal_wdrozeniowy_pkt": 4,
+        "potencjal_wdrozeniowy_waga": 0.45,
+        "innowacyjnosc_i_unikalnosc_pkt": 3,
+        "innowacyjnosc_i_unikalnosc_waga": 0.35,
+        "wykonalnosc_i_dojrzalosc_pkt": 5,
+        "wykonalnosc_i_dojrzalosc_waga": 0.2,
+        "wynik_potencjalu_proc": 77.0,
+        "pewnosc_oceny_proc": 100.0,
+        "brakujacy_obszar_danych": null,
+        "status_na_karcie": "Wysoki potencjał",
+        "rekomendowane_dzialanie": "Przekazanie do programów akceleracyjnych, transferu lub bezpośrednich rozmów z partnerami wdrożeniowymi."
+      },
+      "sugerowane_instytucje_dalszego_rozwoju": ""
+    },
+    {
+      "id": 28,
+      "domena": "www.rybnik.eu",
+      "url": "https://www.rybnik.eu/dla-mieszkancow/aktualnosci/aktualnosc/wypiekacze-domar-w-trojce-najlepszych-mlodzi-rybniczanie-z-pomyslami-na-biznes",
+      "kategoria_wejsciowa": "Płytki opis / Niepewna ocena (JST) – Architekt Światła / Aplikacja City Flow",
+      "nazwa_projektu": "Projekty z konkursu „Rybnicki Biznesplan” (m.in. „Architekt Światła”, „Wypiekacze Domar”, „Lumini Extruder X1”, „Aplikacja City Flow”)",
+      "typ_podmiotu": "Jednostka Samorządu Terytorialnego (Urząd Miasta Rybnika – konkurs dla młodych mieszkańców)",
+      "tworcy_i_wiek": "Młodzi rybniczanie (m.in. Krzysztof Rochnowski, Dominika Pawlik, Artur Kacprzyk, Mikołaj Pustelnik, Adrian Syrek, Anna Kozielska)",
+      "typ_innowacji": "Technologiczna / Produktowa / ICT / Społeczna (zbiór koncepcji biznesowych z konkursu JST)",
+      "keywords": [
+        "JST",
+        "biznesplan",
+        "recykling druku 3D",
+        "aplikacja miejska",
+        "przedsiębiorczość",
+        "Rybnik",
+        "młodzi twórcy"
+      ],
+      "zgodnosc_z_wymogami_pci": {
+        "czy_zgodny": true,
+        "status": "Zgodny (po wyodrębnieniu konkretnych projektów z relacji konkursowej JST)",
+        "uzasadnienie": "Konkurs organizowany przez JST wyłonił konkretne koncepcje młodych twórców (np. urządzenie do recyklingu odpadów z druku 3D 'Lumini Extruder X1', aplikacja 'City Flow', zautomatyzowany wypiekacz bezglutenowy). Projekty są na etapie biznesplanów (koncepcji), wymagają rozbicia na osobne rekordy."
+      },
+      "ocena_metodologia": {
+        "potencjal_wdrozeniowy_pkt": 4,
+        "potencjal_wdrozeniowy_waga": 0.45,
+        "innowacyjnosc_i_unikalnosc_pkt": 3,
+        "innowacyjnosc_i_unikalnosc_waga": 0.35,
+        "wykonalnosc_i_dojrzalosc_pkt": 3,
+        "wykonalnosc_i_dojrzalosc_waga": 0.2,
+        "wynik_potencjalu_proc": 69.0,
+        "pewnosc_oceny_proc": 100.0,
+        "brakujacy_obszar_danych": null,
+        "status_na_karcie": "Potencjał rozwojowy",
+        "rekomendowane_dzialanie": "Skierowanie na mentoring, do laboratoriów prototypowania lub doprecyzowanie założeń."
+      },
+      "sugerowane_instytucje_dalszego_rozwoju": ""
+    },
+    {
+      "id": 29,
+      "domena": "www.gdansk.pl",
+      "url": "https://www.gdansk.pl/wiadomosci/Innovation-Camp-czyli-przedsiebiorczosci-mozna-sie-uczyc-juz-za-mlodu-Gdanska-Fundacja-Przedsiebiorczosci-Starter,a,314520",
+      "kategoria_wejsciowa": "Płytki opis / Niepewna ocena (JST) – Pomocnik AI do tras zwiedzania",
+      "nazwa_projektu": "Pomocnik AI do personalizacji tras zwiedzania i integracji biletów komunikacji miejskiej (Innovation Camp by Starter)",
+      "typ_podmiotu": "Jednostka Samorządu Terytorialnego / Szkoła ponadpodstawowa (Miasto Gdańsk / GFP Starter / VIII LO w Gdańsku)",
+      "tworcy_i_wiek": "Daria Kuzina (uczennica IV kl. VIII LO w Gdańsku) oraz zespoły młodzieżowe w wieku 15–19 lat",
+      "typ_innowacji": "Technologiczna / ICT / Turystyka i mobilność miejska",
+      "keywords": [
+        "JST",
+        "AI",
+        "turystyka",
+        "transport publiczny",
+        "aplikacja mobilna",
+        "Gdańsk",
+        "Starter",
+        "liceum"
+      ],
+      "zgodnosc_z_wymogami_pci": {
+        "czy_zgodny": true,
+        "status": "Zgodny (wymaga rozdzielenia na pojedyncze projekty z obozu innowacji)",
+        "uzasadnienie": "Młodzież ze szkół ponadpodstawowych (grupa 16–30 lat) w projekcie współfinansowanym przez JST opracowała konkretne koncepcje wdrożeniowe dla miasta (integracja biletów ZTM/SKM/Mevo i planer tras AI), na etapie wczesnej koncepcji po 5-dniowym obozie."
+      },
+      "ocena_metodologia": {
+        "potencjal_wdrozeniowy_pkt": 4,
+        "potencjal_wdrozeniowy_waga": 0.45,
+        "innowacyjnosc_i_unikalnosc_pkt": 2,
+        "innowacyjnosc_i_unikalnosc_waga": 0.35,
+        "wykonalnosc_i_dojrzalosc_pkt": 3,
+        "wykonalnosc_i_dojrzalosc_waga": 0.2,
+        "wynik_potencjalu_proc": 62.0,
+        "pewnosc_oceny_proc": 100.0,
+        "brakujacy_obszar_danych": null,
+        "status_na_karcie": "Potencjał rozwojowy",
+        "rekomendowane_dzialanie": "Skierowanie na mentoring, do laboratoriów prototypowania lub doprecyzowanie założeń."
+      },
+      "sugerowane_instytucje_dalszego_rozwoju": ""
+    },
+    {
+      "id": 30,
+      "domena": "www.gminaskawina.pl",
+      "url": "https://www.gminaskawina.pl/aktualnosci/2026/11/mobilny-urban-lab-w-skawinie-warsztaty-o-przyszlosci-i-roli-cak-ow",
+      "kategoria_wejsciowa": "Płytki opis / Niepewna ocena (JST) – Mobilny Urban Lab",
+      "nazwa_projektu": "Mobilny Urban Lab w Skawinie – warsztaty o przyszłości i roli Centrów Aktywności Kulturalnej (CAK)",
+      "typ_podmiotu": "Jednostka Samorządu Terytorialnego (Urząd Miasta i Gminy w Skawinie)",
+      "tworcy_i_wiek": "Urząd Miasta i Gminy w Skawinie / lokalni społecznicy (brak informacji o grupie 16–30 lat)",
+      "typ_innowacji": "Odrzucony – zapowiedź/relacja z warsztatów sieciujących (brak opisu konkretnego rozwiązania)",
+      "keywords": [
+        "JST",
+        "Urban Lab",
+        "warsztaty",
+        "kultura",
+        "CAK",
+        "Skawina",
+        "relacja z wydarzenia"
+      ],
+      "zgodnosc_z_wymogami_pci": {
+        "czy_zgodny": false,
+        "status": "Niezgodny (zapowiedź warsztatów sieciujących bez konkretnego rozwiązania lub prototypu)",
+        "uzasadnienie": "Artykuł informuje o organizacji warsztatów dla zarządców CAK i społeczników w celu integracji i sieciowania – nie opisuje żadnej gotowej ani projektowanej innowacji."
+      },
+      "ocena_metodologia": {
+        "potencjal_wdrozeniowy_pkt": null,
+        "potencjal_wdrozeniowy_waga": 0.45,
+        "innowacyjnosc_i_unikalnosc_pkt": null,
+        "innowacyjnosc_i_unikalnosc_waga": 0.35,
+        "wykonalnosc_i_dojrzalosc_pkt": 1,
+        "wykonalnosc_i_dojrzalosc_waga": 0.2,
+        "wynik_potencjalu_proc": 20.0,
+        "pewnosc_oceny_proc": 20.0,
+        "brakujacy_obszar_danych": "Potencjał wdrożeniowy (45%), Innowacyjność i unikalność (35%)",
+        "status_na_karcie": "Niepewna ocena",
+        "rekomendowane_dzialanie": "Weryfikacja zagadnienia przy wsparciu Asystenta AI lub bezpośredni kontakt z autorami rozwiązania."
+      },
+      "sugerowane_instytucje_dalszego_rozwoju": ""
+    },
+    {
+      "id": 31,
+      "domena": "feng.parp.gov.pl",
+      "url": "https://feng.parp.gov.pl/component/content/article/91517:dzis-ostatni-dzien-web-summit-2026",
+      "kategoria_wejsciowa": "Płytki opis / Niepewna ocena (Instytucje 16-30 lat) – Asystent AI badań klinicznych",
+      "nazwa_projektu": "Asystent AI dla badań klinicznych (laureatka konkursu PARP Future Challenge na Web Summit 2026)",
+      "typ_podmiotu": "Inna instytucja publiczna (Polska Agencja Rozwoju Przedsiębiorczości – PARP / FENG)",
+      "tworcy_i_wiek": "Marta Zagożdżon (laureatka PARP Future Challenge)",
+      "typ_innowacji": "Technologiczna / MedTech / AI (wspomniana w relacji z targów Web Summit 2026)",
+      "keywords": [
+        "AI",
+        "badania kliniczne",
+        "MedTech",
+        "PARP",
+        "Web Summit 2026",
+        "startup"
+      ],
+      "zgodnosc_z_wymogami_pci": {
+        "czy_zgodny": false,
+        "status": "Niezgodny podmiotowo/źródłowo (relacja PARP ze stoiska na Web Summit; bardzo lakoniczna wzmianka)",
+        "uzasadnienie": "Wpis to ogólna relacja PARP z udziału polskich startupów w Web Summit 2026. Zawiera jedynie jednozdaniową wzmiankę o projekcie bez opisu jego działania i bez powiązania z instytucją publiczną jako miejscem powstania innowacji."
+      },
+      "ocena_metodologia": {
+        "potencjal_wdrozeniowy_pkt": null,
+        "potencjal_wdrozeniowy_waga": 0.45,
+        "innowacyjnosc_i_unikalnosc_pkt": null,
+        "innowacyjnosc_i_unikalnosc_waga": 0.35,
+        "wykonalnosc_i_dojrzalosc_pkt": 1,
+        "wykonalnosc_i_dojrzalosc_waga": 0.2,
+        "wynik_potencjalu_proc": 20.0,
+        "pewnosc_oceny_proc": 20.0,
+        "brakujacy_obszar_danych": "Potencjał wdrożeniowy (45%), Innowacyjność i unikalność (35%)",
+        "status_na_karcie": "Niepewna ocena",
+        "rekomendowane_dzialanie": "Weryfikacja zagadnienia przy wsparciu Asystenta AI lub bezpośredni kontakt z autorami rozwiązania."
+      },
+      "sugerowane_instytucje_dalszego_rozwoju": ""
+    },
+    {
+      "id": 32,
+      "domena": "gupkrakow.praca.gov.pl",
+      "url": "https://gupkrakow.praca.gov.pl/-/targi-pracy-i-przedsiebiorczosci-2026-praca-biznes-i-technologie-przyszlosci",
+      "kategoria_wejsciowa": "Płytki opis / Niepewna ocena (Instytucje 16-30 lat) – System Kuki / narzędzie Lokly",
+      "nazwa_projektu": "System Kuki (inteligentny system do lodówek) oraz Lokly (narzędzie AI do analizy umów najmu)",
+      "typ_podmiotu": "Inna instytucja publiczna (Grodzki Urząd Pracy w Krakowie – hackathon podczas Targów Pracy i Przedsiębiorczości)",
+      "tworcy_i_wiek": "Zespoły młodych uczestników hackathonu w Krakowie (grupa 16–30 lat)",
+      "typ_innowacji": "Technologiczna / ICT / IoT / LegalTech (koncepcje z hackathonu)",
+      "keywords": [
+        "IoT",
+        "smart home",
+        "AI",
+        "LegalTech",
+        "analiza umów najmu",
+        "hackathon",
+        "GUP Kraków",
+        "młodzi innowatorzy"
+      ],
+      "zgodnosc_z_wymogami_pci": {
+        "czy_zgodny": true,
+        "status": "Zgodny (po rozbiciu na osobne projekty – powstałe w ramach inicjatywy publicznego urzędu pracy dla młodych)",
+        "uzasadnienie": "Z relacji GUP Kraków można wyodrębnić konkretne pomysły młodych twórców (16–30 lat) z opisem podstawowej funkcjonalności (Kuki – sensory w lodówkach i monitorowanie dat ważności; Lokly – AI wykrywające niekorzystne zapisy w umowach najmu dla studentów)."
+      },
+      "ocena_metodologia": {
+        "potencjal_wdrozeniowy_pkt": 4,
+        "potencjal_wdrozeniowy_waga": 0.45,
+        "innowacyjnosc_i_unikalnosc_pkt": 2,
+        "innowacyjnosc_i_unikalnosc_waga": 0.35,
+        "wykonalnosc_i_dojrzalosc_pkt": 3,
+        "wykonalnosc_i_dojrzalosc_waga": 0.2,
+        "wynik_potencjalu_proc": 62.0,
+        "pewnosc_oceny_proc": 100.0,
+        "brakujacy_obszar_danych": null,
+        "status_na_karcie": "Potencjał rozwojowy",
+        "rekomendowane_dzialanie": "Skierowanie na mentoring, do laboratoriów prototypowania lub doprecyzowanie założeń."
+      },
+      "sugerowane_instytucje_dalszego_rozwoju": ""
+    },
+    {
+      "id": 33,
+      "domena": "funduszeeuropejskie.gov.pl",
+      "url": "https://funduszeeuropejskie.gov.pl/aktualnosci/mlodzi-innowatorzy-w-akcji-final-konkursu-robot-na-6-tke/",
+      "kategoria_wejsciowa": "Płytki opis / Niepewna ocena (Instytucje 16-30 lat) – AVA STEAM Education",
+      "nazwa_projektu": "AVA STEAM Education – inteligentne narzędzie zastępujące „trzecią rękę” w pracy z lupą",
+      "typ_podmiotu": "Inna instytucja publiczna / Szkoła (Ministerstwo Funduszy i Polityki Regionalnej – konkurs „Robot na 6-tkę!” dla uczniów)",
+      "tworcy_i_wiek": "Uczniowie z woj. podlaskiego (laureaci konkursu „Robot na 6-tkę!”)",
+      "typ_innowacji": "Technologiczna / Edukacyjna / Robotyka",
+      "keywords": [
+        "robotyka",
+        "edukacja",
+        "STEAM",
+        "trzecia ręka",
+        "elektronika",
+        "konkurs",
+        "MFiPR"
+      ],
+      "zgodnosc_z_wymogami_pci": {
+        "czy_zgodny": true,
+        "status": "Zgodny (wymaga weryfikacji dokładnego wieku uczniów – konkurs dla klas 4–8 SP oraz szkół ponadpodstawowych)",
+        "uzasadnienie": "Innowacja edukacyjno-techniczna powstała w ramach konkursu instytucji publicznej (MFiPR), wpis opisuje konkretne przeznaczenie urządzenia (inteligentne narzędzie zastępujące 'trzecią rękę' przy pracy z lupą), brak jednak szczegółów technicznych i dokładnego wieku autorów."
+      },
+      "ocena_metodologia": {
+        "potencjal_wdrozeniowy_pkt": null,
+        "potencjal_wdrozeniowy_waga": 0.45,
+        "innowacyjnosc_i_unikalnosc_pkt": 3,
+        "innowacyjnosc_i_unikalnosc_waga": 0.35,
+        "wykonalnosc_i_dojrzalosc_pkt": 4,
+        "wykonalnosc_i_dojrzalosc_waga": 0.2,
+        "wynik_potencjalu_proc": 67.3,
+        "pewnosc_oceny_proc": 55.0,
+        "brakujacy_obszar_danych": "Potencjał wdrożeniowy (45%)",
+        "status_na_karcie": "Niepewna ocena",
+        "rekomendowane_dzialanie": "Weryfikacja zagadnienia przy wsparciu Asystenta AI lub bezpośredni kontakt z autorami rozwiązania."
+      },
+      "sugerowane_instytucje_dalszego_rozwoju": ""
+    }
+  ]
+}

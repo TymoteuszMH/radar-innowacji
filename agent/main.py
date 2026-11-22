@@ -1,3 +1,5 @@
+import csv
+import json
 import os
 import shutil
 from pathlib import Path
@@ -13,6 +15,22 @@ from agents.project_agent import ProjectAgent, process_file
 from logging_utils import get_logger
 
 LOGGER = get_logger("pipeline", console=False)
+
+
+def _count_source_projects(project_dir: Path) -> int:
+    source_file = project_dir / "data" / "sites_and_projects.csv"
+    if not source_file.is_file():
+        return 0
+    with source_file.open(encoding="utf-8-sig", newline="") as file:
+        return sum(1 for _ in csv.DictReader(file))
+
+
+def _count_output_projects(output_file: Path) -> int:
+    if not output_file.is_file():
+        return 0
+    data = json.loads(output_file.read_text(encoding="utf-8"))
+    projects = data.get("projects", [])
+    return len(projects) if isinstance(projects, list) else 0
 
 
 def _delete_scrapped_data(scrapped_dir: Path, project_dir: Path) -> bool:
@@ -45,8 +63,25 @@ def main() -> None:
     data_file = Path(os.getenv("PROJECT_DATA_OUTPUT_FILE", "results/data.json"))
     if not data_file.is_absolute():
         data_file = PROJECT_DIR / data_file
+    threshold = os.getenv("PROJECT_AGENT_THRESHOLD")
     process_file(formatter.output_file, output_file, data_file, model_path,
-                 threshold=float(os.getenv("PROJECT_AGENT_THRESHOLD", "0.5")), agent=project_agent)
+                 threshold=float(threshold) if threshold is not None else None, agent=project_agent,
+                 prior_art_enabled=os.getenv("PRIOR_ART_ENABLED", "1").strip().lower() in {"1", "true", "yes", "on"})
+
+    source_projects = _count_source_projects(PROJECT_DIR)
+    found_projects = _count_output_projects(output_file)
+    LOGGER.info(
+        "Porównanie projektów: źródło=%d, projects.json=%d, pokrycie=%.1f%%",
+        source_projects,
+        found_projects,
+        (found_projects / source_projects * 100) if source_projects else 0.0,
+    )
+    print(
+        f"Porównanie projektów: źródło={source_projects}, "
+        f"projects.json={found_projects}, "
+        f"pokrycie={(found_projects / source_projects * 100) if source_projects else 0:.1f}%"
+    )
+
     if os.getenv("DELETE_SCRAPPED_AFTER_RUN", "1").strip().lower() in {"1", "true", "yes", "on"}:
         scrapped_dir = Path(os.getenv("SCRAPPED_DIR", "data/scrapped"))
         if not scrapped_dir.is_absolute():
