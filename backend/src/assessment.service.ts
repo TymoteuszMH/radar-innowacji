@@ -50,13 +50,4 @@ export class AssessmentService {
       throw new ServiceUnavailableException('Nie udało się uzyskać analizy AI. Spróbuj ponownie później.');
     }
   }
-
-  /** Placeholder zgodnosci wstecznej; kryteria oceny nie sa skonfigurowane. */
-  evaluate(parameters: Record<string, unknown>): {
-    status: 'criteria_not_configured';
-    score: null;
-    parameters: Record<string, unknown>;
-  } {
-    return { status: 'criteria_not_configured', score: null, parameters };
-  }
 }

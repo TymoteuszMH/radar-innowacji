@@ -10,6 +10,7 @@ __pycache__/
 /data/*.json.tmp
 /models/*.pt
 /models/*.pt.tmp
+/models/bert_innovation_classifier/
 /logs/
 /results/
 /tests/

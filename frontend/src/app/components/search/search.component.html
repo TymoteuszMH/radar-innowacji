@@ -22,7 +22,7 @@
           placeholder="np. nauczanie adaptacyjne"
         >
       </div>
-      <div class="buttons" style="margin-top:14px">
+      <div class="buttons form-actions">
         <button type="submit" class="btn btn-primary" [disabled]="loading">
           {{ loading ? 'Wyszukiwanie…' : 'Szukaj' }}
         </button>
@@ -40,7 +40,21 @@
   </section>
 </div>
 
-@if (view.state.results; as results) {
+@if (loading) {
+  <section class="search-report" aria-busy="true">
+    <div class="section-head"><h2>Wyszukiwanie</h2></div>
+    <div class="loading-skeletons" role="status" aria-label="Ładowanie wyników wyszukiwania">
+      @for (placeholder of [1, 2, 3]; track placeholder) {
+        <article class="detail-card search-result skeleton-card" aria-hidden="true">
+          <span class="skeleton-line skeleton-line-short"></span>
+          <span class="skeleton-line skeleton-line-title"></span>
+          <span class="skeleton-line"></span>
+          <span class="skeleton-line skeleton-line-meta"></span>
+        </article>
+      }
+    </div>
+  </section>
+} @else if (view.state.results; as results) {
   <section class="search-report">
     <div class="section-head">
       <div>
@@ -55,7 +69,7 @@
         <h3>{{ item.project.project_title || item.project.source_title || 'Projekt bez tytułu' }}</h3>
         <p><strong>Opis projektu:</strong> {{ excerpt(item.project.summary || 'Brak opisu.', 1100) }}</p>
         @if (item.project.assessment; as assessment) {
-          <p class="small-note">Ocena: {{ assessmentStatus(assessment.status) }} · Potencjał: {{ assessment.score === null ? 'brak danych' : assessment.score + '%' }}@if (assessment.coverage !== null) { · Pewność: {{ round(assessment.coverage * 100) }}% }</p>
+          <p class="small-note">Ocena: <span [class.assessment-development]="assessment.status === 'development'">{{ assessmentStatus(assessment.status) }}</span> · Potencjał: {{ assessment.score === null ? 'brak danych' : assessment.score + '%' }}@if (assessment.coverage !== null) { · Pewność: {{ round(assessment.coverage * 100) }}% }</p>
         } @else {
           <p class="small-note">Ocena: brak danych</p>
         }
@@ -74,7 +88,11 @@
         </div>
       </article>
     } @empty {
-      <div class="empty">Nie znaleziono pasujących innowacji</div>
+      <div class="empty-state">
+        <span class="empty-mark" aria-hidden="true">⌕</span>
+        <h2>Brak wyników</h2>
+        <p>Nie znaleziono materiałów dla „{{ view.state.query }}”. Spróbuj użyć krótszej lub bardziej ogólnej frazy.</p>
+      </div>
     }
   </section>
 }

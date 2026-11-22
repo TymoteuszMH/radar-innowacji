@@ -1,6 +1,7 @@
 import asyncio
 import csv
 import gzip
+import heapq
 import json
 import os
 import xml.etree.ElementTree as ET
@@ -14,6 +15,7 @@ from dotenv import load_dotenv
 from playwright.async_api import async_playwright, TimeoutError as PlaywrightTimeoutError
 
 from agents.content_utils import extract_main_html
+from config import env_int
 from logging_utils import get_logger
 from .crawler_agent import CrawlerAgent
 
@@ -29,6 +31,9 @@ JS_RENDER_MIN_ARTICLE_CHARS = int(os.getenv("JS_RENDER_MIN_ARTICLE_CHARS", "200"
 JS_PAGINATION_MAX_PAGES = int(os.getenv("JS_PAGINATION_MAX_PAGES", "10"))
 JS_PAGINATION_SCROLLS = int(os.getenv("JS_PAGINATION_SCROLLS", "3"))
 LISTING_MIN_ARTICLE_LINKS = int(os.getenv("LISTING_MIN_ARTICLE_LINKS", "3"))
+JS_NETWORK_IDLE_TIMEOUT_MS = env_int("JS_NETWORK_IDLE_TIMEOUT_MS", 3000, 1)
+JS_SCROLL_WAIT_MS = env_int("JS_SCROLL_WAIT_MS", 250, 0)
+JS_PAGINATION_WAIT_MS = env_int("JS_PAGINATION_WAIT_MS", 500, 0)
 UI_QUERY_KEYS = {"mini", "blindfriendly", "contrast", "fontsize", "width"}
 LOGGER = get_logger("crawler")
 
@@ -146,7 +151,7 @@ class Crawler:
                 try:
                     await page.wait_for_load_state(
                         "networkidle",
-                        timeout=min(JS_RENDER_TIMEOUT_SECONDS * 1000, 3000),
+                        timeout=min(JS_RENDER_TIMEOUT_SECONDS * 1000, JS_NETWORK_IDLE_TIMEOUT_MS),
                     )
                 except PlaywrightTimeoutError:
                     pass
@@ -158,7 +163,7 @@ class Crawler:
                     previous_size = -1
                     for _ in range(JS_PAGINATION_SCROLLS):
                         await page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
-                        await page.wait_for_timeout(250)
+                        await page.wait_for_timeout(JS_SCROLL_WAIT_MS)
                         current_html = await page.content()
                         current_size = len(current_html)
                         if current_size == previous_size:
@@ -201,7 +206,7 @@ class Crawler:
                             "domcontentloaded",
                             timeout=JS_RENDER_TIMEOUT_SECONDS * 1000,
                         )
-                        await page.wait_for_timeout(500)
+                        await page.wait_for_timeout(JS_PAGINATION_WAIT_MS)
                     except Exception:
                         break
 
@@ -384,18 +389,23 @@ class Crawler:
             LOGGER.info("Pominięto widok kalendarza: %s", site)
             return []
         agent = self.crawler_agent
-        open_list = [site]
+        open_list = [(0, 0, site)]
+        queue_order = 0
         closed_list: list[str] = []
         open_keys = {self._normalize_url(site)}
         closed_keys: set[str] = set()
 
         def enqueue(link: str, is_sitemap: bool = False) -> None:
+            nonlocal queue_order
             key = self._normalize_url(link)
             if self._is_ignored_url(key):
                 return
             in_scope = self._same_host(link, site) if is_sitemap else self._in_scope(link, site)
             if in_scope and key not in open_keys and key not in closed_keys:
-                open_list.append(key)
+                queue_order += 1
+                category = "sitemap" if is_sitemap else agent.classify(key)
+                priority = {"article": 0, "sitemap": 1, "listing": 2, "other": 3}[category]
+                heapq.heappush(open_list, (priority, queue_order, key))
                 open_keys.add(key)
 
         def page_links(html: str, page_url: str, base_url: str) -> tuple[list[str], int, int]:
@@ -435,7 +445,7 @@ class Crawler:
             enqueue(sitemap_url, is_sitemap=True)
 
         while open_list and len(closed_list) < MAX_VISITED_PAGES:
-            page = open_list.pop(0)
+            _, _, page = heapq.heappop(open_list)
             page_key = self._normalize_url(page)
             open_keys.discard(page_key)
             if page_key in closed_keys:
@@ -458,6 +468,8 @@ class Crawler:
                         enqueue(sitemap_url, is_sitemap=True)
                 page = final_page
             category = agent.classify(page)
+            if page == site and category == "other":
+                category = "listing"
             LOGGER.info("Odwiedzam [%s]: %s", category, page)
             if category == "other":
                 await self._remove_article(site, page)

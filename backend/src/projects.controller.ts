@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, HttpException, HttpStatus, Ip, NotFoundException, Param, Post, Query } from '@nestjs/common';
+import { BadRequestException, Controller, Get, HttpException, HttpStatus, Ip, Param, Post, Query } from '@nestjs/common';
 import { AssessmentService } from './assessment.service';
 import { ProjectsService } from './projects.service';
 
@@ -11,7 +11,7 @@ export class ProjectsController {
   ) {}
 
   /** Wyszukuje tekst projektu i slowa agenta; matchedTerms nie jest ocena trafnosci. */
-  @Get(['projects/search', 'api/projects/search'])
+  @Get('api/projects/search')
   search(@Query('q') query?: string, @Query('keywords') keywords?: string) {
     if ((query !== undefined && typeof query !== 'string') ||
         (keywords !== undefined && typeof keywords !== 'string')) {
@@ -51,27 +51,5 @@ export class ProjectsController {
     const missing = Array.isArray(assessment?.missing_questions)
       ? assessment.missing_questions.filter((item): item is string => typeof item === 'string') : [];
     return this.assessment.analyze(detail.innovation.title, detail.innovation.solution, missing);
-  }
-
-  /** Placeholder do czasu dodania danych o potrzebach organizacji. */
-  @Get('api/needs')
-  needs() {
-    return { items: [], organizations: [], total: 0 };
-  }
-
-  /** Placeholder do czasu dodania danych o potrzebach organizacji. */
-  @Get('api/needs/:id')
-  need() {
-    throw new NotFoundException('Nie znaleziono potrzeby.');
-  }
-
-  /** Legacy placeholder: waliduje wejscie, ale nie liczy ani nie zapisuje oceny. */
-  @Post('assessment')
-  evaluate(@Body() body: unknown) {
-    if (!body || typeof body !== 'object' || Array.isArray(body) || !('parameters' in body) ||
-        !body.parameters || typeof body.parameters !== 'object' || Array.isArray(body.parameters)) {
-      throw new BadRequestException('Podaj obiekt parameters.');
-    }
-    return this.assessment.evaluate(body.parameters as Record<string, unknown>);
   }
 }

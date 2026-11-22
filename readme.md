@@ -42,12 +42,12 @@ Ocena potencjalu jest ostrozna i heurystyczna. Rozpoznaje wybrane fakty z tekstu
 
 Porownanie zewnetrzne moze korzystac z:
 
-| Zrodlo | Stan |
-| --- | --- |
-| Crossref | Publiczne metadane publikacji |
-| Interreg | Katalog projektow pobierany z serwisu Interreg Polska |
-| EPO OPS | Wymaga `EPO_OPS_KEY` i `EPO_OPS_SECRET` |
-| PBN | Wymaga `PBN_APP_ID` i `PBN_APP_TOKEN` |
+| Zrodlo                                    | Stan                                                    |
+| ----------------------------------------- | ------------------------------------------------------- |
+| Crossref                                  | Publiczne metadane publikacji                           |
+| Interreg                                  | Katalog projektow pobierany z serwisu Interreg Polska   |
+| EPO OPS                                   | Wymaga `EPO_OPS_KEY` i `EPO_OPS_SECRET`                 |
+| PBN                                       | Wymaga `PBN_APP_ID` i `PBN_APP_TOKEN`                   |
 | UPRP, PPM, biblioteki PAN i BazTOL, NCBiR | Nie sa bezposrednio przeszukiwane przez obecny pipeline |
 
 Brak znalezionego podobienstwa nie potwierdza nowosci. Porownania tekstowe nie zastepuja badania stanu techniki, analizy zastrzezen patentowych ani ustalenia, czy dwa wpisy opisuja ten sam projekt. Zapytania do zrodel zewnetrznych moga przekazywac fragmenty tytulu i opisu.
@@ -132,14 +132,14 @@ python -m unittest discover -s tests -p "test_*.py"
 
 ## Struktura repozytorium
 
-| Sciezka | Rola |
-| --- | --- |
-| `agent/` | Crawler, formatowanie, wykrywanie projektow, ocena, zrodla porownawcze i trening modeli |
-| `backend/` | NestJS API, mapowanie katalogu, wyszukiwanie i analiza AI |
-| `frontend/` | Angular SPA: katalog, karta projektu i wyszukiwarka |
-| `agent/data/sites.csv` | Punkty startowe crawlera |
-| `agent/data/projects_example.json` | Zestaw referencyjny do przygotowania przykladow treningowych |
-| `agent/results/` | Wyniki pipeline'u czytane przez backend |
+| Sciezka                            | Rola                                                                                    |
+| ---------------------------------- | --------------------------------------------------------------------------------------- |
+| `agent/`                           | Crawler, formatowanie, wykrywanie projektow, ocena, zrodla porownawcze i trening modeli |
+| `backend/`                         | NestJS API, mapowanie katalogu, wyszukiwanie i analiza AI                               |
+| `frontend/`                        | Angular SPA: katalog, karta projektu i wyszukiwarka                                     |
+| `agent/data/sites.csv`             | Punkty startowe crawlera                                                                |
+| `agent/data/projects_example.json` | Zestaw referencyjny do przygotowania przykladow treningowych                            |
+| `agent/results/`                   | Wyniki pipeline'u czytane przez backend                                                 |
 
 ## Kontekst konkursowy
 
@@ -152,4 +152,3 @@ Zgloszenie formalne wymaga osobnej prezentacji PDF do 10 slajdow oraz filmu do 3
 Kontakt do wyzwania PCI: Kacper Moczarny, [k.moczarny@pcinn.org](mailto:k.moczarny@pcinn.org).
 
 Szczegoly techniczne: [frontend](frontend/README.md), [backend](backend/README.md), [agent](agent/README.md).
-

@@ -26,11 +26,7 @@ Plik musi zawierac obiekt `{"projects": [...]}` w formacie generowanym przez [ag
 | `GET /api/innovations?q=...` | Katalog; opcjonalne filtrowanie tekstowe; zwraca `items`, `organizations`, `total` |
 | `GET /api/innovations/:id` | Szczegoly innowacji, ocena, cytaty, podobne rekordy i dalsze kroki |
 | `GET /api/projects/search?q=...&keywords=...` | Wyszukiwanie tekstowe; zwraca `{ project, matchedTerms }[]` |
-| `GET /projects/search` | Alias zgodnosci wstecznej dla wyszukiwania |
-| `GET /api/needs` | Pusta lista: brak danych o potrzebach organizacji |
-| `GET /api/needs/:id` | `404`: rekordy potrzeb nie sa dostepne |
 | `POST /api/innovations/:id/analysis` | Opcjonalna analiza AI; nie zmienia zapisanej oceny |
-| `POST /assessment` | Placeholder: `criteria_not_configured`; nie liczy ani nie zapisuje oceny |
 
 Wyszukiwanie ignoruje wielkosc liter i polskie znaki, dopasowuje fragmenty slow w polach projektu i ogranicza zapytanie `q` do 180 znakow, a `keywords` do 500. Co najmniej jedno slowo musi byc podane. `matchedTerms` jest lista dopasowan, a nie wynikiem trafnosci.
 

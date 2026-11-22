@@ -24,8 +24,6 @@ Router używa zwykłych ścieżek bez hash-location:
 | `/innovations` | Katalog innowacji |
 | `/innovations/:id` | Szczegóły innowacji |
 | `/search` | Wyszukiwanie projektów zindeksowanych przez agenta |
-| `/online` | Przekierowanie zgodności wstecznej do `/search` |
-| `/needs` i `/needs/:id` | Przekierowanie do katalogu; API nie ma danych o potrzebach |
 
 Hosting produkcyjny musi kierować bezpośrednie żądania nieznanych ścieżek aplikacji do `index.html`.
 

@@ -7,35 +7,54 @@
 </div>
 <form class="search-row" (submit)="search($event, searchInput.value)">
   <div class="search-field">
-    <span class="search-icon">⌕</span>
+    <span class="search-icon" aria-hidden="true">⌕</span>
     <input #searchInput name="q" [value]="query" aria-label="Szukaj innowacji" placeholder="Szukaj po problemie, rozwiązaniu lub obszarze...">
   </div>
-  <button type="submit" class="btn" [disabled]="loading">Szukaj</button>
+  <button type="submit" class="btn" [disabled]="loading">{{ loading ? 'Wyszukiwanie…' : 'Szukaj' }}</button>
 </form>
 @if (error) { <div class="form-alert" role="alert">{{ error }}</div> }
 <div class="section-head">
   <h2>Innowacje <span class="counter">{{ data.total }}</span></h2>
   <span class="small-note">Oceny nie są zweryfikowane</span>
 </div>
-<div class="list-cards">
-  @for (item of data.items; track item.id) {
-    <article class="list-row">
-      <div>
-        <div class="meta">
-          <span [class]="item.is_demo ? 'tag tag-demo' : 'tag tag-slate'">{{ item.is_demo ? 'DANE DEMONSTRACYJNE' : 'Dane niezweryfikowane' }}</span>
-          @if (item.prior_art?.status === 'matches_found') { <span class="tag tag-demo">Możliwe podobne rozwiązanie</span> }
-          @if (item.assessment; as assessment) { <span class="tag tag-outline">{{ assessmentStatus(assessment.status) }}</span> }
-          @for (tag of (item.domain_tags || []).slice(0, 2); track $index) { <span class="tag">{{ tag }}</span> }
-          @if (stageName(item.stage)) { <span class="tag tag-outline">{{ stageName(item.stage) }}</span> }
+<div class="list-cards" [attr.aria-busy]="loading">
+  @if (loading) {
+    <div class="loading-skeletons" role="status" aria-label="Ładowanie innowacji">
+      @for (placeholder of [1, 2, 3, 4]; track placeholder) {
+        <div class="list-row skeleton-row" aria-hidden="true">
+          <div class="skeleton-content">
+            <span class="skeleton-line skeleton-line-short"></span>
+            <span class="skeleton-line skeleton-line-title"></span>
+            <span class="skeleton-line"></span>
+            <span class="skeleton-line skeleton-line-meta"></span>
+          </div>
         </div>
-        <h3><a [routerLink]="['/', view.kind, item.id]">{{ item.title }}</a></h3>
-        <p>{{ excerpt(item.solution) }}</p>
-        @if (item.assessment; as assessment) { <div class="small-note">Potencjał: {{ assessment.score === null ? 'brak danych' : assessment.score + '%' }} · Pewność: {{ round(assessment.coverage * 100) }}%</div> }
-        <div class="small-note" style="margin-top:9px">{{ organizationName(item.organization_id) }}@if (typeName(item.innovation_type)) { · {{ typeName(item.innovation_type) }} }</div>
+      }
+    </div>
+  } @else {
+    @for (item of data.items; track item.id) {
+      <article class="list-row">
+        <div>
+          <div class="meta">
+            <span [class]="item.is_demo ? 'tag tag-demo' : 'tag tag-slate'">{{ item.is_demo ? 'DANE DEMONSTRACYJNE' : 'Dane niezweryfikowane' }}</span>
+            @if (item.prior_art?.status === 'matches_found') { <span class="tag tag-demo">Możliwe podobne rozwiązanie</span> }
+            @if (item.assessment; as assessment) { <span class="tag tag-outline" [class.tag-development]="assessment.status === 'development'">{{ assessmentStatus(assessment.status) }}</span> }
+            @for (tag of (item.domain_tags || []).slice(0, 2); track $index) { <span class="tag">{{ tag }}</span> }
+            @if (stageName(item.stage)) { <span class="tag tag-outline">{{ stageName(item.stage) }}</span> }
+          </div>
+          <h3><a [routerLink]="['/', view.kind, item.id]">{{ item.title }}</a></h3>
+          <p>{{ excerpt(item.solution) }}</p>
+              @if (item.assessment; as assessment) { <div class="small-note">Potencjał: {{ assessment.score === null ? 'brak danych' : assessment.score + '%' }} · Pewność: {{ round(assessment.coverage * 100) }}%</div> }
+              <div class="small-note organization-note">{{ organizationName(item.organization_id) }}@if (typeName(item.innovation_type)) { <span>· {{ typeName(item.innovation_type) }}</span> }</div>
+        </div>
+        <div class="side"><a [routerLink]="['/', view.kind, item.id]" class="btn btn-sm">Otwórz →</a></div>
+      </article>
+    } @empty {
+      <div class="empty-state">
+        <span class="empty-mark" aria-hidden="true">⌕</span>
+        <h2>Brak wyników</h2>
+        <p>{{ query ? 'Nie znaleziono innowacji dla „' + query + '”. Zmień frazę i spróbuj ponownie.' : 'W katalogu nie ma teraz innowacji do wyświetlenia.' }}</p>
       </div>
-      <div class="side"><a [routerLink]="['/', view.kind, item.id]" class="btn btn-sm">Otwórz →</a></div>
-    </article>
-  } @empty {
-    <div class="empty">Nie znaleziono pasujących innowacji</div>
+    }
   }
 </div>

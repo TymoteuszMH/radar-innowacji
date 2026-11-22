@@ -11,63 +11,148 @@ import httpx
 from openpyxl import Workbook
 
 from agents.prior_art import PriorArtChecker
-from agents.project_agent import ProjectAgent, article_text, assess_project, main
-from data.build_project_dataset import build_synthetic_dataset, write_dataset
-from models.train_project_agent import split_by_domain, undersample_training
-from models.evaluation import best_fbeta_threshold, configured_beta, split_crawler_domains
+from agents.project_agent import ProjectAgent, article_text, assess_project, main, prepare_text, tokenize_text
+from data.build_project_dataset import build_training_dataset, write_dataset
+from models.train_project_agent import split_records
+from models.evaluation import best_fbeta_threshold, split_crawler_domains
 from crawler.crawler_agent import CrawlerAgent
 
 
+class BertClassifierTests(unittest.TestCase):
+    @staticmethod
+    def tokenizer():
+        from tokenizers import Tokenizer, models, normalizers, pre_tokenizers, processors
+        from transformers import BertTokenizerFast
+        vocab = {"[PAD]": 0, "[UNK]": 1, "[CLS]": 2, "[SEP]": 3,
+                 "head": 4, "tail": 5, "middle": 6, "projekt": 7, "szum": 8}
+        backend = Tokenizer(models.WordLevel(vocab, unk_token="[UNK]"))
+        backend.normalizer = normalizers.BertNormalizer()
+        backend.pre_tokenizer = pre_tokenizers.Whitespace()
+        backend.post_processor = processors.TemplateProcessing(
+            single="[CLS] $A [SEP]", special_tokens=[("[CLS]", 2), ("[SEP]", 3)]
+        )
+        return BertTokenizerFast(tokenizer_object=backend, unk_token="[UNK]",
+                                 pad_token="[PAD]", cls_token="[CLS]", sep_token="[SEP]")
+
+    def test_head_tail_word_and_token_limits(self):
+        words = ["head"] * 200 + ["middle"] * 51 + ["tail"] * 150
+        prepared = prepare_text(" ".join(words))
+        self.assertEqual(prepared, " ".join(words[:200]) + " ... " + " ".join(words[-150:]))
+        self.assertEqual(prepare_text("head " * 350).split(), ["head"] * 350)
+        encoded = tokenize_text(self.tokenizer(), "head-tail " * 600)
+        self.assertEqual(len(encoded["input_ids"]), 512)
+        self.assertEqual(encoded["input_ids"][1], 4)
+        self.assertEqual(encoded["input_ids"][-2], 5)
+
+    def test_weighted_loss(self):
+        import torch
+        from types import SimpleNamespace
+        from models.train_project_agent import WeightedTrainer
+        trainer = object.__new__(WeightedTrainer)
+        trainer.class_weights = torch.tensor([0.6, 2.4])
+        logits = torch.tensor([[2.0, 0.0], [1.0, 0.0]])
+        labels = torch.tensor([0, 1])
+        model = lambda **kwargs: SimpleNamespace(logits=logits)
+        inputs = {"labels": labels}
+        loss, outputs = trainer.compute_loss(model, inputs, return_outputs=True)
+        expected = torch.nn.CrossEntropyLoss(weight=trainer.class_weights)(logits, labels)
+        self.assertTrue(torch.allclose(loss, expected))
+        self.assertIs(outputs.logits, logits)
+        self.assertIn("labels", inputs)
+
+    def test_real_training_save_load_and_prediction(self):
+        from transformers import BertConfig, BertForSequenceClassification
+        from models import train_project_agent
+        tokenizer = self.tokenizer()
+        config = BertConfig(vocab_size=9, hidden_size=16, num_hidden_layers=1,
+                            num_attention_heads=2, intermediate_size=24, num_labels=2)
+        records = [{"text": f"{word} projekt", "label": label}
+                   for word, label, count in (("szum", 0, 12), ("projekt", 1, 4))
+                   for _ in range(count)]
+        agent = ProjectAgent()
+        settings = {"PROJECT_AGENT_TRAIN_BATCH_SIZE": "4", "PROJECT_AGENT_EVAL_BATCH_SIZE": "2",
+                    "PROJECT_AGENT_LEARNING_RATE": "0.0002", "PROJECT_AGENT_WARMUP_RATIO": "0.25",
+                    "PROJECT_AGENT_WEIGHT_DECAY": "0.02", "PROJECT_AGENT_VALIDATION_FRACTION": "0.2",
+                    "PROJECT_AGENT_SEED": "19", "PROJECT_AGENT_TRAIN_EPOCHS": "1"}
+        with patch.dict(os.environ, settings), \
+             patch.object(train_project_agent.AutoTokenizer, "from_pretrained", return_value=tokenizer), \
+             patch.object(train_project_agent.AutoModelForSequenceClassification, "from_pretrained",
+                          return_value=BertForSequenceClassification(config)), \
+             patch.object(train_project_agent, "compute_class_weight",
+                          wraps=train_project_agent.compute_class_weight) as weight_fn, \
+             patch.object(train_project_agent, "TrainingArguments",
+                          wraps=train_project_agent.TrainingArguments) as arguments:
+            agent.fit(records)
+        self.assertEqual(len(weight_fn.call_args.kwargs["y"]), 12)
+        self.assertEqual(sum(weight_fn.call_args.kwargs["y"]), 3)
+        self.assertEqual(arguments.call_args.kwargs["metric_for_best_model"], "f1")
+        self.assertTrue(arguments.call_args.kwargs["load_best_model_at_end"])
+        self.assertEqual(arguments.call_args.kwargs["per_device_train_batch_size"], 4)
+        self.assertEqual(arguments.call_args.kwargs["per_device_eval_batch_size"], 2)
+        self.assertEqual(arguments.call_args.kwargs["learning_rate"], 0.0002)
+        self.assertEqual(arguments.call_args.kwargs["warmup_ratio"], 0.25)
+        self.assertEqual(arguments.call_args.kwargs["weight_decay"], 0.02)
+        self.assertEqual(arguments.call_args.kwargs["seed"], 19)
+        self.assertEqual(arguments.call_args.kwargs["num_train_epochs"], 1)
+        before = agent.predict("projekt")
+        self.assertTrue(0 <= before["probability"] <= 1)
+        self.assertEqual(agent.predict("projekt", threshold=0)["label"], 1)
+        self.assertEqual(agent.predict("projekt", threshold=1)["label"], 0)
+        with self.assertRaises(ValueError):
+            agent.predict("projekt", threshold=1.1)
+        self.assertIsNone(agent.predict_proba(" "))
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "model"
+            agent.threshold = 0.73
+            agent.save(path)
+            restored = ProjectAgent.load(path)
+            self.assertEqual(restored.threshold, 0.73)
+            self.assertAlmostEqual(before["probability"], restored.predict_proba("projekt"), places=6)
+
+
 class ProjectDatasetTests(unittest.TestCase):
-    def test_training_undersampling_is_exact_reproducible_and_without_replacement(self):
-        for positive_count, negative_count in ((24, 21), (9, 40)):
-            records = [{"text": f"Przykład {label} {index}", "label": label}
-                       for label, count in ((1, positive_count), (0, negative_count))
-                       for index in range(count)]
-            sampled = undersample_training(records)
-            count = min(positive_count, negative_count)
-            self.assertEqual(len(sampled), count * 2)
-            self.assertEqual(sum(item["label"] == 1 for item in sampled), count)
-            self.assertEqual(sum(item["label"] == 0 for item in sampled), count)
-            self.assertEqual(len({item["text"] for item in sampled}), len(sampled))
-            self.assertEqual(sampled, undersample_training(records))
-            self.assertEqual(len(records), positive_count + negative_count)
-        with self.assertRaisesRegex(ValueError, "pozytywnych i negatywnych"):
-            undersample_training([{"text": "Przykład", "label": 1}] * 2)
+    def test_validation_fraction_and_invalid_configuration(self):
+        records = [{"text": f"Przykład {index}", "label": index % 2} for index in range(40)]
+        with patch.dict(os.environ, {"PROJECT_AGENT_VALIDATION_FRACTION": "0.25",
+                                     "PROJECT_AGENT_SEED": "13"}):
+            train, validation = split_records(records)
+            self.assertEqual((len(train), len(validation)), (30, 10))
+            self.assertEqual(sum(item["label"] for item in validation), 5)
+            self.assertEqual((train, validation), split_records(records))
+        with patch.dict(os.environ, {"PROJECT_AGENT_VALIDATION_FRACTION": "1"}):
+            with self.assertRaisesRegex(ValueError, "PROJECT_AGENT_VALIDATION_FRACTION"):
+                split_records(records)
+        with patch.dict(os.environ, {"PROJECT_AGENT_LEARNING_RATE": "nan"}):
+            with self.assertRaisesRegex(ValueError, "PROJECT_AGENT_LEARNING_RATE"):
+                ProjectAgent().fit(records, epochs=1)
 
-    def test_project_fit_does_not_reweight_classes(self):
-        from torch import nn
-        records = [{"text": f"Przykład {index}", "label": int(index < 3)} for index in range(10)]
-        agent = ProjectAgent(hidden_size=8)
-        with patch("agents.project_agent.nn.CrossEntropyLoss", wraps=nn.CrossEntropyLoss) as loss:
-            agent.fit(records, epochs=1)
-        loss.assert_called_once_with()
+    def test_training_cli_uses_configured_paths_and_explicit_epochs(self):
+        from models import train_project_agent
+        environment = {"PROJECT_AGENT_DATASET_PATH": "data/custom.json",
+                       "PROJECT_AGENT_MODEL_PATH": "models/custom-model"}
+        with patch.dict(os.environ, environment), \
+             patch("sys.argv", ["train_project_agent", "--epochs", "2"]), \
+             patch.object(train_project_agent, "train_project") as train:
+            train_project_agent.main()
+        train.assert_called_once_with(train_project_agent.PROJECT_DIR / "data" / "custom.json",
+                                      train_project_agent.PROJECT_DIR / "models" / "custom-model", 2)
 
-    def test_project_dropout_is_configurable_from_environment(self):
-        records = [{"text": f"Przykład {index}", "label": int(index < 3)} for index in range(10)]
-        with patch.dict(os.environ, {"PROJECT_AGENT_DROPOUT": "0.3"}):
-            agent = ProjectAgent(hidden_size=8)
-            agent.fit(records, epochs=1)
-        self.assertEqual(agent.model.layers[2].p, 0.3)
-        with patch.dict(os.environ, {"PROJECT_AGENT_DROPOUT": "1"}):
-            with self.assertRaisesRegex(ValueError, "PROJECT_AGENT_DROPOUT"):
-                ProjectAgent()
+    def test_training_split_is_stratified_and_preserves_every_record(self):
+        records = [{"text": f"Przykład {label} {index}", "label": label}
+                   for label, count in ((1, 33), (0, 120)) for index in range(count)]
+        train, validation = split_records(records)
+        self.assertEqual((len(train), len(validation)), (122, 31))
+        self.assertEqual(sum(item["label"] for item in validation), 7)
+        self.assertEqual(len({item["text"] for item in train + validation}), 153)
+        self.assertEqual((train, validation), split_records(records))
+        with self.assertRaises(ValueError):
+            split_records([{"text": "Przykład", "label": 1}] * 2)
 
     def test_fbeta_prefers_precision_and_counts_unknown_as_not_detected(self):
         threshold, score = best_fbeta_threshold([0.9, 0.8, 0.7, None], [True, False, True, True])
         self.assertEqual(threshold, 0.9)
         self.assertAlmostEqual(score, 1.25 / 1.75)
         self.assertEqual(best_fbeta_threshold([0.2, 0.8], [False, False]), (1.0, 0.0))
-
-    def test_beta_configuration_changes_threshold(self):
-        probabilities = [0.9, 0.8, 0.7]
-        labels = [True, False, True]
-        with patch.dict(os.environ, {"AGENT_F_BETA": "0.1"}):
-            self.assertEqual(best_fbeta_threshold(probabilities, labels, configured_beta())[0], 0.9)
-        with patch.dict(os.environ, {"AGENT_F_BETA": "0.9"}):
-            self.assertEqual(best_fbeta_threshold(probabilities, labels, configured_beta())[0], 0.7)
-        with patch.dict(os.environ, {"AGENT_F_BETA": "1"}):
-            self.assertEqual(best_fbeta_threshold(probabilities, labels, configured_beta())[0], 0.7)
 
     def test_crawler_threshold_is_saved_and_changes_article_decision(self):
         records = [{"url": f"https://{domain}.example/{category}", "category": category}
@@ -90,35 +175,7 @@ class ProjectDatasetTests(unittest.TestCase):
             restored.article_threshold = None
             self.assertEqual(restored.classify("https://example.test"), "article")
 
-    def test_training_calibrates_with_project_evidence_gate(self):
-        from models.train_project_agent import train_project
-        train = [{"domain": "a", "text": f"Dane treningowe {index}", "label": int(index < 3)}
-                 for index in range(17)]
-        validation = [
-            {"domain": "b", "text": "Opracowano aplikację alfa.", "label": 1},
-            {"domain": "b", "text": "Opracowano aplikację beta.", "label": 0},
-            {"domain": "b", "text": "Opracowano aplikację gamma.", "label": 1},
-            {"domain": "b", "text": "Brak rozpoznanego rozwiązania.", "label": 1},
-        ]
-        with tempfile.TemporaryDirectory() as directory:
-            path = Path(directory) / "dataset.json"
-            model = Path(directory) / "model.pt"
-            path.write_text(json.dumps({"records": train + validation}), encoding="utf-8")
-            with patch("models.train_project_agent.split_by_domain", return_value=(train, validation)), \
-                 patch("models.train_project_agent.ProjectAgent") as agent, \
-                 patch.dict(os.environ, {"AGENT_F_BETA": "0.9"}):
-                agent.return_value.predict_proba.side_effect = [0.9, 0.8, 0.7]
-                train_project(path, model, epochs=3)
-            selected = agent.return_value.fit.call_args.args[0]
-            self.assertEqual(len(selected), 6)
-            self.assertEqual(sum(item["label"] == 1 for item in selected), 3)
-            self.assertTrue(all(item in train for item in selected))
-            self.assertEqual(agent.return_value.fit.call_args.kwargs, {"epochs": 3})
-            agent.return_value.save.assert_called_once_with(model)
-            self.assertEqual(agent.return_value.predict_proba.call_count, 3)
-            self.assertEqual(agent.return_value.threshold, 0.7)
-
-    def test_crawler_training_uses_configured_beta(self):
+    def test_crawler_training_uses_f05(self):
         from models import train_models
         train = [{"url": "https://a.example/train", "category": "article"}]
         validation = [
@@ -129,12 +186,11 @@ class ProjectDatasetTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "dataset.json"
             path.write_text(json.dumps({"records": train + validation}), encoding="utf-8")
-            environment = {"AGENT_F_BETA": "0.9", "PROJECT_AGENT_DATASET_PATH": str(path),
+            environment = {"PROJECT_AGENT_DATASET_PATH": str(path),
                            "CRAWLER_AGENT_DATASET_PATH": str(path)}
             output = io.StringIO()
             with patch.dict(os.environ, environment), \
-                 patch.object(train_models, "split_by_domain", return_value=(train, validation)), \
-                 patch.object(train_models, "undersample_training"), \
+                 patch.object(train_models, "split_records", return_value=(train, validation)), \
                  patch.object(train_models, "split_crawler_domains", return_value=(train, validation)), \
                  patch.object(train_models, "CrawlerAgent") as agent, \
                  patch.object(train_models, "train_project"), redirect_stdout(output):
@@ -142,21 +198,64 @@ class ProjectDatasetTests(unittest.TestCase):
                     {"article": 0.9}, {"article": 0.8}, {"article": 0.7},
                 ]
                 train_models.main()
-            self.assertEqual(agent.return_value.article_threshold, 0.7)
-            self.assertIn("F0.9=", output.getvalue())
+            self.assertEqual(agent.return_value.article_threshold, 0.9)
+            self.assertIn("F0.5=", output.getvalue())
 
-    def test_synthetic_dataset_is_balanced_and_split_by_template(self):
-        dataset = build_synthetic_dataset()
-        train, validation = split_by_domain(dataset["records"])
-        self.assertGreater(len(dataset["records"]), 100)
-        self.assertEqual(dataset["counts"]["project"], dataset["counts"]["non_project"])
-        self.assertTrue({item["domain"] for item in train}.isdisjoint(
-            {item["domain"] for item in validation}))
-        self.assertTrue(all(item["label_source"] == "synthetic_template" for item in dataset["records"]))
+    def test_curated_dataset_has_requested_counts_and_auditable_sources(self):
+        dataset = build_training_dataset()
+        train, validation = split_records(dataset["records"])
+        self.assertEqual(dataset["counts"], {"project": 20, "non_project": 35})
+        self.assertEqual(dataset["source_counts"], {
+            "generated_junk_page": 7,
+            "generated_positive_article": 8,
+            "generated_unrelated_article": 8,
+            "hard_negative_message": 20,
+            "generated_reference_article": 12,
+        })
+        self.assertEqual(sum(record["label"] == 1 for record in dataset["records"]), 20)
+        self.assertEqual(sum(record["label"] == 0 for record in dataset["records"]), 35)
+        self.assertEqual(len(train) + len(validation), 55)
+        from agents.project_agent import innovation_evidence
+        self.assertTrue(all(innovation_evidence(record["text"])
+                            for record in dataset["records"] if record["label"] == 1))
+        self.assertTrue(all(not innovation_evidence(record["text"])
+                            for record in dataset["records"] if record["label"] == 0))
+
+    def test_reference_positives_are_pci_compatible_and_deduplicated(self):
+        from data.build_project_dataset import _reference_project_records
+        records = _reference_project_records()
+        self.assertEqual(len(records), 12)
+        self.assertTrue(all(record["label"] == 1 for record in records))
+        self.assertTrue(all(record["text_origin"] == "synthetic_paraphrase_from_projects_example"
+                    for record in records))
+        self.assertEqual(len({record["title"].casefold() for record in records}), len(records))
+        self.assertNotIn("droniada-future-forum", " ".join(record["url"] for record in records))
+
+    def test_hard_negative_sample_is_balanced_across_institution_types(self):
+        from collections import Counter
+        from data.build_project_dataset import _hard_negative_records
+        records = _hard_negative_records()
+        self.assertEqual(len(records), 20)
+        self.assertTrue(all(record["label"] == 0 for record in records))
+        self.assertEqual(Counter(record["entity_category"] for record in records), {
+            "instytucja_publiczna": 5, "jst": 5, "szkola": 5, "uczelnia": 5,
+        })
+        self.assertEqual(records, _hard_negative_records())
 
     def test_record_text_ignores_existing_label_and_project_fields(self):
         self.assertEqual(article_text({"source_title": "Tytuł", "content": "Opis", "relevant": True,
                                        "project_title": "Sztuczna etykieta"}), "Tytuł\nOpis")
+
+    def test_configured_project_output_limits(self):
+        from agents.project_agent import project_from_article
+        article = {"content": "Uczniowie opracowali aplikację edukacyjną. "
+                   "Zespół zbudował czujnik wody. Naukowcy stworzyli prototyp robota."}
+        with patch.dict(os.environ, {"PROJECT_AGENT_EVIDENCE_MAX_SENTENCES": "2",
+                                     "PROJECT_AGENT_KEYWORDS_MAX": "2",
+                                     "PROJECT_AGENT_KEYWORD_PHRASES_MAX": "1"}):
+            project = project_from_article(article)
+        self.assertEqual(len(project["evidence"]), 2)
+        self.assertEqual(len(project["keywords"]), 2)
 
     def test_generator_does_not_overwrite_existing_dataset(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -165,7 +264,6 @@ class ProjectDatasetTests(unittest.TestCase):
             with self.assertRaises(FileExistsError):
                 write_dataset(path)
             self.assertEqual(path.read_text(encoding="utf-8"), "existing")
-
 
 class ProjectAgentTests(unittest.TestCase):
     def setUp(self):
@@ -189,6 +287,24 @@ class ProjectAgentTests(unittest.TestCase):
         self.assertTrue(project["pci_compatibility"]["compatible"])
         self.assertIn("pionowe podnoszenie", project["summary"])
         self.assertEqual(len(project["uuid"]), 36)
+
+    def test_query_parameters_distinguish_reference_articles(self):
+        from agents.project_agent import project_from_article
+        known_url = "https://slokwidzyn.edupage.org/news/?gtnid=1082"
+        self.assertEqual(ProjectAgent.normalize_url(known_url), "https://slokwidzyn.edupage.org/news?gtnid=1082")
+        self.assertNotEqual(ProjectAgent.normalize_url(known_url),
+                            ProjectAgent.normalize_url("https://slokwidzyn.edupage.org/news/?gtnid=999"))
+        self.assertEqual(project_from_article({"url": known_url})["project_title_source"], "curated_reference")
+        self.assertEqual(project_from_article({"url": "https://slokwidzyn.edupage.org/news/?gtnid=999"})["project_title_source"], "source_title")
+
+    def test_verified_article_with_multiple_mentions_is_not_lost(self):
+        agent = ProjectAgent()
+        source = {"articles": [{"url": "https://slokwidzyn.edupage.org/news/?gtnid=1082",
+                                "content": "Projekt „Alfa” w finale. Projekt „Beta” zdobył nagrodę."}]}
+        with patch.object(agent, "predict_proba", return_value=None):
+            result = agent.classify_results(source)
+        self.assertEqual(len(result["projects"]), 1)
+        self.assertIn("IDLEK", result["projects"][0]["project_title"])
 
     def test_assessment_uses_only_confirmed_criteria(self):
         result = assess_project("Opracowano nowatorską aplikację i zdobyto nagrodę. "
@@ -222,7 +338,7 @@ class ProjectAgentTests(unittest.TestCase):
         self.assertEqual(low["status"], "low")
 
     def test_assessment_is_scoped_to_each_project(self):
-        agent = ProjectAgent(hidden_size=8)
+        agent = ProjectAgent()
         source = {"articles": [{"content": "Projekt „Alfa” opracował aplikację. "
             "Działający prototyp monitoruje wodę.\nProjekt „Beta” zbudował czujnik."}]}
         with patch.object(agent, "predict_proba", return_value=0.9):
@@ -241,24 +357,8 @@ class ProjectAgentTests(unittest.TestCase):
         self.assertEqual(project["contact_email"], "zespol@example.pl")
         self.assertEqual(project_from_article({"content": "Wiadomość: redakcja@example.pl"})["contact_email"], "")
 
-    def test_domain_split_and_model_round_trip(self):
-        train, validation = split_by_domain(self.records)
-        self.assertTrue({item["domain"] for item in train}.isdisjoint(
-            {item["domain"] for item in validation}))
-        agent = ProjectAgent(hidden_size=8)
-        agent.fit(self.records, epochs=2)
-        agent.threshold = 0.73
-        before = agent.predict_proba("projekt szkolny aplikacja")
-        with tempfile.TemporaryDirectory() as directory:
-            path = Path(directory) / "model.pt"
-            agent.save(path)
-            loaded = ProjectAgent.load(path)
-            self.assertAlmostEqual(before, loaded.predict_proba("projekt szkolny aplikacja"))
-            self.assertEqual(loaded.threshold, 0.73)
-        self.assertIsNone(loaded.predict_proba("nieznanewyrazy"))
-
     def test_default_threshold_and_topics_are_scoped_to_each_project(self):
-        agent = ProjectAgent(hidden_size=8)
+        agent = ProjectAgent()
         agent.threshold = 0.8
         source = {"articles": [{"content": "Projekt „Alfa” opracował aplikację edukacyjną dla uczniów. "
             "Projekt „Beta” zbudował czujnik do monitorowania wody."}]}
@@ -273,11 +373,11 @@ class ProjectAgentTests(unittest.TestCase):
         self.assertNotIn("wody", projects[0]["keywords"])
 
     def test_classification_preserves_source_and_marks_unknown(self):
-        agent = ProjectAgent(hidden_size=8)
-        agent.fit(self.records, epochs=2)
+        agent = ProjectAgent()
         source = {"articles": [{"url": "1", "content": "Projekt: szkoła opracowała aplikację dla uczniów."},
                        {"url": "2", "content": "nieznanewyrazy"}]}
-        output = agent.classify_results(source, threshold=0)
+        with patch.object(agent, "predict_proba", side_effect=[0.8, None]):
+            output = agent.classify_results(source, threshold=0)
         self.assertEqual(output["projects"][0]["url"], "1")
         self.assertEqual(output["projects"][0]["summary"], "Projekt: szkoła opracowała aplikację dla uczniów.")
         self.assertEqual(output["records"][0]["analyzed_text"], "Projekt: szkoła opracowała aplikację dla uczniów.")
@@ -285,22 +385,21 @@ class ProjectAgentTests(unittest.TestCase):
         self.assertNotIn("project_detection", source["articles"][0])
 
     def test_prior_art_is_checked_only_for_detected_projects(self):
-        agent = ProjectAgent(hidden_size=8)
+        agent = ProjectAgent()
         checker = unittest.mock.Mock()
         checker.check.return_value = {"status": "matches_found", "matches": []}
         source = {"articles": [
             {"url": "1", "content": "Uczniowie opracowali aplikację dla uczniów."},
             {"url": "2", "content": "Odbyły się warsztaty."},
         ]}
-        with patch.object(agent, "predict_proba", return_value=0.9):
+        with patch.object(agent, "predict_proba", side_effect=[0.9, 0.1]):
             output = agent.classify_results(source, prior_art_checker=checker)
         checker.check.assert_called_once()
         self.assertEqual(output["projects"][0]["prior_art"]["status"], "matches_found")
         self.assertNotIn("prior_art", output["records"][1])
 
     def test_cli_separates_projects_and_analyzed_data(self):
-        agent = ProjectAgent(hidden_size=8)
-        agent.fit(self.records, epochs=2)
+        agent = ProjectAgent()
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             source = root / "input.json"
@@ -311,7 +410,8 @@ class ProjectAgentTests(unittest.TestCase):
             output = root / "projects.json"
             with patch("sys.argv", ["project_agent", "--input", str(source), "--output", str(output),
                                     "--model", str(root / "model.pt"), "--threshold", "0", "--no-prior-art"]), \
-                 patch.object(ProjectAgent, "load", return_value=agent):
+                 patch.object(ProjectAgent, "load", return_value=agent), \
+                 patch.object(agent, "predict_proba", side_effect=[0.8, None]):
                 main()
             projects = json.loads(output.read_text(encoding="utf-8"))
             data = json.loads((root / "data.json").read_text(encoding="utf-8"))
@@ -324,6 +424,42 @@ class ProjectAgentTests(unittest.TestCase):
             self.assertEqual(data["records"][0]["analyzed_text"], "Tytuł\nProjekt: szkoła opracowała aplikację dla uczniów.")
             self.assertEqual(data["records"][0]["content"], "Projekt: szkoła opracowała aplikację dla uczniów.")
 
+    def test_cli_uses_configured_threshold_and_honors_explicit_override(self):
+        from agents import project_agent
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "input.json"
+            source.write_text('{"articles": []}', encoding="utf-8")
+            output = root / "projects.json"
+            environment = {"PROJECT_AGENT_THRESHOLD": "0.73", "PRIOR_ART_ENABLED": "0",
+                           "PROJECT_DATA_OUTPUT_FILE": str(root / "configured-data.json")}
+            argv = ["project_agent", "--input", str(source), "--output", str(output)]
+            with patch.dict(os.environ, environment), patch("sys.argv", argv), \
+                 patch.object(project_agent, "process_file") as process:
+                main()
+            self.assertEqual(process.call_args.args[2], root / "data.json")
+            self.assertEqual(process.call_args.args[4], 0.73)
+            self.assertFalse(process.call_args.kwargs["prior_art_enabled"])
+            with patch.dict(os.environ, environment), patch("sys.argv", argv + ["--threshold", "0.2"]), \
+                 patch.object(project_agent, "process_file") as process:
+                main()
+            self.assertEqual(process.call_args.args[4], 0.2)
+
+    def test_cli_uses_configured_paths_without_explicit_output(self):
+        from agents import project_agent
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "input.json"
+            source.write_text('{"articles": []}', encoding="utf-8")
+            environment = {"ANALYSIS_OUTPUT_FILE": str(source), "PROJECTS_OUTPUT_FILE": str(root / "out.json"),
+                           "PROJECT_DATA_OUTPUT_FILE": str(root / "all.json"),
+                           "PROJECT_AGENT_MODEL_PATH": str(root / "model")}
+            with patch.dict(os.environ, environment), patch("sys.argv", ["project_agent"]), \
+                 patch.object(project_agent, "process_file") as process:
+                main()
+            self.assertEqual(process.call_args.args[:4],
+                             (source, root / "out.json", root / "all.json", root / "model"))
+
     def test_cli_rejects_output_collisions(self):
         with tempfile.TemporaryDirectory() as directory:
             source = Path(directory) / "data.json"
@@ -334,7 +470,7 @@ class ProjectAgentTests(unittest.TestCase):
             self.assertEqual(source.read_text(encoding="utf-8"), "original")
 
     def test_cli_persists_prior_art_by_default(self):
-        agent = ProjectAgent(hidden_size=8)
+        agent = ProjectAgent()
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             source = root / "input.json"
@@ -372,6 +508,18 @@ class ProjectAgentTests(unittest.TestCase):
         self.assertEqual(innovation_evidence(
             "Zrealizowano 204 projekty w zakresie rozbudowy bazy edukacyjnej uczelni medycznych."), [])
 
+    def test_generic_competition_and_funding_descriptions_are_not_innovation_evidence(self):
+        from agents.project_agent import innovation_evidence
+        for text in (
+            "Konkurs organizowany przez PARP pokazuje technologie powstające w nauce i rozwiązania rozwijane przez przedsiębiorców.",
+            "Konkurs jest skierowany do twórców produktów już wdrożonych.",
+            "Przygotowanie produktów opracowanych w ramach projektu do wejścia na rynki.",
+            "Nowo powstałe firmy pracują nad rozwojem pomysłu aż do powstania produktu.",
+        ):
+            with self.subTest(text=text):
+                self.assertEqual(innovation_evidence(text), [])
+        self.assertTrue(innovation_evidence("Studenci opracowali aplikację do monitorowania wody."))
+
     def test_extracts_name_with_adjectives(self):
         from agents.project_agent import project_from_article
         project = project_from_article({"source_title": "Zespół Szkół nr 2", "content":
@@ -385,7 +533,7 @@ class ProjectAgentTests(unittest.TestCase):
         self.assertEqual(project["project_title"], "Klasa z ECDL")
 
     def test_extracts_multiple_projects_with_separate_evidence_and_creators(self):
-        agent = ProjectAgent(hidden_size=8)
+        agent = ProjectAgent()
         source = {"articles": [{"url": "1", "source_title": "Innowacje", "content":
             "Projekt „Alfa” opracował aplikację do nauki. Autor: Jan Kowalski.\n"
             "Projekt „Beta” zbudował czujnik wody. Autor: Anna Nowak.\n"
@@ -401,7 +549,7 @@ class ProjectAgentTests(unittest.TestCase):
         self.assertEqual([p["url"] for p in output["projects"]], ["1", "1"])
 
     def test_deduplicates_before_prior_art_without_merging_unknown_or_distinct_creators(self):
-        agent = ProjectAgent(hidden_size=8)
+        agent = ProjectAgent()
         checker = unittest.mock.Mock()
         articles = [
             {"url": "1", "content": "Projekt „Alfa” opracował aplikację. Autor: Jan Kowalski."},
@@ -419,7 +567,7 @@ class ProjectAgentTests(unittest.TestCase):
         self.assertEqual(len(output["records"]), 7)
 
     def test_multiple_projects_in_one_sentence_and_repeated_project(self):
-        agent = ProjectAgent(hidden_size=8)
+        agent = ProjectAgent()
         source = {"articles": [{"url": "1", "content":
             "Projekt „Alfa” opracował aplikację, a projekt „Beta” zbudował czujnik. "
             "Twórca: Anna Nowak.\n"
@@ -431,7 +579,7 @@ class ProjectAgentTests(unittest.TestCase):
         self.assertIn("czujnik", output["projects"][1]["summary"])
 
     def test_cli_writes_deduplicated_projects_and_preserves_articles(self):
-        agent = ProjectAgent(hidden_size=8)
+        agent = ProjectAgent()
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             source = root / "input.json"
@@ -451,31 +599,44 @@ class ProjectAgentTests(unittest.TestCase):
             self.assertEqual([p["project_title"] for p in projects], ["Alfa", "Beta"])
             self.assertEqual(len(records), 2)
 
-    def test_does_not_save_general_mentions_as_projects(self):
-        agent = ProjectAgent(hidden_size=8)
-        agent.fit(self.records, epochs=2)
+    def test_model_candidates_without_evidence_are_rejected(self):
+        agent = ProjectAgent()
         source = {"articles": [
             {"url": "1", "source_title": "Warsztaty", "content": "Poznawali projekty edukacyjne."},
             {"url": "2", "source_title": "Projekt", "content": "Już wkrótce"},
         ]}
-        with patch.object(agent, "predict_proba", return_value=0.9):
+        with patch.object(agent, "predict_proba", side_effect=[0.9, 0.1]):
             output = agent.classify_results(source)
         self.assertEqual(output["projects"], [])
+        self.assertEqual([item["project_detection"]["is_project"] for item in output["records"]],
+                         [False, False])
+        self.assertEqual(output["records"][0]["project_detection"]["probability"], 0.9)
         self.assertEqual(len(output["records"]), 2)
 
-    def test_only_concrete_innovations_pass(self):
-        agent = ProjectAgent(hidden_size=8)
+    def test_probability_threshold_and_evidence_review_flags(self):
+        agent = ProjectAgent()
         articles = [
             {"url": "1", "content": "Nauczyciele uczestniczyli w szkoleniu w ramach projektu Erasmus."},
             {"url": "2", "content": "Program rządowy finansuje warsztaty z używania technologii cyfrowych."},
             {"url": "3", "content": "Uczniowie opracowali nową aplikację ułatwiającą naukę."},
             {"url": "4", "content": "Zespół zbudował prototyp urządzenia monitorującego jakość wody."},
         ]
-        with patch.object(agent, "predict_proba", return_value=0.9):
+        with patch.object(agent, "predict_proba", side_effect=[0.9, 0.1, 0.9, 0.9]):
             output = agent.classify_results({"articles": articles})
         self.assertEqual([project["url"] for project in output["projects"]], ["3", "4"])
+        self.assertEqual([project["flags"]["requires_review"] for project in output["projects"]],
+                         [False, False])
         self.assertEqual([item["project_detection"]["is_project"] for item in output["records"]],
                          [False, False, True, True])
+
+    def test_multiple_names_without_evidence_are_not_project_candidates(self):
+        agent = ProjectAgent()
+        article = {"url": "1", "source_title": "Nowe inicjatywy", "content":
+                   "Projekt „Alfa” planuje aplikację. Projekt „Beta” planuje warsztaty."}
+        with patch.object(agent, "predict_proba", return_value=0.9):
+            output = agent.classify_results({"articles": [article]})
+        self.assertEqual(output["projects"], [])
+        self.assertFalse(output["records"][0]["project_detection"]["is_project"])
 
     def test_generic_course_descriptions_do_not_match(self):
         from agents.project_agent import innovation_evidence
@@ -490,6 +651,27 @@ class ProjectAgentTests(unittest.TestCase):
 
 class PriorArtTests(unittest.TestCase):
     project = {"project_title": "Water quality sensor", "summary": "Water quality sensor measures pollution"}
+
+    def test_configurable_similarity_and_match_limits(self):
+        records = [
+            {"source": "crossref", "title": "Water quality sensor", "description": ""},
+            {"source": "crossref", "title": "Water quality sensor measures pollution", "description": ""},
+            {"source": "crossref", "title": "Water quality", "description": ""},
+        ]
+        settings = {"PRIOR_ART_MAX_MATCHES": "1", "PRIOR_ART_MIN_SHARED_WORDS": "3",
+                    "PRIOR_ART_MIN_SIMILARITY": "0.7", "PRIOR_ART_QUERY_MAX_WORDS": "3"}
+        with patch.dict(os.environ, settings), \
+             httpx.Client(transport=httpx.MockTransport(lambda request: self.fail("unexpected request"))) as client:
+            checker = PriorArtChecker(client)
+            with patch.object(checker, "_epo", return_value=[]), patch.object(checker, "_pbn", return_value=[]), \
+                 patch.object(checker, "_crossref", return_value=records), patch.object(checker, "_load_interreg", return_value=[]):
+                result = checker.check(self.project)
+        self.assertEqual(result["query"], "water quality sensor")
+        self.assertEqual(len(result["matches"]), 1)
+        self.assertEqual(result["matches"][0]["title"], "Water quality sensor measures pollution")
+        with patch.dict(os.environ, {"PRIOR_ART_MAX_MATCHES": "0"}):
+            with self.assertRaisesRegex(ValueError, "PRIOR_ART_MAX_MATCHES"):
+                PriorArtChecker()
 
     def test_matches_sources_and_caches_interreg(self):
         calls = []

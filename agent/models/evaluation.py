@@ -1,12 +1,7 @@
 import math
-import os
 import random
 from typing import Any
 from urllib.parse import urlsplit
-
-
-def configured_beta() -> float:
-    return float(os.getenv("AGENT_F_BETA", "0.5"))
 
 
 def split_crawler_domains(records: list[dict[str, Any]], seed: int = 42) -> tuple[list[dict], list[dict]]:

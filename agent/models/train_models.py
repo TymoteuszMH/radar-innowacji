@@ -10,9 +10,10 @@ if str(PROJECT_DIR) not in sys.path:
 from dotenv import load_dotenv
 
 from crawler.crawler_agent import CrawlerAgent
+from config import env_int
 from data.build_project_dataset import write_dataset
-from models.evaluation import best_fbeta_threshold, configured_beta, split_crawler_domains
-from models.train_project_agent import split_by_domain, train_project, undersample_training
+from models.evaluation import best_fbeta_threshold, split_crawler_domains
+from models.train_project_agent import split_records, train_project
 
 
 load_dotenv(PROJECT_DIR / ".env")
@@ -24,18 +25,17 @@ def configured_path(name: str, default: str) -> Path:
 
 
 def main() -> None:
-    beta = configured_beta()
+    project_epochs = env_int("PROJECT_AGENT_TRAIN_EPOCHS", 5, 1)
     project_dataset_path = configured_path("PROJECT_AGENT_DATASET_PATH", "data/innovation_dataset.json")
     if not project_dataset_path.is_file():
         write_dataset(project_dataset_path)
     project_records = json.loads(project_dataset_path.read_text(encoding="utf-8"))["records"]
     try:
-        project_train, _ = split_by_domain(project_records)
-        undersample_training(project_train)
+        split_records(project_records)
     except ValueError as error:
         raise ValueError(
             f"Zbiór innowacji {project_dataset_path} nie wystarcza do treningu i walidacji. "
-            "Uzupełnij ręcznie zweryfikowane przykłady obu klas z różnych domen."
+            "Uzupełnij ręcznie zweryfikowane przykłady obu klas."
         ) from error
     crawler_dataset_path = configured_path(
         "CRAWLER_AGENT_DATASET_PATH",
@@ -54,9 +54,9 @@ def main() -> None:
     )
     probabilities = [crawler_agent.predict_proba(record["url"])["article"] for record in crawler_validation]
     crawler_agent.article_threshold, score = best_fbeta_threshold(
-        probabilities, [record["category"] == "article" for record in crawler_validation], beta)
+        probabilities, [record["category"] == "article" for record in crawler_validation])
     print(f"Walidacja i dobór progu CrawlerAgent (article): rekordy={len(crawler_validation)}, "
-          f"F{beta:g}={score:.3f}, próg={crawler_agent.article_threshold:.6f}")
+          f"F0.5={score:.3f}, próg={crawler_agent.article_threshold:.6f}")
     crawler_model_path = configured_path(
         "CRAWLER_AGENT_MODEL_PATH",
         "models/crawler_agent.pt",
@@ -68,8 +68,8 @@ def main() -> None:
 
     train_project(
         project_dataset_path,
-        configured_path("PROJECT_AGENT_MODEL_PATH", "models/project_agent.pt"),
-        epochs=int(os.getenv("PROJECT_AGENT_TRAIN_EPOCHS", "50")),
+        configured_path("PROJECT_AGENT_MODEL_PATH", "models/bert_innovation_classifier"),
+        epochs=project_epochs,
     )
 
 

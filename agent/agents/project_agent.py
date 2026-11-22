@@ -8,12 +8,14 @@ import uuid as uuidlib
 from collections import Counter
 from pathlib import Path
 from typing import Any
-from urllib.parse import urldefrag, urlsplit
+from urllib.parse import urldefrag, urlsplit, urlunsplit
 
 import torch
-from torch import nn
+from dotenv import load_dotenv
+from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
 from agents.prior_art import PriorArtChecker
+from config import env_float, env_int
 
 
 PROJECT_DIR = Path(__file__).resolve().parent.parent
@@ -23,12 +25,13 @@ REFERENCE_FILE = PROJECT_DIR / "data" / "projects_example.json"
 
 
 def _normalize_project_url(url: str) -> str:
-    url = urldefrag(url.strip())[0].rstrip("/")
+    url = urldefrag(url.strip())[0]
     parts = urlsplit(url)
     if not parts.scheme or not parts.hostname:
         return url
     hostname = parts.hostname.lower().removeprefix("www.")
-    return f"{parts.scheme.lower()}://{hostname}{parts.path or '/'}"
+    port = f":{parts.port}" if parts.port else ""
+    return urlunsplit((parts.scheme.lower(), hostname + port, parts.path.rstrip("/") or "/", parts.query, ""))
 
 
 def _verified_projects_index() -> dict[str, dict[str, Any]]:
@@ -135,6 +138,8 @@ KEYWORD_STOP_WORDS = set(("oraz jest przez dla które który która które tego 
 
 
 def project_topics(title: str, description: str) -> tuple[list[str], list[str]]:
+    keyword_limit = env_int("PROJECT_AGENT_KEYWORDS_MAX", 10, 1)
+    phrase_limit = env_int("PROJECT_AGENT_KEYWORD_PHRASES_MAX", 5, 0)
     text = f"{title} {description}"
     tags = [label for label, pattern in DOMAIN_TAG_RULES.items() if re.search(pattern, text, re.IGNORECASE)]
     tokens = [word for word in re.findall(r"[^\W_]+", text.casefold(), re.UNICODE)
@@ -150,9 +155,9 @@ def project_topics(title: str, description: str) -> tuple[list[str], list[str]]:
         -phrases[phrase], -sum(counts[word] for word in phrase.split()), phrase
     ))
     ranked_words = [word for word, _ in counts.most_common()]
-    keywords = ranked_phrases[:5]
+    keywords = ranked_phrases[:min(phrase_limit, keyword_limit)]
     keywords.extend(word for word in ranked_words if word not in keywords)
-    return tags, keywords[:10]
+    return tags, keywords[:keyword_limit]
 
 
 def innovation_evidence(text: str) -> list[str]:
@@ -160,6 +165,10 @@ def innovation_evidence(text: str) -> list[str]:
     return [sentence.strip() for sentence in sentences
             if INNOVATION_ARTIFACT.search(sentence) and INNOVATION_ACTION.search(sentence)
             and not re.search(r"\b(?:dokumentacj\w*|instrukcj\w*)\b", sentence, re.IGNORECASE)
+            and not re.search(
+                r"\b(?:konkurs (?:organizowan\w*|jest skierowan\w*)|"
+                r"produkt(?:y|ów) (?:już )?(?:wdrożon\w*|wprowadzon\w*|opracowan\w*)|"
+                r"nowo powstał\w* firm\w*)\b", sentence, re.IGNORECASE)
             and not re.search(r"\bnie\s+" + INNOVATION_ACTION.pattern, sentence, re.IGNORECASE)]
 
 
@@ -243,8 +252,9 @@ def project_from_article(article: dict[str, Any], project_title: str = "") -> di
             project_title = next(group.strip().rstrip(". ") for group in named_project.groups() if group)
             title_source = "article_content"
     sentences = [sentence.strip() for line in lines for sentence in re.split(r"(?<=[.!?])\s+", line) if sentence.strip()]
-    evidence = innovation_evidence(content)[:3]
-    description = " ".join(evidence or sentences[:3])
+    evidence_limit = env_int("PROJECT_AGENT_EVIDENCE_MAX_SENTENCES", 3, 1)
+    evidence = innovation_evidence(content)[:evidence_limit]
+    description = " ".join(evidence or sentences[:evidence_limit])
     if not project_title:
         project_title = project_name_from_evidence(evidence)
         if project_title:
@@ -272,7 +282,7 @@ def project_from_article(article: dict[str, Any], project_title: str = "") -> di
         pci_reason = str(pci.get("uzasadnienie") or "") if isinstance(pci, dict) else ""
         innovation_type = str(verified.get("typ_innowacji") or "")
         description = " ".join(dict.fromkeys(part for part in (
-            " ".join(evidence[:3]), innovation_type, pci_reason
+            " ".join(evidence), innovation_type, pci_reason
         ) if part)) or description
         keywords = list(dict.fromkeys(list(verified.get("keywords") or []) + keywords))
         author_text = str(verified.get("tworcy_i_wiek") or "")
@@ -369,6 +379,8 @@ def projects_from_article(article: dict[str, Any]) -> list[dict[str, Any]]:
     content = article.get("content", "")
     if not isinstance(content, str):
         content = ""
+    if _normalize_project_url(str(article.get("url") or "")) in _verified_projects_index():
+        return [project_from_article(article)]
     matches = list(PROJECT_NAME.finditer(content))
     if len(matches) <= 1:
         return [project_from_article(article)]
@@ -384,7 +396,7 @@ def projects_from_article(article: dict[str, Any]) -> list[dict[str, Any]]:
         if innovation_evidence(section):
             name = next(group.strip().rstrip(". ") for group in match.groups() if group)
             projects.append(project_from_article({**article, "content": section}, name))
-    return projects
+    return projects or [project_from_article(article)]
 
 
 def project_identity(project: dict[str, Any]) -> tuple[str, tuple[str, ...]] | None:
@@ -400,8 +412,7 @@ def project_identity(project: dict[str, Any]) -> tuple[str, tuple[str, ...]] | N
 
 def article_text(record: dict[str, Any]) -> str:
     parts = []
-    for field in ("source_title", "content"):
-        value = record.get(field, "")
+    for value in (record.get("source_title") or record.get("title", ""), record.get("content", "")):
         values = value if isinstance(value, list) else [value]
         for item in values:
             if isinstance(item, str) and item.strip() and item.strip() not in parts:
@@ -409,122 +420,85 @@ def article_text(record: dict[str, Any]) -> str:
     return "\n".join(parts)
 
 
-def tokens(text: str) -> list[str]:
-    return re.findall(r"[^\W_]+", text.casefold(), re.UNICODE)
+def prepare_text(text: str) -> str:
+    words = text.split()
+    if len(words) > 350:
+        return " ".join(words[:200]) + " ... " + " ".join(words[-150:])
+    return text.strip()
 
 
-class _ProjectClassifier(nn.Module):
-    def __init__(self, input_size: int, hidden_size: int, dropout: float) -> None:
-        super().__init__()
-        self.layers = nn.Sequential(
-            nn.Linear(input_size, hidden_size), nn.ReLU(), nn.Dropout(dropout), nn.Linear(hidden_size, 2)
-        )
-
-    def forward(self, inputs: torch.Tensor) -> torch.Tensor:
-        return self.layers(inputs)
+def tokenize_text(tokenizer: Any, text: str) -> dict[str, Any]:
+    token_ids = tokenizer(prepare_text(text), add_special_tokens=False, truncation=False)["input_ids"]
+    budget = 512 - tokenizer.num_special_tokens_to_add(pair=False)
+    if len(token_ids) > budget:
+        head = budget * 200 // 350
+        token_ids = token_ids[:head] + token_ids[-(budget - head):]
+    return tokenizer.prepare_for_model(token_ids, add_special_tokens=True, truncation=False)
 
 
 class ProjectAgent:
-    def __init__(self, hidden_size: int = 64) -> None:
-        if hidden_size < 1:
-            raise ValueError("hidden_size musi być dodatni")
-        try:
-            dropout = float(os.getenv("PROJECT_AGENT_DROPOUT", "0.15"))
-        except ValueError as error:
-            raise ValueError("PROJECT_AGENT_DROPOUT musi być liczbą z zakresu [0, 1)") from error
-        if not 0 <= dropout < 1:
-            raise ValueError("PROJECT_AGENT_DROPOUT musi być liczbą z zakresu [0, 1)")
-        self.hidden_size = hidden_size
-        self.dropout = dropout
-        self.vocabulary: dict[str, int] = {}
-        self.model: _ProjectClassifier | None = None
+    def __init__(self) -> None:
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.model = None
+        self.tokenizer = None
         self.threshold = 0.5
 
-    def _vectorize(self, text: str) -> torch.Tensor:
-        vector = torch.zeros(len(self.vocabulary), dtype=torch.float32)
-        for token in set(tokens(text)):
-            index = self.vocabulary.get(token)
-            if index is not None:
-                vector[index] = 1.0
-        return vector
-
-    def fit(self, records: list[dict[str, Any]], epochs: int = 50, seed: int = 42) -> None:
-        if epochs < 1:
-            raise ValueError("epochs musi być dodatnie")
-        if any(not isinstance(record.get("text"), str) or not record["text"].strip()
-               or type(record.get("label")) is not int or record["label"] not in (0, 1)
-               for record in records):
-            raise ValueError("Każdy rekord musi mieć tekst i etykietę 0 lub 1")
-        counts = Counter(record["label"] for record in records)
-        if not counts[0] or not counts[1]:
-            raise ValueError("Zbiór treningowy musi zawierać obie klasy")
-        word_counts = Counter(token for record in records for token in set(tokens(record["text"])))
-        self.vocabulary = {word: index for index, (word, _) in enumerate(word_counts.most_common(10000))}
-        if not self.vocabulary:
-            raise ValueError("Brak słów w danych treningowych")
-        features = torch.stack([self._vectorize(record["text"]) for record in records])
-        labels = torch.tensor([record["label"] for record in records], dtype=torch.long)
-        torch.manual_seed(seed)
-        self.model = _ProjectClassifier(len(self.vocabulary), self.hidden_size, self.dropout)
-        loss_function = nn.CrossEntropyLoss()
-        optimizer = torch.optim.AdamW(self.model.parameters(), lr=0.001)
-        for _ in range(epochs):
-            self.model.train()
-            optimizer.zero_grad()
-            loss = loss_function(self.model(features), labels)
-            loss.backward()
-            optimizer.step()
-        self.model.eval()
+    def fit(self, records: list[dict[str, Any]], epochs: int | None = None, seed: int | None = None) -> None:
+        from models.train_project_agent import fit_agent
+        fit_agent(self, records, epochs=epochs, seed=seed)
 
     def predict_proba(self, text: str) -> float | None:
-        if self.model is None:
+        if self.model is None or self.tokenizer is None:
             raise RuntimeError("Najpierw wytrenuj lub załaduj ProjectAgent")
-        vector = self._vectorize(text)
-        if not torch.any(vector):
+        if not isinstance(text, str):
+            raise ValueError("Tekst musi być ciągiem znaków")
+        if not text.strip():
             return None
+        encoded = tokenize_text(self.tokenizer, text)
+        inputs = {key: torch.tensor([value], device=self.device) for key, value in encoded.items()}
         self.model.eval()
-        with torch.no_grad():
-            return torch.softmax(self.model(vector.unsqueeze(0)), dim=1)[0, 1].item()
+        with torch.inference_mode():
+            return torch.softmax(self.model(**inputs).logits, dim=-1)[0, 1].item()
+
+    def predict(self, text: str, threshold: float | None = None) -> dict[str, Any]:
+        threshold = self.threshold if threshold is None else threshold
+        if not 0 <= threshold <= 1:
+            raise ValueError("Próg musi być między 0 i 1")
+        probability = self.predict_proba(text)
+        if probability is None:
+            raise ValueError("Tekst nie może być pusty")
+        return {"label": int(probability >= threshold), "probability": probability}
 
     def save(self, path: str | Path) -> None:
-        if self.model is None:
+        if self.model is None or self.tokenizer is None:
             raise RuntimeError("Nie można zapisać niewytrenowanego modelu")
         path = Path(path)
-        path.parent.mkdir(parents=True, exist_ok=True)
-        temporary = path.with_suffix(path.suffix + ".tmp")
-        try:
-            torch.save({"version": 1, "hidden_size": self.hidden_size, "vocabulary": self.vocabulary,
-                        "threshold": self.threshold,
-                        "state_dict": self.model.state_dict()}, temporary)
-            os.replace(temporary, path)
-        finally:
-            temporary.unlink(missing_ok=True)
+        path.mkdir(parents=True, exist_ok=True)
+        self.model.config.innovation_threshold = self.threshold
+        self.model.save_pretrained(path)
+        self.tokenizer.save_pretrained(path)
 
     @classmethod
     def load(cls, path: str | Path) -> "ProjectAgent":
-        checkpoint = torch.load(path, map_location="cpu", weights_only=True)
-        if checkpoint.get("version") != 1:
-            raise ValueError("Nieobsługiwany format modelu ProjectAgent")
-        agent = cls(hidden_size=int(checkpoint["hidden_size"]))
-        threshold = checkpoint.get("threshold", 0.5)
+        path = Path(path)
+        if not path.is_dir():
+            raise FileNotFoundError(f"Brak katalogu modelu BERT: {path}. Wytrenuj model ponownie.")
+        agent = cls()
+        agent.tokenizer = AutoTokenizer.from_pretrained(path, local_files_only=True)
+        agent.model = AutoModelForSequenceClassification.from_pretrained(path, local_files_only=True)
+        if agent.model.config.num_labels != 2:
+            raise ValueError("Model ProjectAgent musi mieć dwie klasy")
+        threshold = getattr(agent.model.config, "innovation_threshold", 0.5)
         if not isinstance(threshold, (float, int)) or not 0 <= threshold <= 1:
             raise ValueError("Nieprawidłowy próg ProjectAgent")
-        agent.threshold = threshold
-        agent.vocabulary = checkpoint["vocabulary"]
-        agent.model = _ProjectClassifier(len(agent.vocabulary), agent.hidden_size, agent.dropout)
-        agent.model.load_state_dict(checkpoint["state_dict"])
+        agent.threshold = float(threshold)
+        agent.model.to(agent.device)
         agent.model.eval()
         return agent
 
     @staticmethod
     def normalize_url(url: str) -> str:
-        url = urldefrag(url.strip())[0].rstrip("/")
-        parts = urlsplit(url)
-        if not parts.scheme or not parts.hostname:
-            return url
-        hostname = parts.hostname.lower().removeprefix("www.")
-        port = f":{parts.port}" if parts.port else ""
-        return f"{parts.scheme.lower()}://{hostname}{port}{parts.path or '/'}"
+        return _normalize_project_url(url)
 
     def known_project_urls(self) -> set[str]:
         source_path = PROJECT_DIR / "data" / "sites_and_projects.csv"
@@ -570,6 +544,9 @@ class ProjectAgent:
             if item["project_detection"]["is_project"] is not True:
                 continue
             for project in projects_from_article(item):
+                project["flags"]["requires_review"] = (
+                    not project["evidence"] and not project["flags"]["source_url_verified"]
+                )
                 identity = project_identity(project)
                 if identity is not None:
                     if identity in seen:
@@ -658,15 +635,25 @@ def build_verified_output(output_file: Path, data_output: Path) -> dict[str, Any
 
 
 def main() -> None:
+    load_dotenv(PROJECT_DIR / ".env")
     parser = argparse.ArgumentParser(description="Wykrywa projekty w gotowych wynikach analizy.")
-    parser.add_argument("--input", type=Path, default=PROJECT_DIR / "results" / "results.json")
-    parser.add_argument("--output", type=Path, default=PROJECT_DIR / "results" / "projects.json")
+    parser.add_argument("--input", type=Path, default=PROJECT_DIR / os.getenv(
+        "ANALYSIS_OUTPUT_FILE", "results/results.json"))
+    parser.add_argument("--output", type=Path)
     parser.add_argument("--data-output", type=Path, help="Plik wszystkich przeanalizowanych artykułów (domyślnie data.json obok --output)")
-    parser.add_argument("--model", type=Path, default=PROJECT_DIR / "models" / "project_agent.pt")
+    parser.add_argument("--model", type=Path, default=PROJECT_DIR / os.getenv(
+        "PROJECT_AGENT_MODEL_PATH", "models/bert_innovation_classifier"))
     parser.add_argument("--threshold", type=float)
     parser.add_argument("--no-prior-art", action="store_true", help="Pomiń sprawdzanie źródeł zewnętrznych")
     args = parser.parse_args()
-    data_output = args.data_output or args.output.with_name("data.json")
+    if args.threshold is None and os.getenv("PROJECT_AGENT_THRESHOLD") is not None:
+        args.threshold = env_float("PROJECT_AGENT_THRESHOLD", 0.5, 0, 1)
+    explicit_output = args.output is not None
+    if args.output is None:
+        args.output = PROJECT_DIR / os.getenv("PROJECTS_OUTPUT_FILE", "results/projects.json")
+    configured_data_output = os.getenv("PROJECT_DATA_OUTPUT_FILE")
+    data_output = args.data_output or (PROJECT_DIR / configured_data_output if configured_data_output and not explicit_output
+                                      else args.output.with_name("data.json"))
     if not args.input.is_absolute():
         args.input = PROJECT_DIR / args.input
     if not args.input.is_file() and VERIFICATION_FILE.is_file():
@@ -674,8 +661,9 @@ def main() -> None:
         data_output = data_output if data_output.is_absolute() else PROJECT_DIR / data_output
         build_verified_output(output_file, data_output)
         return
+    prior_art_enabled = os.getenv("PRIOR_ART_ENABLED", "1").strip().lower() in {"1", "true", "yes", "on"}
     process_file(args.input, args.output, data_output,
-                 args.model, args.threshold, prior_art_enabled=not args.no_prior_art)
+                 args.model, args.threshold, prior_art_enabled=prior_art_enabled and not args.no_prior_art)
 
 
 if __name__ == "__main__":

@@ -12,6 +12,8 @@ from bs4 import BeautifulSoup
 from openpyxl import load_workbook
 from openpyxl.utils.exceptions import InvalidFileException
 
+from config import env_float, env_int
+
 
 INTERREG_URL = "https://interreg.gov.pl/lista-projektow/"
 EPO_URL = "https://ops.epo.org/3.2/rest-services"
@@ -23,10 +25,10 @@ def meaningful_words(text: str) -> list[str]:
             if len(word) >= 4 and word not in STOP_WORDS and not word.isdigit()]
 
 
-def search_query(project: dict[str, Any]) -> str:
+def search_query(project: dict[str, Any], max_words: int = 8) -> str:
     title = meaningful_words(str(project.get("project_title") or ""))
     summary = meaningful_words(str(project.get("summary") or ""))
-    return " ".join(list(dict.fromkeys(title + summary))[:8])
+    return " ".join(list(dict.fromkeys(title + summary))[:max_words])
 
 
 def similarity(project: dict[str, Any], title: str, description: str = "") -> tuple[float, list[str]]:
@@ -40,7 +42,14 @@ def similarity(project: dict[str, Any], title: str, description: str = "") -> tu
 
 class PriorArtChecker:
     def __init__(self, client: httpx.Client | None = None) -> None:
-        self.client = client or httpx.Client(timeout=15, follow_redirects=True,
+        timeout = env_float("PRIOR_ART_TIMEOUT_SECONDS", 15, 0)
+        if timeout == 0:
+            raise ValueError("PRIOR_ART_TIMEOUT_SECONDS musi być dodatni")
+        self.max_matches = env_int("PRIOR_ART_MAX_MATCHES", 10, 1)
+        self.min_shared_words = env_int("PRIOR_ART_MIN_SHARED_WORDS", 2, 1)
+        self.min_similarity = env_float("PRIOR_ART_MIN_SIMILARITY", 0.2, 0, 1)
+        self.query_max_words = env_int("PRIOR_ART_QUERY_MAX_WORDS", 8, 2)
+        self.client = client or httpx.Client(timeout=timeout, follow_redirects=True,
                                              headers={"User-Agent": "RadarInnowacji/1.0"})
         self.owns_client = client is None
         self.epo_key = os.getenv("EPO_OPS_KEY", "").strip()
@@ -168,7 +177,7 @@ class PriorArtChecker:
             raise
 
     def check(self, project: dict[str, Any]) -> dict[str, Any]:
-        query = search_query(project)
+        query = search_query(project, self.query_max_words)
         statuses = {}
         matches = []
         sources = (("epo", lambda: self._epo(query)), ("pbn", lambda: self._pbn(query)),
@@ -182,11 +191,11 @@ class PriorArtChecker:
                 statuses[name] = {"status": "ok", "records_examined": len(records)}
                 for record in records:
                     score, shared = similarity(project, record["title"], record["description"])
-                    if len(shared) >= 2 and score >= 0.2:
+                    if len(shared) >= self.min_shared_words and score >= self.min_similarity:
                         matches.append({**record, "similarity": score, "shared_words": shared})
             except (httpx.HTTPError, ValueError, KeyError, TypeError, ET.ParseError, OSError,
                     BadZipFile, InvalidFileException) as error:
                 statuses[name] = {"status": "unavailable", "reason": str(error)}
         matches.sort(key=lambda item: item["similarity"], reverse=True)
         return {"status": "matches_found" if matches else "inconclusive", "query": query,
-                "sources": statuses, "matches": matches[:10]}
+                "sources": statuses, "matches": matches[:self.max_matches]}
