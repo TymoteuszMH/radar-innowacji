@@ -70,7 +70,7 @@ Przykład: artykuł opisuje cel projektu badawczego, ale pomija sposób jego kom
 | --- | ---: | --- | --- |
 | 75%–100% | co najmniej 70% | Wysoki potencjał | Przekazanie do programów akceleracyjnych, transferu lub bezpośrednich rozmów z partnerami wdrożeniowymi. |
 | 50%–74% | co najmniej 70% | Potencjał rozwojowy | Skierowanie na mentoring, do laboratoriów prototypowania lub doprecyzowanie założeń. |
-| Dowolny wynik | poniżej 70% | Niepewna ocena | Weryfikacja tematu z Asystentem Ai lub bezpośredni kontakt z autorami rozwiązania. |
+| Dowolny wynik | poniżej 70% | Niepewna ocena | Weryfikacja tematu z Asystentem AI lub bezpośredni kontakt z autorami rozwiązania. |
 | Poniżej 50% | co najmniej 70% | Niski potencjał / Duplikat | Weryfikacja podobnych projektów wskazanych przez system w bazach, np. Interreg i NCBiR, w celu współpracy zamiast powielania prac. |
 
 Porównanie zewnętrzne może korzystać z:
@@ -79,8 +79,8 @@ Porównanie zewnętrzne może korzystać z:
 | ----------------------------------------- | ------------------------------------------------------- |
 | Crossref                                  | Publiczne metadane publikacji                           |
 | Interreg                                  | Katalog projektów pobierany z serwisu Interreg Polska   |
-| Epo Ops                                   | Wymaga `EPO_OPS_KEY` i `EPO_OPS_SECRET`                 |
-| Pbn                                       | Wymaga `PBN_APP_ID` i `PBN_APP_TOKEN`                   |
+| EPO OPS                                   | Wymaga `EPO_OPS_KEY` i `EPO_OPS_SECRET`                 |
+| PBN                                       | Wymaga `PBN_APP_ID` i `PBN_APP_TOKEN`                   |
 | UPRP, PPM, biblioteki PAN i BazTOL, NCBiR | Nie są bezpośrednio przeszukiwane przez obecny pipeline |
 
 Brak znalezionego podobieństwa nie potwierdza nowości. Porównania tekstowe nie zastępują badania stanu techniki, analizy zastrzeżeń patentowych ani ustalenia, czy dwa wpisy opisują ten sam projekt. Zapytania do źródeł zewnętrznych mogą przekazywać fragmenty tytułu i opisu.
@@ -97,11 +97,11 @@ Backend testuje kontrakt API, wyszukiwanie, podobieństwa i ograniczenia zapyta�
 
 1. Wyszukaj projekt w `/search` albo otwórz katalog `/innovations`.
 2. Przejdź do szczegółów i sprawdź opis, autorów, instytucje, cytaty oraz źródło.
-3. Omów ocenę, jej pokrycie, brakujące informacje i uzasadnienia poszczególnych kryteriow.
+3. Omów ocenę, jej pokrycie, brakujące informacje i uzasadnienia poszczególnych kryteriów.
 4. Pokaż wewnętrzne podobieństwa i wyniki porównania zewnętrznego, podkreślając ich ograniczenia.
 5. Zakończ proponowanym następnym krokiem i warunkiem jego weryfikacji.
 
-Demonstracje nalezy przeprowadzić na co najmniej dwóch rekordach z aktualnego `agent/results/projects.json`. Zestaw `projects_example.json` może dostarczyć przykładów referencyjnych, ale nie jest automatycznie katalogiem serwowanym przez Api.
+Demonstracje należy przeprowadzić na co najmniej dwóch rekordach z aktualnego `agent/results/projects.json`. Zestaw `projects_example.json` może dostarczyć przykładów referencyjnych, ale nie jest automatycznie katalogiem serwowanym przez API.
 
 ### Mierniki do walidacji
 
@@ -138,7 +138,7 @@ npm --prefix backend run start:dev
 npm --prefix frontend start
 ```
 
-Backend domyślnie działa na `http://localhost:3000`, frontend na `http://localhost:4200`. Development frontendu łączy się z backendem przez `http://127.0.0.1:3000`; domyślne `CORS_ORIGINS` backendu dopuszcza lokalne originy na porcie 4200. Produkcyjny frontend uzywa same-origin Api i wymaga, aby serwer zwracał `index.html` dla tras Angulara.
+Backend domyślnie działa na `http://localhost:3000`, frontend na `http://localhost:4200`. Development frontendu łączy się z backendem przez `http://127.0.0.1:3000`; domyślne `CORS_ORIGINS` backendu dopuszcza lokalne originy na porcie 4200. Produkcyjny frontend używa same-origin API i wymaga, aby serwer zwracał `index.html` dla tras Angulara.
 
 Do uruchomienia pipeline'u agenta przejdź do katalogu `agent`. Przed pierwszym uruchomieniem lub po zmianie modelu wytrenuj checkpointy, a następnie uruchom crawler:
 
